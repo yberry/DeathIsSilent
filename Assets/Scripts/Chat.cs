@@ -1,0 +1,45 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class Chat : MonoBehaviour {
+
+    private PhotonVoiceRecorder rec;
+    private AudioSource source;
+
+	// Use this for initialization
+	void Start () {
+        PhotonNetwork.networkingPeer.TrafficStatsEnabled = true;
+        PhotonVoiceNetwork.Client.loadBalancingPeer.TrafficStatsEnabled = true;
+        PhotonVoiceNetwork.Client.DebugEchoMode = false;
+
+        DontDestroyOnLoad(gameObject);
+	}
+
+    void Update()
+    {
+        if (rec != null)
+        {
+            return;
+        }
+        foreach (PhotonVoiceRecorder r in FindObjectsOfType<PhotonVoiceRecorder>())
+        {
+            if (r.photonView.isMine)
+            {
+                rec = r;
+                rec.Transmit = true;
+                source = rec.GetComponent<AudioSource>();
+                return;
+            }
+        }
+    }
+	
+	public void SetTransmission(bool tr)
+    {
+        rec.Transmit = tr;
+    }
+
+    public void SetVolume(float vol)
+    {
+        source.volume = vol;
+    }
+}
