@@ -15,19 +15,17 @@ public class Radar : NetworkBehaviour {
     public float tempsBalayageLimite;
     public int vitesse;
     public GameObject fleche;
-    [SyncVar]
-    public bool activate = true;
     public AudioClip sonEnnemi;
+    public float tempsBrouille = 10f;
 
-    public OVRInput.Button brouilleButton;
-    public GameObject[] disparu;
-
+    private bool brouille = false;
     private List<GameObject> radarObjects;
     private float tempsBalayage;
     private GameObject balais;
     private GameObject player;
     private NoiseAndScratches script;
     private AudioSource source;
+    private Chat chat;
 
     [SyncVar]
     bool vueSubjective = true;
@@ -40,6 +38,10 @@ public class Radar : NetworkBehaviour {
         balais.transform.parent = transform;
         tempsBalayage = 0f;
         source = GetComponent<AudioSource>();
+        if (isLocalPlayer)
+        {
+            chat = FindObjectOfType<Chat>();
+        }
 
         script = GameObject.Find("Radar Camera").GetComponent<NoiseAndScratches>();
         script.activate = false;
@@ -59,25 +61,38 @@ public class Radar : NetworkBehaviour {
             balais.GetComponent<Balayage>().detect = false;
         }
 
-        if (!activate)
-        {
-            return;
-        }
         for (int i = 0; i < radarObjects.Count; i++) {
             if (Vector3.Distance(radarObjects[i].transform.position, transform.position) > switchDistance) {
                 helpTransform.LookAt(radarObjects[i].transform);
                 //borderObjects[i].transform.position = transform.position + switchDistance * helpTransform.forward;
             }
         }
-        tempsBalayage += Time.deltaTime;
-        if (tempsBalayage < tempsBalayageLimite)
+
+        if (brouille)
         {
-            balais.transform.localScale = balais.transform.localScale * (vitesse + 1) / vitesse;
-        } else {
-            Destroy(balais);
-            tempsBalayage = 0f;
-            balais = Instantiate(balayagePrefab,transform.position, Quaternion.Euler(90f, 0f, 0f)) as GameObject;
-            balais.transform.parent = transform;
+            tempsBrouille -= Time.deltaTime;
+        }
+        else
+        {
+            tempsBalayage += Time.deltaTime;
+            if (tempsBalayage < tempsBalayageLimite)
+            {
+                balais.transform.localScale = balais.transform.localScale * (vitesse + 1) / vitesse;
+            }
+            else {
+                Destroy(balais);
+                tempsBalayage = 0f;
+                balais = Instantiate(balayagePrefab, transform.position, Quaternion.Euler(90f, 0f, 0f)) as GameObject;
+                balais.transform.parent = transform;
+            }
+        }
+
+        if (tempsBrouille <= 0f)
+        {
+            tempsBrouille = 0f;
+            script.activate = false;
+            brouille = false;
+            chat.SetTransmission(true);
         }
 
         if (OVRInput.GetDown(OVRInput.Button.Two) || Input.GetKeyDown(KeyCode.W))
@@ -91,24 +106,20 @@ public class Radar : NetworkBehaviour {
         }
 	}
 
-    [ClientRpc]
-    public void RpcBrouille()
+    [Command]
+    public void CmdBrouille()
     {
-        script.activate = !script.activate;
-        activate = !activate;
+        RpcBrouille();
+    }
 
-        foreach (GameObject o in disparu)
+    [ClientRpc]
+    void RpcBrouille()
+    {
+        script.activate = true;
+        brouille = true;
+        if (isLocalPlayer)
         {
-            if (o.GetComponent<MeshRenderer>() == null)
-            {
-                foreach (Transform child in o.transform)
-                {
-                    child.GetComponent<MeshRenderer>().enabled = activate;
-                }
-            }
-            else {
-                o.GetComponent<MeshRenderer>().enabled = activate;
-            }
+            chat.SetTransmission(false);
         }
     }
 

@@ -91,10 +91,6 @@ public class EnnemiSpawner : NetworkBehaviour {
             pos.x = Random.Range(min.x + extents.x, max.x - extents.x);
             pos.z = Random.Range(min.z + extents.z, max.z - extents.z);
         }
-
-        Debug.Log(pos);
-        Debug.Log(Vector3.Distance(joueur.position, pos));
-
         return pos;
     }
 

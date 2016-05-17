@@ -12,14 +12,15 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
     public static float distanceOuverture = 2f;
     public AudioClip sonOuverture;
     public AudioClip sonFermeture;
+    [SyncVar]
+    public float angle = 0f;
 
     [SyncVar]
     private bool ouverte = false;
-    [SyncVar]
-    private float angle = 0f;
     private Transform pos;
     private PorteRadar porteRadar;
     private AudioSource source;
+    private bool tourne = false;
     
 	// Use this for initialization
 	void Start () {
@@ -38,7 +39,7 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
 	
 	// Update is called once per frame
 	void Update () {
-        if (!isServer)
+        if (!isServer || !tourne)
         {
             return;
         }
@@ -47,6 +48,7 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
             if (vitesseOuverture == 0f)
             {
                 angle = angleOuverture;
+                tourne = false;
             }
             else
             {
@@ -56,19 +58,19 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
                     if (angle > angleOuverture)
                     {
                         angle = angleOuverture;
+                        tourne = false;
                     }
                 }
             }
-            float x = transform.localRotation.eulerAngles.x;
-            float new_angle = sensHoraireOuverture ? angle : -angle;
-            RpcSetLocalRotation(Quaternion.Euler(x, new_angle, 0f));
-            porteRadar.RpcSetLocalRotation(Quaternion.Euler(x, new_angle, 0f));
+            Turn();
+            
         }
         if (!ouverte && angle != 0f)
         {
             if (vitesseOuverture == 0f)
             {
                 angle = 0f;
+                tourne = false;
             }
             else
             {
@@ -78,12 +80,21 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
                     if (angle < 0f)
                     {
                         angle = 0f;
+                        tourne = false;
                     }
                 }
             }
-            float x = transform.localRotation.eulerAngles.x;
-            float new_angle = sensHoraireOuverture ? angle : -angle;
-            RpcSetLocalRotation(Quaternion.Euler(x, new_angle, 0f));
+            Turn();
+        }
+    }
+
+    void Turn()
+    {
+        float x = transform.localRotation.eulerAngles.x;
+        float new_angle = sensHoraireOuverture ? angle : -angle;
+        RpcSetLocalRotation(Quaternion.Euler(x, new_angle, 0f));
+        if (porteRadar != null)
+        {
             porteRadar.RpcSetLocalRotation(Quaternion.Euler(x, new_angle, 0f));
         }
     }
@@ -98,6 +109,7 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
     {
         if (Vector3.Distance(pos.position, transform.position) < distanceOuverture)
         {
+            tourne = true;
             ouverte = !ouverte;
             source.PlayOneShot(ouverte ? sonOuverture : sonFermeture);
         }

@@ -63,4 +63,9 @@ public class MyLobbyPlayer : NetworkLobbyPlayer {
             readyButton.interactable = isLocalPlayer;
         }
     }
+
+    public void OnDestroy()
+    {
+        MyLobbyPlayerList.instance.RemovePlayer(this);
+    }
 }

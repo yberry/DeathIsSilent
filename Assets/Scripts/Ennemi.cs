@@ -3,18 +3,17 @@ using UnityEngine.Networking;
 using System.Collections;
 
 [RequireComponent(typeof(Collider))]
-public class Ennemi : MonoBehaviour {
+public class Ennemi : NetworkBehaviour {
 
     public Camera vision;
 
     private bool detecteJoueur = false;
     private Transform joueur;
-    private Renderer joueurRender;
+    private RaycastHit hit;
 
 	// Use this for initialization
 	void Start () {
         joueur = GameObject.FindGameObjectWithTag("Player").transform;
-        joueurRender = joueur.GetComponent<Renderer>();
 	}
 	
 	// Update is called once per frame
@@ -22,16 +21,22 @@ public class Ennemi : MonoBehaviour {
         transform.LookAt(joueur);
         transform.position = Vector3.MoveTowards(transform.position, joueur.position, Time.deltaTime);
 
-        if (joueurRender.IsVisibleFrom(vision))
+        if (Physics.Raycast(transform.position, transform.forward, out hit))
         {
-            detecteJoueur = true;
-            Debug.Log("detection");
+            detecteJoueur = hit.transform == joueur;
+            if (detecteJoueur)
+            {
+                Debug.Log("détection");
+            }
         }
 	}
 
     void OnDestroy()
     {
         Debug.Log("destruction");
-        EnnemiSpawner.instance.MonstreAbsent();
+        if (isServer)
+        {
+            EnnemiSpawner.instance.MonstreAbsent();
+        }
     }
 }

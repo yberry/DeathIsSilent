@@ -665,13 +665,13 @@ public enum DisconnectCause
     Exception = StatusCode.Exception,
 
     /// <summary>(32756) Authorization on the Photon Cloud failed because the app's subscription does not allow to use a particular region's server.</summary>
-    InvalidRegion = ErrorCode.InvalidRegion,
+    InvalidRegion = ExitGames.Client.Photon.ErrorCode.InvalidRegion,
 
     /// <summary>(32757) Authorization on the Photon Cloud failed because the concurrent users (CCU) limit of the app's subscription is reached.</summary>
-    MaxCcuReached = ErrorCode.MaxCcuReached,
+    MaxCcuReached = ExitGames.Client.Photon.ErrorCode.MaxCcuReached,
 
     /// <summary>(32767) The Photon Cloud rejected the sent AppId. Check your Dashboard and make sure the AppId you use is complete and correct.</summary>
-    InvalidAuthentication = ErrorCode.InvalidAuthentication,
+    InvalidAuthentication = ExitGames.Client.Photon.ErrorCode.InvalidAuthentication,
 
     /// <summary>(32753) The Authentication ticket expired. Handle this by connecting again (which includes an authenticate to get a fresh ticket).</summary>
     AuthenticationTicketExpired = 32753,

@@ -24,4 +24,9 @@ public class MyLobbyPlayerList : MonoBehaviour {
         player.readyImage.sprite = players.Count == 1 ? manette : radar;
         player.transform.localScale = Vector3.one;
     }
+
+    public void RemovePlayer(MyLobbyPlayer player)
+    {
+        players.Remove(player);
+    }
 }

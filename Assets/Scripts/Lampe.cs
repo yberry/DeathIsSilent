@@ -24,9 +24,13 @@ public class Lampe : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	    if (OVRInput.GetDown(switcher))
+        if (frequenceClignotement > 0f)
         {
-            lampe.enabled = !lampe.enabled;
+            frequenceClignotement -= Time.deltaTime / 2;
+            if (frequenceClignotement <= 0f)
+            {
+                frequenceClignotement = 0f;
+            }
         }
         lampe.intensity = (Mathf.Cos(Time.time * frequenceClignotement) * (intensiteMax - intensiteMin) + intensiteMax + intensiteMin) / 2;
     }
@@ -34,5 +38,10 @@ public class Lampe : MonoBehaviour {
     public void SetFreq(float freq)
     {
         frequenceClignotement = freq;
+    }
+
+    public void Switch()
+    {
+        lampe.enabled = !lampe.enabled;
     }
 }

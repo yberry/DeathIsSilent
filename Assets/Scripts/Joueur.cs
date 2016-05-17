@@ -1,14 +1,30 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-[RequireComponent(typeof(Renderer))]
 public class Joueur : NetworkBehaviour {
 
     public OVRInput.Button boutonPause;
+    public MenuPause menuPause;
     public Lampe lampe;
+    public AudioSource ambiance;
 
+    private bool pause = false;
     private Radar radar;
+    private Chat chat;
+
+    void Start()
+    {
+        if (!isLocalPlayer)
+        {
+            ambiance.enabled = false;
+        }
+        else
+        {
+            chat = FindObjectOfType<Chat>();
+        }
+    }
 
     // Update is called once per frame
     void Update()
@@ -17,17 +33,38 @@ public class Joueur : NetworkBehaviour {
         {
             radar = FindObjectOfType<Radar>();
         }
+        
+        if (!isLocalPlayer)
+        {
+            return;
+        }
 
-        if (OVRInput.GetDown(boutonPause) && isLocalPlayer)
+        if (OVRInput.GetDown(boutonPause))
         {
             RpcPause();
+        }
+
+        if (OVRInput.GetDown(lampe.switcher))
+        {
+            lampe.Switch();
         }
     }
 
     [ClientRpc]
-    void RpcPause()
+    public void RpcPause()
     {
-        Time.timeScale = Time.timeScale == 1f ? 0f : 1f;
+        if (pause)
+        {
+            pause = false;
+            Time.timeScale = 1f;
+            menuPause.Desactive();
+        }
+        else
+        {
+            pause = true;
+            Time.timeScale = 0f;
+            menuPause.Active();
+        }
     }
 
     void OnTriggerEnter(Collider col)
@@ -36,8 +73,9 @@ public class Joueur : NetworkBehaviour {
         {
             Debug.Log("attaque");
             Destroy(col.gameObject);
-            //radar.RpcBrouille();
-            lampe.SetFreq(10f);
+            radar.CmdBrouille();
+            //chat.SetTransmission(false);
+            lampe.SetFreq(5f);
         }
     }
 }
