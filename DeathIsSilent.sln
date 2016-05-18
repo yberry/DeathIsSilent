@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeathIsSilent.CSharp.Plugins", "DeathIsSilent.CSharp.Plugins.csproj", "{07A3006A-4668-E80B-B47F-A43CE422922A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeathIsSilent.CSharp", "DeathIsSilent.CSharp.csproj", "{0B9F0482-152B-78F1-1CAA-5032BA717C8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeathIsSilent.CSharp.Editor", "DeathIsSilent.CSharp.Editor.csproj", "{2360A543-F99B-06CC-3172-317F3942EB95}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{07A3006A-4668-E80B-B47F-A43CE422922A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07A3006A-4668-E80B-B47F-A43CE422922A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07A3006A-4668-E80B-B47F-A43CE422922A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07A3006A-4668-E80B-B47F-A43CE422922A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B9F0482-152B-78F1-1CAA-5032BA717C8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B9F0482-152B-78F1-1CAA-5032BA717C8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B9F0482-152B-78F1-1CAA-5032BA717C8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B9F0482-152B-78F1-1CAA-5032BA717C8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2360A543-F99B-06CC-3172-317F3942EB95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2360A543-F99B-06CC-3172-317F3942EB95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2360A543-F99B-06CC-3172-317F3942EB95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2360A543-F99B-06CC-3172-317F3942EB95}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
