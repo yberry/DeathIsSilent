@@ -42,20 +42,21 @@ public class Radar : NetworkBehaviour {
         {
             chat = FindObjectOfType<Chat>();
         }
-
-        script = GameObject.Find("Radar Camera").GetComponent<NoiseAndScratches>();
-        script.activate = false;
-    }
-
-    void Update() {
-        if (!isLocalPlayer)
+        else
         {
             Camera cam = transform.Find("Radar Camera").GetComponent<Camera>();
             cam.rect = new Rect(2f / 3f, 0f, 1f / 3f, 1f / 3f);
             cam.GetComponent<AudioListener>().enabled = false;
             source.enabled = false;
         }
-        else if (balais.GetComponent<Balayage>().detect)
+
+        script = GameObject.Find("Radar Camera").GetComponent<NoiseAndScratches>();
+        script.activate = false;
+    }
+
+    void Update() {
+
+        if (isLocalPlayer && balais.GetComponent<Balayage>().detect)
         {
             source.PlayOneShot(sonEnnemi);
             balais.GetComponent<Balayage>().detect = false;
@@ -87,7 +88,7 @@ public class Radar : NetworkBehaviour {
             }
         }
 
-        if (tempsBrouille <= 0f)
+        if (tempsBrouille < 0f)
         {
             tempsBrouille = 0f;
             script.activate = false;

@@ -6,10 +6,10 @@ public class EnnemiRadar : NetworkBehaviour {
 
     public bool dejaEuCollision = false;
     public float timeLimited;
+    public float tempsDisparition = 5f;
 
     private float timeElapsedAppeared = 0f;
     private float alpha = 1f;
-    private float tempsDisparition = 5f;
 
     void Update()
     {

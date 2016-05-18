@@ -21,6 +21,8 @@ public class EnnemiSpawner : NetworkBehaviour {
     private bool monstrePresent = false;
     private Vector3 extents;
 
+    private GameObject ennemi;
+
     private const float y = 1f;
 
 	// Use this for initialization
@@ -71,8 +73,8 @@ public class EnnemiSpawner : NetworkBehaviour {
 
     void SpawnEnemy()
     {
-        GameObject enemy = Instantiate(ennemiPrefab, GetSpawnPosition(), Quaternion.identity) as GameObject;
-        NetworkServer.Spawn(enemy);
+        ennemi = Instantiate(ennemiPrefab, GetSpawnPosition(), Quaternion.identity) as GameObject;
+        NetworkServer.Spawn(ennemi);
         monstrePresent = true;
     }
 

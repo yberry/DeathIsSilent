@@ -47,4 +47,9 @@ public class MenuPause : MonoBehaviour {
     {
         ChangeTo(menuPause);
     }
+
+    public void Quit()
+    {
+        Application.Quit();
+    }
 }

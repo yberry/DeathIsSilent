@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(Light))]
 public class Lampe : MonoBehaviour {
 
@@ -12,6 +13,7 @@ public class Lampe : MonoBehaviour {
 
     private Light lampe;
     private float frequenceClignotement = 0f;
+    private Collider col;
 
     // Use this for initialization
     void Start() {
@@ -20,19 +22,20 @@ public class Lampe : MonoBehaviour {
         {
             intensiteMax = intensiteMin;
         }
+        col = GetComponent<Collider>();
     }
 	
 	// Update is called once per frame
 	void Update () {
         if (frequenceClignotement > 0f)
         {
-            frequenceClignotement -= Time.deltaTime / 2;
+            frequenceClignotement -= Time.deltaTime;
             if (frequenceClignotement <= 0f)
             {
                 frequenceClignotement = 0f;
             }
         }
-        lampe.intensity = (Mathf.Cos(Time.time * frequenceClignotement) * (intensiteMax - intensiteMin) + intensiteMax + intensiteMin) / 2;
+        lampe.intensity = (Mathf.Cos(Time.time * frequenceClignotement / 10) * (intensiteMax - intensiteMin) + intensiteMax + intensiteMin) / 2;
     }
 
     public void SetFreq(float freq)
@@ -43,5 +46,6 @@ public class Lampe : MonoBehaviour {
     public void Switch()
     {
         lampe.enabled = !lampe.enabled;
+        col.enabled = !col.enabled;
     }
 }
