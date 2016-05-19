@@ -16,8 +16,7 @@ public class EnnemiSpawner : NetworkBehaviour {
     private int currentZone = 0;
     private float temps = 0f;
     private float[] probaApparition;
-    private Vector3[] mins;
-    private Vector3[] maxs;
+    private Bounds[] bounds;
     private bool monstrePresent = false;
     private Vector3 extents;
 
@@ -39,12 +38,10 @@ public class EnnemiSpawner : NetworkBehaviour {
             1f / 15f
         };
         joueur = GameObject.FindGameObjectWithTag("Player").transform;
-        mins = new Vector3[colliders.Length];
-        maxs = new Vector3[colliders.Length];
+        bounds = new Bounds[colliders.Length];
         for (int i = 0; i < colliders.Length; i++)
         {
-            mins[i] = colliders[i].bounds.min;
-            maxs[i] = colliders[i].bounds.max;
+            bounds[i] = colliders[i].bounds;
         }
         extents = ennemiPrefab.GetComponent<Collider>().bounds.extents;
     }
@@ -53,6 +50,21 @@ public class EnnemiSpawner : NetworkBehaviour {
 	void Update () {
         if (monstrePresent)
         {
+            bool interieur = false;
+            Collider col = ennemi.GetComponent<Collider>();
+            foreach (Bounds bound in bounds)
+            {
+                if (bound.Intersects(col.bounds) || bound.Contains(col.bounds.center))
+                {
+                    interieur = true;
+                }
+            }
+
+            if (!interieur)
+            {
+                Destroy(ennemi);
+            }
+
             return;
         }
 
@@ -80,8 +92,8 @@ public class EnnemiSpawner : NetworkBehaviour {
 
     Vector3 GetSpawnPosition()
     {
-        Vector3 min = mins[currentZone];
-        Vector3 max = maxs[currentZone];
+        Vector3 min = bounds[currentZone].min;
+        Vector3 max = bounds[currentZone].max;
 
         float x = Random.Range(min.x + extents.x, max.x - extents.x);
         float z = Random.Range(min.z + extents.z, max.z - extents.z);

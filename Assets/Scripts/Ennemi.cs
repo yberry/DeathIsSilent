@@ -6,25 +6,30 @@ using System.Collections;
 public class Ennemi : NetworkBehaviour {
 
     public Camera vision;
+    public float tempsDeplacementLumiere = 3f;
     public float vitesseNormale = 1f;
     public float vitesseAttaque = 2f;
 
     private bool deplacementRandom = false;
+    [SyncVar]
     private Vector3 cible;
+    [SyncVar]
     private Vector3 cibleTemp;
-    private float tempsDeplacement;
+    private float tempsDeplacementRandom;
+    public MeshFilter[] yeux;
 
     private bool detecteLumiere = false;
     private bool detecteJoueur = false;
     private Transform joueur;
-    private Collider lumiere;
+    private Collider[] lumieres;
     private RaycastHit hit1;
     private RaycastHit hit2;
-    private int zones = 1;
+    private int rand = 0;
 
 	// Use this for initialization
 	void Start () {
         joueur = GameObject.FindGameObjectWithTag("Player").transform;
+        lumieres = FindObjectOfType<Lampe>().cones;
 	}
 	
 	// Update is called once per frame
@@ -47,24 +52,44 @@ public class Ennemi : NetworkBehaviour {
             }
         }
 
-        if (Physics.Raycast(transform.position, transform.forward, out hit1))
+        foreach (MeshFilter oeil in yeux)
         {
-            if (hit1.collider == lumiere)
+            Vector3 dir;
+            if (rand % 3 == 0)
             {
-                if (Physics.Raycast(hit1.point, joueur.position, out hit2))
-                {
-                    if (hit2.transform == joueur)
-                    {
-                        detecteLumiere = true;
-                        Debug.Log("détection lumière");
-                    }
-                }
+                dir = transform.TransformPoint(oeil.mesh.vertices[Random.Range(0, oeil.mesh.vertexCount)]) - transform.position;
+            }
+            else if (rand % 3 == 1)
+            {
+                dir = oeil.transform.parent.forward;
+            }
+            else
+            {
+                dir = transform.forward + 2 * Vector3.up;
             }
 
-            detecteJoueur = detecteLumiere && hit1.transform == joueur;
-            if (detecteJoueur)
+            rand++;
+
+            if (Physics.Raycast(transform.position, dir, out hit1))
             {
-                Debug.Log("détection joueur");
+                Debug.Log(hit1.collider);
+                if (hit1.collider == lumieres[0] || hit1.collider == lumieres[1])
+                {
+                    if (Physics.Raycast(hit1.point, joueur.position - hit1.point, out hit2))
+                    {
+                        if (hit2.transform == joueur)
+                        {
+                            detecteLumiere = true;
+                            Debug.Log("détection lumière");
+                        }
+                    }
+                }
+
+                if (detecteLumiere && hit1.transform == joueur)
+                {
+                    detecteJoueur = true;
+                    Debug.Log("détection joueur");
+                }
             }
         }
 	}
@@ -74,21 +99,18 @@ public class Ennemi : NetworkBehaviour {
         if (!deplacementRandom)
         {
             cibleTemp = transform.position + 5 * transform.forward;
-            float angle = Random.Range(0f, 2 * Mathf.PI);
-            cible = cibleTemp + 5 * new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
-            tempsDeplacement = Random.Range(2f, 6f);
+            float angle = Random.Range(-2 * Mathf.PI / 3, 2 * Mathf.PI / 3);
+            cible = cibleTemp + 5 * new Vector3(Mathf.Cos(angle) * transform.forward.x - Mathf.Sin(angle) * transform.forward.z, 0f, Mathf.Sin(angle) * transform.forward.x + Mathf.Cos(angle) * transform.forward.z);
+            tempsDeplacementRandom = Random.Range(2f, 6f);
             deplacementRandom = true;
-            Debug.Log(transform.position);
-            Debug.Log(cibleTemp);
-            Debug.Log(cible);
         }
         else
         {
-            Debug.Log("déplacement");
             cibleTemp = Vector3.MoveTowards(cibleTemp, cible, vitesseNormale * Time.deltaTime);
+            transform.LookAt(cibleTemp);
             transform.position = Vector3.MoveTowards(transform.position, cibleTemp, vitesseNormale * Time.deltaTime);
-            tempsDeplacement -= Time.deltaTime;
-            if (tempsDeplacement <= 0f)
+            tempsDeplacementRandom -= Time.deltaTime;
+            if (tempsDeplacementRandom <= 0f)
             {
                 deplacementRandom = false;
             }
@@ -99,32 +121,18 @@ public class Ennemi : NetworkBehaviour {
     {
         transform.LookAt(joueur);
         transform.position = Vector3.MoveTowards(transform.position, joueur.position, vitesseNormale * Time.deltaTime);
+        tempsDeplacementLumiere -= Time.deltaTime;
+        if (tempsDeplacementLumiere <= 0f)
+        {
+            detecteLumiere = false;
+            tempsDeplacementLumiere = 3f;
+        }
     }
 
     void DetectionJoueur()
     {
         transform.LookAt(joueur);
         transform.position = Vector3.MoveTowards(transform.position, joueur.position, vitesseAttaque * Time.deltaTime);
-    }
-
-    void OnTriggerEnter(Collider col) {
-        if (col.name.StartsWith("Zone"))
-        {
-            zones++;
-        }
-        Debug.Log("zones " + zones);
-    }
-
-    void OnTriggerExit(Collider col)
-    {
-        if (col.name.StartsWith("Zone"))
-        {
-            zones--;
-            if (zones == 0)
-            {
-                Destroy(gameObject);
-            }
-        }
     }
 
     void OnDestroy()

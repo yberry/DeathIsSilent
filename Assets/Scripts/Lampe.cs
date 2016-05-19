@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(Light))]
 public class Lampe : MonoBehaviour {
 
@@ -10,6 +9,7 @@ public class Lampe : MonoBehaviour {
     public float intensiteMin;
     [Range(0f, 8f)]
     public float intensiteMax;
+    public Collider[] cones;
 
     private Light lampe;
     private float frequenceClignotement = 0f;
@@ -22,7 +22,6 @@ public class Lampe : MonoBehaviour {
         {
             intensiteMax = intensiteMin;
         }
-        col = GetComponent<Collider>();
     }
 	
 	// Update is called once per frame
@@ -46,6 +45,9 @@ public class Lampe : MonoBehaviour {
     public void Switch()
     {
         lampe.enabled = !lampe.enabled;
-        col.enabled = !col.enabled;
+        foreach (Collider cone in cones)
+        {
+            cone.enabled = !cone.enabled;
+        }
     }
 }

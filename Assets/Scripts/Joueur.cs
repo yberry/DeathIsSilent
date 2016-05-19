@@ -73,7 +73,7 @@ public class Joueur : NetworkBehaviour {
         {
             Debug.Log("attaque");
             Destroy(col.gameObject);
-            radar.CmdBrouille();
+            //radar.CmdBrouille();
             //chat.SetTransmission(false);
             lampe.SetFreq(5f);
         }
