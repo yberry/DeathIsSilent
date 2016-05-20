@@ -4,7 +4,6 @@ using System.Collections;
 [RequireComponent(typeof(Light))]
 public class Lampe : MonoBehaviour {
 
-    public OVRInput.Button switcher;
     [Range(0f, 8f)]
     public float intensiteMin;
     [Range(0f, 8f)]

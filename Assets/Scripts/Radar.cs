@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityStandardAssets.ImageEffects;
 [AddComponentMenu("Image Effects/GlitchEffect")]
@@ -17,6 +18,7 @@ public class Radar : NetworkBehaviour {
     public GameObject fleche;
     public AudioClip sonEnnemi;
     public float tempsBrouille = 10f;
+    public Text text;
 
     private bool brouille = false;
     private List<GameObject> radarObjects;
@@ -93,7 +95,11 @@ public class Radar : NetworkBehaviour {
             tempsBrouille = 0f;
             script.activate = false;
             brouille = false;
-            chat.SetTransmission(true);
+            text.gameObject.SetActive(false);
+            if (isLocalPlayer)
+            {
+                chat.SetTransmission(true);
+            }
         }
 
         if (OVRInput.GetDown(OVRInput.Button.Two) || Input.GetKeyDown(KeyCode.W))
@@ -118,6 +124,7 @@ public class Radar : NetworkBehaviour {
     {
         script.activate = true;
         brouille = true;
+        text.gameObject.SetActive(true);
         if (isLocalPlayer)
         {
             chat.SetTransmission(false);

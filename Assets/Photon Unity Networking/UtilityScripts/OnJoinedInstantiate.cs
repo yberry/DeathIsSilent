@@ -6,7 +6,6 @@ public class OnJoinedInstantiate : MonoBehaviour
     public Transform SpawnPosition;
     public float PositionOffset = 2.0f;
     public GameObject[] PrefabsToInstantiate;   // set in inspector
-    public Options options;
 
     public void OnJoinedRoom()
     {
@@ -27,9 +26,7 @@ public class OnJoinedInstantiate : MonoBehaviour
                 random = random.normalized;
                 Vector3 itempos = spawnPos + this.PositionOffset * random;
 
-                GameObject obj = PhotonNetwork.Instantiate(o.name, itempos, Quaternion.identity, 0);
-                options.voix = obj.GetComponent<AudioSource>();
-                DontDestroyOnLoad(obj);
+                DontDestroyOnLoad(PhotonNetwork.Instantiate(o.name, itempos, Quaternion.identity, 0));
             }
         }
     }

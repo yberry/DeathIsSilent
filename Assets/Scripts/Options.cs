@@ -2,13 +2,22 @@
 
 public class Options : MonoBehaviour {
 
-    public AudioSource voix;
+    public bool start;
 
     void Start()
     {
-        PlayerPrefs.SetFloat("stick", 0.5f);
-        PlayerPrefs.SetFloat("musique", 0.25f);
-        PlayerPrefs.SetFloat("voix", 1f);
+        if (!PlayerPrefs.HasKey("stick") || start)
+        {
+            PlayerPrefs.SetFloat("stick", 1.5f);
+        }
+        if (!PlayerPrefs.HasKey("musique") || start)
+        {
+            PlayerPrefs.SetFloat("musique", 0.25f);
+        }
+        if (!PlayerPrefs.HasKey("voix") || start)
+        {
+            PlayerPrefs.SetFloat("voix", 1f);
+        }
     }
 
 	public void SetStick(float value)
@@ -23,6 +32,6 @@ public class Options : MonoBehaviour {
 
     public void SetVoix(float value)
     {
-        voix.volume = value;
+        PlayerPrefs.SetFloat("voix", value);
     }
 }

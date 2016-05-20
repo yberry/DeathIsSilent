@@ -17,7 +17,7 @@ public class Chat : MonoBehaviour {
 
     void Update()
     {
-        if (rec != null)
+        if (rec != null && source != null)
         {
             return;
         }
@@ -27,8 +27,10 @@ public class Chat : MonoBehaviour {
             {
                 rec = r;
                 rec.Transmit = true;
-                source = rec.GetComponent<AudioSource>();
-                return;
+            }
+            else
+            {
+                source = r.GetComponent<AudioSource>();
             }
         }
     }

@@ -491,7 +491,7 @@ namespace UnityEngine.EventSystems
         {
             if (rayTransform == null)
             {
-                rayTransform = GameObject.Find("CenterEyeAnchor").transform;
+                rayTransform = Camera.main.transform;
             }
         }
 

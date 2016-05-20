@@ -1,10 +1,15 @@
 fileFormatVersion: 2
 guid: 3d8f905a8604c8d4a927a7de1d0d4900
-timeCreated: 1460580027
+timeCreated: 1463753566
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - radarPrefab: {instanceID: 0}
+  - helpTransform: {instanceID: 0}
+  - balayagePrefab: {instanceID: 0}
+  - fleche: {instanceID: 0}
+  - sonEnnemi: {fileID: 8300000, guid: 6f04a1a1fcf704f4faf1dcb7d83b35ae, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

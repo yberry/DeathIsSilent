@@ -157,6 +157,16 @@
     <Compile Include="Assets\Standard Assets\Network\Scripts\Lobby\LobbyServerEntry.cs" />
     <Compile Include="Assets\Standard Assets\Network\Scripts\Lobby\LobbyServerList.cs" />
     <Compile Include="Assets\Standard Assets\Network\Scripts\Lobby\LobbyTopPanel.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\AfterburnerPhysicsForce.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\ExplosionFireAndDebris.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\ExplosionPhysicsForce.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\Explosive.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\ExtinguishableParticleSystem.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\FireLight.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\Hose.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\ParticleSystemMultiplier.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\SmokeParticles.cs" />
+    <Compile Include="Assets\Standard Assets\ParticleSystems\Scripts\WaterHoseParticles.cs" />
     <Compile Include="Assets\Standard Assets\Utility\ActivateTrigger.cs" />
     <Compile Include="Assets\Standard Assets\Utility\AutoMobileShaderSwitch.cs" />
     <Compile Include="Assets\Standard Assets\Utility\AutoMoveAndRotate.cs" />

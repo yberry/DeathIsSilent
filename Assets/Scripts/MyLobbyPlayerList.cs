@@ -20,7 +20,7 @@ public class MyLobbyPlayerList : MonoBehaviour {
 	public void AddPlayer(MyLobbyPlayer player)
     {
         players.Add(player);
-        player.transform.parent = transform;
+        player.transform.SetParent(transform);
         player.readyImage.sprite = players.Count == 1 ? manette : radar;
         player.transform.localScale = Vector3.one;
     }
