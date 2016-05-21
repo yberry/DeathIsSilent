@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 [RequireComponent(typeof(Collider))]
 public class ParticulesMur : MonoBehaviour {
@@ -34,7 +33,7 @@ public class ParticulesMur : MonoBehaviour {
             duration -= Time.deltaTime;
             if (duration <= 0f)
             {
-                system.Play();
+                system.loop = true;
                 duration = system.duration;
             }
         }
@@ -48,7 +47,7 @@ public class ParticulesMur : MonoBehaviour {
             collisions--;
             if (collisions == 0)
             {
-                system.Stop();
+                system.loop = false;
                 particules = false;
             }
         }

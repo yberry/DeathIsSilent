@@ -214,6 +214,7 @@
     <Compile Include="Assets\Scripts\Radar.cs" />
     <Compile Include="Assets\Scripts\RendererExtensions.cs" />
     <Compile Include="Assets\Scripts\Zone.cs" />
+    <Compile Include="Assets\Scripts\ZoneEvents.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\NouveauRadar\NoiseEffectShaderRGB.shader" />

@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
 
 [RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(Collider))]
@@ -148,8 +147,9 @@ public class Ennemi : NetworkBehaviour {
 
     void DetectionJoueur()
     {
-        transform.LookAt(joueur);
-        transform.position = Vector3.MoveTowards(transform.position, joueur.position, vitesseAttaque * Time.deltaTime);
+        cibleTemp = Vector3.MoveTowards(cibleTemp, joueur.position, vitesseAttaque * Time.deltaTime);
+        transform.LookAt(cibleTemp);
+        transform.position = Vector3.MoveTowards(transform.position, cibleTemp, vitesseAttaque * Time.deltaTime);
     }
 
     void OnDestroy()

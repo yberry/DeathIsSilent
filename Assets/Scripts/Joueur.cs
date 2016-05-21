@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(OVRPlayerController))]
 public class Joueur : NetworkBehaviour {
@@ -58,7 +57,7 @@ public class Joueur : NetworkBehaviour {
 
         if (OVRInput.GetDown(boutonPause))
         {
-            RpcPause();
+            CmdPause();
         }
 
         if (OVRInput.GetDown(boutonLampe))
@@ -67,8 +66,14 @@ public class Joueur : NetworkBehaviour {
         }
     }
 
+    [Command]
+    public void CmdPause()
+    {
+        RpcPause();
+    }
+
     [ClientRpc]
-    public void RpcPause()
+    void RpcPause()
     {
         if (pause)
         {
