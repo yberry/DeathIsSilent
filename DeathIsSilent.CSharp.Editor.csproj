@@ -147,8 +147,45 @@
     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\Views\PhotonRigidbody2DViewEditor.cs" />
     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\Views\PhotonRigidbodyViewEditor.cs" />
     <Compile Include="Assets\Photon Unity Networking\Editor\PhotonNetwork\Views\PhotonTransformViewEditor.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseComponents\AkAmbientInspector.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseComponents\AkBankInspector.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseComponents\AkBaseInspector.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseComponents\AkEnvironmentInspector.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseComponents\AkEnvironmentPortalInspector.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseComponents\AkEventInspector.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseComponents\AkGameObjectInspector.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseComponents\AkInitializerInspector.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseComponents\AkPortalManager.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseComponents\AkStateInspector.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseComponents\AkSwitchInspector.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseComponents\AkUnityEventHandlerInspector.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseComponents\AkWwiseXMLWatcher.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseMenu\Common\AkExampleAppBuilderBase.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseMenu\Common\AkUnityBuilderBase.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseMenu\Common\AkUnityPluginInstallerBase.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseMenu\Common\AkWwiseIdConverter.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseMenu\Windows\AkWwiseMenu_Windows.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseSetupWizard\AkPluginActivator.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseSetupWizard\AkUnitySettingsParser.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseSetupWizard\AkWwisePostImportCallback.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseSetupWizard\AkWwiseSettingsWindow.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseSetupWizard\AkWwiseSetupWindow.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseSetupWizard\AkWwiseSetupWizard.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseWindows\AkWwiseComponentPicker.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseWindows\AkWwisePicker.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseWindows\AkWwiseProjectData.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseWindows\AkWwiseProjectInfo.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseWindows\AkWwiseTreeView.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseWindows\AkWwiseWWUBuilder.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseWindows\AkWwiseXMLBuilder.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseWindows\TreeViewControl\TreeViewControl.cs" />
+    <Compile Include="Assets\Wwise\Editor\WwiseWindows\TreeViewControl\TreeViewItem.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Audio\Init.txt" />
+    <None Include="Assets\Audio\PluginInfo.xml" />
+    <None Include="Assets\Audio\SoundBank.txt" />
+    <None Include="Assets\Audio\SoundbanksInfo.xml" />
     <None Include="Assets\NouveauRadar\NoiseEffectShaderRGB.shader" />
     <None Include="Assets\NouveauRadar\NoiseEffectShaderYUV.shader" />
     <None Include="Assets\OVR\Moonlight\Resources\Unlit Transparent Color.shader" />
@@ -239,6 +276,10 @@
     <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\frag_ao.cginc" />
     <None Include="Assets\Standard Assets\Fonts\OpenSans\License!.txt" />
     <None Include="Assets\Standard Assets\Network\Instruction.txt" />
+    <None Include="Assets\StreamingAssets\desc.txt" />
+    <None Include="Assets\Wwise\Readme.txt" />
+    <None Include="Assets\Wwise\Version.txt" />
+    <None Include="Assets\WwiseSettings.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

@@ -7,10 +7,10 @@ public class Joueur : NetworkBehaviour {
 
     [Header("Commandes Joueur")]
     public OVRInput.Button boutonPause;
-    public OVRInput.Button boutonLampe;
+    public OVRInput.Button[] boutonsLampe;
     public MenuPause menuPause;
     public Lampe lampe;
-    public AudioSource ambiance;
+    public string eventAmbiance = "ambiance";
 
     [Header("Options")]
     public Slider stick;
@@ -24,12 +24,9 @@ public class Joueur : NetworkBehaviour {
 
     void Start()
     {
-        if (!isLocalPlayer)
+        if (isLocalPlayer)
         {
-            ambiance.enabled = false;
-        }
-        else
-        {
+            Debug.Log(AkSoundEngine.PostEvent(eventAmbiance, gameObject));
             chat = FindObjectOfType<Chat>();
             stick.value = PlayerPrefs.GetFloat("stick");
             musique.value = PlayerPrefs.GetFloat("musique");
@@ -52,7 +49,7 @@ public class Joueur : NetworkBehaviour {
         }
 
         controller.RotationAmount = PlayerPrefs.GetFloat("stick");
-        ambiance.volume = PlayerPrefs.GetFloat("musique");
+        //ambiance.volume = PlayerPrefs.GetFloat("musique");
         chat.SetVolume(PlayerPrefs.GetFloat("voix"));
 
         if (OVRInput.GetDown(boutonPause))
@@ -60,9 +57,12 @@ public class Joueur : NetworkBehaviour {
             CmdPause();
         }
 
-        if (OVRInput.GetDown(boutonLampe))
+        foreach (OVRInput.Button bouton in boutonsLampe)
         {
-            lampe.Switch();
+            if (OVRInput.GetDown(bouton))
+            {
+                lampe.Switch();
+            }
         }
     }
 

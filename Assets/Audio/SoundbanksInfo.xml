@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="10" SoundbankVersion="113">
+	<RootPaths>
+		<ProjectRoot>C:\Users\berry.yanis\Documents\WwiseProjects\DeathIsSilent\</ProjectRoot>
+		<SourceFilesRoot>C:\Users\berry.yanis\Documents\WwiseProjects\DeathIsSilent\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>C:\Users\berry.yanis\Documents\DeathIsSilent\Assets\Audio\</SoundBanksRoot>
+		<ExternalSourcesInputFile></ExternalSourcesInputFile>
+		<ExternalSourcesOutputRoot>C:\Users\berry.yanis\Documents\WwiseProjects\DeathIsSilent\GeneratedSoundBanks\Windows\</ExternalSourcesOutputRoot>
+	</RootPaths>
+	<DialogueEvents/>
+	<StreamedFiles/>
+	<MediaFilesNotInAnyBank/>
+	<SoundBanks>
+		<SoundBank Id="1355168291" Language="SFX">
+			<ShortName>Init</ShortName>
+			<Path>Init.bnk</Path>
+		</SoundBank>
+		<SoundBank Id="1661994096" Language="SFX">
+			<ShortName>SoundBank</ShortName>
+			<Path>SoundBank.bnk</Path>
+			<IncludedEvents>
+				<Event Id="128625444" Name="door_close" MaxAttenuation="10.000000"/>
+				<Event Id="535830432" Name="door_open" MaxAttenuation="10.000000"/>
+				<Event Id="2352118965" Name="musique_ambiance"/>
+				<Event Id="1034121807" Name="radar_detect"/>
+				<Event Id="4221452351" Name="radar_emit"/>
+			</IncludedEvents>
+			<IncludedMemoryFiles>
+				<File Id="194924502" Language="SFX">
+					<ShortName>DeathIsSilent-Ambiance0205.wav</ShortName>
+					<Path>SFX\DeathIsSilent-Ambiance0205_4B8CC0C5.wem</Path>
+				</File>
+				<File Id="230968701" Language="SFX">
+					<ShortName>ouverture.wav</ShortName>
+					<Path>SFX\ouverture_4FAA74E2.wem</Path>
+				</File>
+				<File Id="675195721" Language="SFX">
+					<ShortName>radarennemi.wav</ShortName>
+					<Path>SFX\radarennemi_9E69E797.wem</Path>
+				</File>
+				<File Id="722183276" Language="SFX">
+					<ShortName>radaremission.wav</ShortName>
+					<Path>SFX\radaremission_4B8CC0C5.wem</Path>
+				</File>
+				<File Id="810504215" Language="SFX">
+					<ShortName>fermeture.wav</ShortName>
+					<Path>SFX\fermeture_A0F5E904.wem</Path>
+				</File>
+			</IncludedMemoryFiles>
+		</SoundBank>
+	</SoundBanks>
+</SoundBanksInfo>

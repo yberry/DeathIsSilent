@@ -2,6 +2,8 @@
 
 public class Chat : MonoBehaviour {
 
+    public AkMultiPosEvent ev;
+
     private PhotonVoiceRecorder rec;
     private AudioSource source;
 

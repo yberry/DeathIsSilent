@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 
-[RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(Collider))]
 public class Ennemi : NetworkBehaviour {
 
@@ -14,14 +13,17 @@ public class Ennemi : NetworkBehaviour {
     public float vitesseAttaque = 2f;
     [Tooltip("Layers visibles par l'ennemi")]
     public LayerMask mask;
-
-    private AudioSource source;
+    [Tooltip("Disques représentant le champ de vision de l'ennemi")]
+    public MeshFilter[] yeux;
+    [Tooltip("Event sonore pour le monstre")]
+    public string eventMonstre = "enemy";
 
     private bool deplacementRandom = false;
+    [SyncVar]
     private Vector3 cible;
+    [SyncVar]
     private Vector3 cibleTemp;
     private float tempsDeplacementRandom;
-    public MeshFilter[] yeux;
 
     private bool detecteLumiere = false;
     private bool detecteJoueur = false;
@@ -35,10 +37,9 @@ public class Ennemi : NetworkBehaviour {
 	void Start () {
         joueur = GameObject.FindGameObjectWithTag("Player").transform;
         lumieres = FindObjectOfType<Lampe>().cones;
-        source = GetComponent<AudioSource>();
-        if (!isServer)
+        if (isServer)
         {
-            source.enabled = false;
+            AkSoundEngine.PostEvent(eventMonstre, gameObject);
         }
 	}
 	

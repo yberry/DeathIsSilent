@@ -13,6 +13,7 @@ public class EnnemiSpawner : NetworkBehaviour {
     public static EnnemiSpawner instance;
 
     private Transform joueur;
+    private bool[] currentZones;
     private int currentZone = 0;
     private float temps = 0f;
     private float[] probaApparition;
@@ -38,6 +39,7 @@ public class EnnemiSpawner : NetworkBehaviour {
             1f / 15f
         };
         joueur = GameObject.FindGameObjectWithTag("Player").transform;
+        currentZones = new bool[colliders.Length];
         bounds = new Bounds[colliders.Length];
         for (int i = 0; i < colliders.Length; i++)
         {
@@ -108,9 +110,28 @@ public class EnnemiSpawner : NetworkBehaviour {
         return pos;
     }
 
-    public void SetCurrentZone(int zone)
+    public void EnterZone(int zone)
     {
-        currentZone = zone;
+        currentZones[zone] = true;
+        SetCurrentZone();
+    }
+
+    public void ExitZone(int zone)
+    {
+        currentZones[zone] = false;
+        SetCurrentZone();
+    }
+
+    void SetCurrentZone()
+    {
+        for (int i = currentZones.Length - 1; i >= 0; i--)
+        {
+            if (currentZones[i])
+            {
+                currentZone = i;
+                return;
+            }
+        }
     }
 
     public void MonstreAbsent()

@@ -1,0 +1,14 @@
+Event	ID	Name			Wwise Object Path	Notes
+	128625444	door_close			\Default Work Unit\door_close	
+	535830432	door_open			\Default Work Unit\door_open	
+	1034121807	radar_detect			\Default Work Unit\radar_detect	
+	2352118965	musique_ambiance			\Default Work Unit\musique_ambiance	
+	4221452351	radar_emit			\Default Work Unit\radar_emit	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	194924502	DeathIsSilent-Ambiance0205	C:\Users\berry.yanis\Documents\WwiseProjects\DeathIsSilent\.cache\Windows\SFX\DeathIsSilent-Ambiance0205_4B8CC0C5.wem		\Actor-Mixer Hierarchy\Default Work Unit\DeathIsSilent-Ambiance0205		30481984
+	230968701	ouverture	C:\Users\berry.yanis\Documents\WwiseProjects\DeathIsSilent\.cache\Windows\SFX\ouverture_4FAA74E2.wem		\Actor-Mixer Hierarchy\Default Work Unit\ouverture		289172
+	675195721	radarennemi	C:\Users\berry.yanis\Documents\WwiseProjects\DeathIsSilent\.cache\Windows\SFX\radarennemi_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\radarennemi		273408
+	722183276	radaremission	C:\Users\berry.yanis\Documents\WwiseProjects\DeathIsSilent\.cache\Windows\SFX\radaremission_4B8CC0C5.wem		\Actor-Mixer Hierarchy\Default Work Unit\radaremission		345560
+	810504215	fermeture	C:\Users\berry.yanis\Documents\WwiseProjects\DeathIsSilent\.cache\Windows\SFX\fermeture_A0F5E904.wem		\Actor-Mixer Hierarchy\Default Work Unit\fermeture		298164
+

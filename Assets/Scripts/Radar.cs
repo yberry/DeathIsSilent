@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityStandardAssets.ImageEffects;
 [AddComponentMenu("Image Effects/GlitchEffect")]
 
-[RequireComponent(typeof(AudioSource))]
 public class Radar : NetworkBehaviour {
 
 	public GameObject[] trackedObjects;
@@ -16,7 +15,8 @@ public class Radar : NetworkBehaviour {
     public float tempsBalayageLimite;
     public int vitesse;
     public GameObject fleche;
-    public AudioClip sonEnnemi;
+    public string eventEmission = "radar_emit";
+    public string eventDetection = "radar_detect";
     public float tempsBrouille = 10f;
     public Text text;
 
@@ -26,7 +26,6 @@ public class Radar : NetworkBehaviour {
     private GameObject balais;
     private GameObject player;
     private NoiseAndScratches script;
-    private AudioSource source;
     private Chat chat;
 
     [SyncVar]
@@ -39,9 +38,9 @@ public class Radar : NetworkBehaviour {
         balais = Instantiate(balayagePrefab,transform.position, Quaternion.Euler(90f, 0f, 0f)) as GameObject;
         balais.transform.parent = transform;
         tempsBalayage = 0f;
-        source = GetComponent<AudioSource>();
         if (isLocalPlayer)
         {
+            AkSoundEngine.PostEvent(eventEmission, gameObject);
             chat = FindObjectOfType<Chat>();
         }
         else
@@ -49,7 +48,6 @@ public class Radar : NetworkBehaviour {
             Camera cam = transform.Find("Radar Camera").GetComponent<Camera>();
             cam.rect = new Rect(2f / 3f, 0f, 1f / 3f, 1f / 3f);
             cam.GetComponent<AudioListener>().enabled = false;
-            source.enabled = false;
         }
 
         script = GameObject.Find("Radar Camera").GetComponent<NoiseAndScratches>();
@@ -58,10 +56,10 @@ public class Radar : NetworkBehaviour {
 
     void Update() {
 
-        if (isLocalPlayer && balais.GetComponent<Balayage>().detect)
+        if (isLocalPlayer && Balayage.detect)
         {
-            source.PlayOneShot(sonEnnemi);
-            balais.GetComponent<Balayage>().detect = false;
+            AkSoundEngine.PostEvent(eventDetection, Balayage.detected);
+            Balayage.detect = false;
         }
 
         for (int i = 0; i < radarObjects.Count; i++) {

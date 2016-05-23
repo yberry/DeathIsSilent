@@ -2,7 +2,6 @@
 using UnityEngine.Networking;
 using UnityEngine.EventSystems;
 
-[RequireComponent(typeof(AudioSource))]
 public class Porte : NetworkBehaviour, IPointerDownHandler {
 
     public bool sensHoraireOuverture;
@@ -10,8 +9,8 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
     public float angleOuverture = 60f;
     public float vitesseOuverture = 50f;
     public static float distanceOuverture = 2f;
-    public AudioClip sonOuverture;
-    public AudioClip sonFermeture;
+    public string eventOuverture = "door_open";
+    public string eventFermeture = "door_close";
     [SyncVar]
     public float angle = 0f;
 
@@ -19,7 +18,6 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
     private bool ouverte = false;
     private Transform pos;
     private PorteRadar porteRadar;
-    private AudioSource source;
     private bool tourne = false;
     
 	// Use this for initialization
@@ -28,7 +26,6 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
         string numPorte = transform.parent.name;
         string piece = transform.parent.parent.name;
         porteRadar = GameObject.FindGameObjectWithTag("BatimentRadar").transform.Find(piece).Find(numPorte).Find(transform.name).GetComponent<PorteRadar>();
-        source = GetComponent<AudioSource>();
     }
 
     void OnDrawGizmosSelected()
@@ -111,7 +108,7 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
         {
             tourne = true;
             ouverte = !ouverte;
-            source.PlayOneShot(ouverte ? sonOuverture : sonFermeture);
+            AkSoundEngine.PostEvent(ouverte ? eventOuverture : eventFermeture, gameObject);
         }
     }
 }

@@ -10,7 +10,15 @@ public class Zone : MonoBehaviour {
     {
         if (other.tag == "Player")
         {
-            EnnemiSpawner.instance.SetCurrentZone(numZone);
+            EnnemiSpawner.instance.EnterZone(numZone);
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            EnnemiSpawner.instance.ExitZone(numZone);
         }
     }
 }

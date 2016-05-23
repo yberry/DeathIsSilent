@@ -148,9 +148,7 @@ public class OVRPlayerController : NetworkBehaviour
 	{
         if (!isLocalPlayer)
         {
-            Camera cam = CameraRig.centerEyeAnchor.GetComponent<Camera>();
-            cam.targetDisplay = 1;
-            cam.GetComponent<AudioListener>().enabled = false;
+            CameraRig.centerEyeAnchor.GetComponent<Camera>().targetDisplay = 1;
             return;
         }
 
