@@ -3,7 +3,7 @@
 	<RootPaths>
 		<ProjectRoot>C:\Users\berry.yanis\Documents\WwiseProjects\DeathIsSilent\</ProjectRoot>
 		<SourceFilesRoot>C:\Users\berry.yanis\Documents\WwiseProjects\DeathIsSilent\.cache\Windows\</SourceFilesRoot>
-		<SoundBanksRoot>C:\Users\berry.yanis\Documents\DeathIsSilent\Assets\Audio\</SoundBanksRoot>
+		<SoundBanksRoot>C:\Users\berry.yanis\Documents\DeathIsSilent\Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\</SoundBanksRoot>
 		<ExternalSourcesInputFile></ExternalSourcesInputFile>
 		<ExternalSourcesOutputRoot>C:\Users\berry.yanis\Documents\WwiseProjects\DeathIsSilent\GeneratedSoundBanks\Windows\</ExternalSourcesOutputRoot>
 	</RootPaths>

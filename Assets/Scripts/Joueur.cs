@@ -10,7 +10,7 @@ public class Joueur : NetworkBehaviour {
     public OVRInput.Button[] boutonsLampe;
     public MenuPause menuPause;
     public Lampe lampe;
-    public string eventAmbiance = "ambiance";
+    public string eventAmbiance = "musique_ambiance";
 
     [Header("Options")]
     public Slider stick;
@@ -26,7 +26,7 @@ public class Joueur : NetworkBehaviour {
     {
         if (isLocalPlayer)
         {
-            Debug.Log(AkSoundEngine.PostEvent(eventAmbiance, gameObject));
+            AkSoundEngine.PostEvent(eventAmbiance, gameObject);
             chat = FindObjectOfType<Chat>();
             stick.value = PlayerPrefs.GetFloat("stick");
             musique.value = PlayerPrefs.GetFloat("musique");

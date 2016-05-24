@@ -182,10 +182,6 @@
     <Compile Include="Assets\Wwise\Editor\WwiseWindows\TreeViewControl\TreeViewItem.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Audio\Init.txt" />
-    <None Include="Assets\Audio\PluginInfo.xml" />
-    <None Include="Assets\Audio\SoundBank.txt" />
-    <None Include="Assets\Audio\SoundbanksInfo.xml" />
     <None Include="Assets\NouveauRadar\NoiseEffectShaderRGB.shader" />
     <None Include="Assets\NouveauRadar\NoiseEffectShaderYUV.shader" />
     <None Include="Assets\OVR\Moonlight\Resources\Unlit Transparent Color.shader" />
@@ -276,6 +272,10 @@
     <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\frag_ao.cginc" />
     <None Include="Assets\Standard Assets\Fonts\OpenSans\License!.txt" />
     <None Include="Assets\Standard Assets\Network\Instruction.txt" />
+    <None Include="Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\Init.txt" />
+    <None Include="Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\PluginInfo.xml" />
+    <None Include="Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\SoundBank.txt" />
+    <None Include="Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\SoundbanksInfo.xml" />
     <None Include="Assets\StreamingAssets\desc.txt" />
     <None Include="Assets\Wwise\Readme.txt" />
     <None Include="Assets\Wwise\Version.txt" />

@@ -93,11 +93,7 @@ public class Radar : NetworkBehaviour {
             tempsBrouille = 0f;
             script.activate = false;
             brouille = false;
-            text.gameObject.SetActive(false);
-            if (isLocalPlayer)
-            {
-                chat.SetTransmission(true);
-            }
+            SetTransmission(true);
         }
 
         if (OVRInput.GetDown(OVRInput.Button.Two) || Input.GetKeyDown(KeyCode.W))
@@ -122,10 +118,15 @@ public class Radar : NetworkBehaviour {
     {
         script.activate = true;
         brouille = true;
-        text.gameObject.SetActive(true);
+        SetTransmission(false);
+    }
+
+    void SetTransmission(bool tr)
+    {
+        text.gameObject.SetActive(!tr);
         if (isLocalPlayer)
         {
-            chat.SetTransmission(false);
+            chat.SetTransmission(tr);
         }
     }
 

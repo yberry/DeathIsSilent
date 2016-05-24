@@ -43,6 +43,9 @@ public class Chat : MonoBehaviour {
 
     public void SetVolume(float vol)
     {
-        source.volume = vol;
+        if (source != null)
+        {
+            source.volume = vol;
+        }
     }
 }
