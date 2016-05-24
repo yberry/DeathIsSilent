@@ -17,7 +17,8 @@ namespace AK
         static const AkUniqueID DOOR_OPEN = 535830432U;
         static const AkUniqueID MUSIQUE_AMBIANCE = 2352118965U;
         static const AkUniqueID RADAR_DETECT = 1034121807U;
-        static const AkUniqueID RADAR_EMIT = 4221452351U;
+        static const AkUniqueID RADAR_EMIT_START = 3537011154U;
+        static const AkUniqueID RADAR_EMIT_STOP = 4245466506U;
     } // namespace EVENTS
 
     namespace GAME_PARAMETERS

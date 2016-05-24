@@ -146,17 +146,25 @@ public class OVRPlayerController : NetworkBehaviour
 
 	protected virtual void Update()
 	{
-        if (!isLocalPlayer)
-        {
-            CameraRig.centerEyeAnchor.GetComponent<Camera>().targetDisplay = 1;
-            return;
-        }
-
         PhotonVoiceSpeaker[] speakers = FindObjectsOfType<PhotonVoiceSpeaker>();
         foreach (PhotonVoiceSpeaker speaker in speakers)
         {
             speaker.transform.parent = transform;
             speaker.transform.localPosition = Vector3.zero;
+        }
+
+        Camera cam = CameraRig.centerEyeAnchor.GetComponent<Camera>();
+        if (cam.GetComponent<AkAudioListener>() == null)
+        {
+            AkAudioListener listener = cam.gameObject.AddComponent<AkAudioListener>();
+            listener.listenerId = 0;
+        }
+
+        if (!isLocalPlayer)
+        {
+            cam.targetDisplay = 1;
+            cam.GetComponent<AudioListener>().enabled = false;
+            return;
         }
 
         if (useProfileData)

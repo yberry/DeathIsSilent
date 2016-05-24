@@ -21,6 +21,7 @@ public class Joueur : NetworkBehaviour {
     private Radar radar;
     private Chat chat;
     private OVRPlayerController controller;
+    private int nbAttaques = 0;
 
     void Start()
     {
@@ -42,13 +43,14 @@ public class Joueur : NetworkBehaviour {
         {
             radar = FindObjectOfType<Radar>();
         }
-        
+
+        controller.RotationAmount = PlayerPrefs.GetFloat("stick");
+
         if (!isLocalPlayer)
         {
             return;
         }
-
-        controller.RotationAmount = PlayerPrefs.GetFloat("stick");
+        
         //ambiance.volume = PlayerPrefs.GetFloat("musique");
         chat.SetVolume(PlayerPrefs.GetFloat("voix"));
 
@@ -95,9 +97,10 @@ public class Joueur : NetworkBehaviour {
         {
             Debug.Log("attaque");
             Destroy(col.gameObject);
-            radar.CmdBrouille();
-            //chat.SetTransmission(false);
-            lampe.SetFreq(5f);
+            nbAttaques++;
+            float tempsBrouille = 3 * Mathf.Log(nbAttaques + 1);
+            radar.CmdBrouille(tempsBrouille);
+            lampe.SetFreq(tempsBrouille);
         }
     }
 }

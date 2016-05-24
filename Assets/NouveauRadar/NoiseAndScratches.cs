@@ -13,31 +13,30 @@ namespace UnityStandardAssets.ImageEffects
         /// more resembles VCR as it adds noise in YUV color space,
         /// thus introducing magenta/green colors.
         public bool monochrome = true;
-        public bool activate = false;
-        private bool rgbFallback = false;
+        public bool rgbFallback = false;
 
         // Noise grain takes random intensity from Min to Max.
         [Range(0.0f,5.0f)]
-        private float grainIntensityMin = 1.0f;
+        public float grainIntensityMin = 1.0f;
         [Range(0.0f, 5.0f)]
-        private float grainIntensityMax = 5.0f;
+        public float grainIntensityMax = 5.0f;
 
         /// The size of the noise grains (1 = one pixel).
         [Range(0.1f, 50.0f)]
-        private float grainSize = 1.0f;
+        public float grainSize = 1.0f;
 
         // Scratches take random intensity from Min to Max.
         [Range(0.0f, 5.0f)]
-        private float scratchIntensityMin = 5.0f;
+        public float scratchIntensityMin = 5.0f;
         [Range(0.0f, 5.0f)]
-        private float scratchIntensityMax = 5.0f;
+        public float scratchIntensityMax = 5.0f;
 
         /// Scratches jump to another locations at this times per second.
         [Range(1.0f, 30.0f)]
-        private float scratchFPS = 30.0f;
+        public float scratchFPS = 30.0f;
         /// While scratches are in the same location, they jitter a bit.
         [Range(0.0f, 1.0f)]
-        private float scratchJitter = 1.0f;
+        public float scratchJitter = 1.0f;
 
         public Texture grainTexture;
         public Texture scratchTexture;
@@ -107,11 +106,6 @@ namespace UnityStandardAssets.ImageEffects
         // Called by the camera to apply the image effect
         void OnRenderImage (RenderTexture source, RenderTexture destination)
         {
-            if (!activate)
-            {
-                return;
-            }
-
             SanitizeParameters();
 
             if (scratchTimeLeft <= 0.0f)

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{FC45063C-58B6-4097-A516-FFDA5D44A514}" SchemaVersion="70">
+	<SoundBanks>
+		<WorkUnit Name="Default Work Unit" ID="{FC45063C-58B6-4097-A516-FFDA5D44A514}" PersistMode="Standalone">
+			<ChildrenList>
+				<SoundBank Name="SoundBank" ID="{30E85462-261B-467B-967A-4726C5B41123}">
+					<ObjectInclusionList>
+						<ObjectRef Name="door_close" ID="{8041E30E-FF2A-40C8-9C09-3A3D6E0D8AC4}" WorkUnitID="{62A9C6F4-C9BF-4870-BED6-DD8A7532CD41}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="door_open" ID="{563F9132-BFF7-41D2-A8FA-7D9166C89996}" WorkUnitID="{62A9C6F4-C9BF-4870-BED6-DD8A7532CD41}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="radar_emit_start" ID="{06C78762-83FF-45EA-994C-3BE1DB2B31E4}" WorkUnitID="{62A9C6F4-C9BF-4870-BED6-DD8A7532CD41}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="radar_emit_stop" ID="{16720A73-C1D7-4850-B1CD-89F438DF5A53}" WorkUnitID="{62A9C6F4-C9BF-4870-BED6-DD8A7532CD41}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="musique_ambiance" ID="{4305B19A-E8EB-4967-99CC-487CBE7F7EE7}" WorkUnitID="{62A9C6F4-C9BF-4870-BED6-DD8A7532CD41}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="radar_detect" ID="{1650FFBE-3C47-49A3-90A0-4787D46683F2}" WorkUnitID="{62A9C6F4-C9BF-4870-BED6-DD8A7532CD41}" Filter="7" Origin="Manual"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
+			</ChildrenList>
+		</WorkUnit>
+	</SoundBanks>
+</WwiseDocument>

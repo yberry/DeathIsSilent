@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{62A9C6F4-C9BF-4870-BED6-DD8A7532CD41}" SchemaVersion="70">
+	<Events>
+		<WorkUnit Name="Default Work Unit" ID="{62A9C6F4-C9BF-4870-BED6-DD8A7532CD41}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="door_open" ID="{563F9132-BFF7-41D2-A8FA-7D9166C89996}">
+					<ChildrenList>
+						<Action Name="Play" ID="{A648490D-9060-4786-9203-3E78599AD72D}" ShortID="232277124" Type="Play" Scope="One" Global="false">
+							<ElementList>
+								<Element ID="{74443A1F-1286-4A92-A8BD-50CB638C94EE}" Global="false">
+									<ObjectRef Name="ouverture" ID="{036760A0-6449-4F55-BCE1-CF217D199A9F}" WorkUnitID="{78438926-37C7-42CC-8B61-7E93AF1711C5}"/>
+								</Element>
+							</ElementList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="door_close" ID="{8041E30E-FF2A-40C8-9C09-3A3D6E0D8AC4}">
+					<ChildrenList>
+						<Action Name="Play" ID="{60989190-BBA8-47B8-B0D1-A20220CF3473}" ShortID="686635106" Type="Play" Scope="One" Global="false">
+							<ElementList>
+								<Element ID="{A42CD0BB-498D-4CF0-8F20-EFD615027672}" Global="false">
+									<ObjectRef Name="fermeture" ID="{C16119D1-3300-40EB-B64B-9C3363BD9190}" WorkUnitID="{78438926-37C7-42CC-8B61-7E93AF1711C5}"/>
+								</Element>
+							</ElementList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="musique_ambiance" ID="{4305B19A-E8EB-4967-99CC-487CBE7F7EE7}">
+					<ChildrenList>
+						<Action Name="Play" ID="{5AC02743-765B-4576-B4D4-C273BCD95458}" ShortID="1033161666" Type="Play" Scope="One" Global="false">
+							<ElementList>
+								<Element ID="{E3B9971D-A5B0-4525-A374-0DBFBF8D0998}" Global="false">
+									<ObjectRef Name="DeathIsSilent-Ambiance0205" ID="{49C0C38F-930B-406F-80EA-747561936F48}" WorkUnitID="{78438926-37C7-42CC-8B61-7E93AF1711C5}"/>
+								</Element>
+							</ElementList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="radar_emit_start" ID="{06C78762-83FF-45EA-994C-3BE1DB2B31E4}">
+					<ChildrenList>
+						<Action Name="Play" ID="{0A6F94D8-B365-45D4-BC85-F856CC2F4A02}" ShortID="780022266" Type="Play" Scope="One" Global="false">
+							<ElementList>
+								<Element ID="{613EA98B-F8FA-48CD-BA98-CC6DE44CCBFD}" Global="false">
+									<ObjectRef Name="radaremission" ID="{9CFA68B7-3938-4CA8-94BF-5696EDA7CC71}" WorkUnitID="{78438926-37C7-42CC-8B61-7E93AF1711C5}"/>
+								</Element>
+							</ElementList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="radar_detect" ID="{1650FFBE-3C47-49A3-90A0-4787D46683F2}">
+					<ChildrenList>
+						<Action Name="Play" ID="{1141E7B4-AD8B-4402-BAE6-8149B8AD9621}" ShortID="944800888" Type="Play" Scope="One" Global="false">
+							<ElementList>
+								<Element ID="{0B16CEF3-9DF6-451F-B5EB-43E841C256A6}" Global="false">
+									<ObjectRef Name="radarennemi" ID="{D61BC2A1-0109-4260-AD66-CF8D7BA4589E}" WorkUnitID="{78438926-37C7-42CC-8B61-7E93AF1711C5}"/>
+								</Element>
+							</ElementList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="radar_emit_stop" ID="{16720A73-C1D7-4850-B1CD-89F438DF5A53}">
+					<ChildrenList>
+						<Action Name="Stop" ID="{44F96B34-61C0-4059-803E-8206A679B4FA}" ShortID="596141336" Type="Stop" Scope="One" Global="false">
+							<ElementList>
+								<Element ID="{C957D3BC-4FE3-46F4-8FDB-5085C452D2C9}" Global="false">
+									<ObjectRef Name="radaremission" ID="{9CFA68B7-3938-4CA8-94BF-5696EDA7CC71}" WorkUnitID="{78438926-37C7-42CC-8B61-7E93AF1711C5}"/>
+								</Element>
+							</ElementList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="10" SoundbankVersion="113">
 	<RootPaths>
-		<ProjectRoot>C:\Users\berry.yanis\Documents\WwiseProjects\DeathIsSilent\</ProjectRoot>
-		<SourceFilesRoot>C:\Users\berry.yanis\Documents\WwiseProjects\DeathIsSilent\.cache\Windows\</SourceFilesRoot>
+		<ProjectRoot>C:\Users\berry.yanis\Documents\DeathIsSilent\Assets\StreamingAssets\Audio\</ProjectRoot>
+		<SourceFilesRoot>C:\Users\berry.yanis\Documents\DeathIsSilent\Assets\StreamingAssets\Audio\.cache\Windows\</SourceFilesRoot>
 		<SoundBanksRoot>C:\Users\berry.yanis\Documents\DeathIsSilent\Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\</SoundBanksRoot>
 		<ExternalSourcesInputFile></ExternalSourcesInputFile>
-		<ExternalSourcesOutputRoot>C:\Users\berry.yanis\Documents\WwiseProjects\DeathIsSilent\GeneratedSoundBanks\Windows\</ExternalSourcesOutputRoot>
+		<ExternalSourcesOutputRoot>C:\Users\berry.yanis\Documents\DeathIsSilent\Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\</ExternalSourcesOutputRoot>
 	</RootPaths>
 	<DialogueEvents/>
 	<StreamedFiles/>
@@ -23,7 +23,8 @@
 				<Event Id="535830432" Name="door_open" MaxAttenuation="10.000000"/>
 				<Event Id="2352118965" Name="musique_ambiance"/>
 				<Event Id="1034121807" Name="radar_detect"/>
-				<Event Id="4221452351" Name="radar_emit"/>
+				<Event Id="3537011154" Name="radar_emit_start"/>
+				<Event Id="4245466506" Name="radar_emit_stop" MaxAttenuation="0.000000"/>
 			</IncludedEvents>
 			<IncludedMemoryFiles>
 				<File Id="194924502" Language="SFX">

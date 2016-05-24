@@ -7,21 +7,19 @@ using UnityStandardAssets.ImageEffects;
 
 public class Radar : NetworkBehaviour {
 
-	public GameObject[] trackedObjects;
 	public GameObject radarPrefab;
-	public float switchDistance;
-	public Transform helpTransform;
     public GameObject balayagePrefab;
     public float tempsBalayageLimite;
     public int vitesse;
     public GameObject fleche;
-    public string eventEmission = "radar_emit";
+    public string eventEmissionStart = "radar_emit_start";
+    public string eventEmissionStop = "radar_emit_stop";
     public string eventDetection = "radar_detect";
-    public float tempsBrouille = 10f;
     public Text text;
 
     private bool brouille = false;
-    private List<GameObject> radarObjects;
+    private float tempsBrouilleMax = 10f;
+    private float tempsBrouille;
     private float tempsBalayage;
     private GameObject balais;
     private GameObject player;
@@ -34,13 +32,12 @@ public class Radar : NetworkBehaviour {
     void Start () {
         player = GameObject.FindGameObjectWithTag("Player");
         ResetPosition();
-		createRadarObjects();
         balais = Instantiate(balayagePrefab,transform.position, Quaternion.Euler(90f, 0f, 0f)) as GameObject;
         balais.transform.parent = transform;
         tempsBalayage = 0f;
         if (isLocalPlayer)
         {
-            AkSoundEngine.PostEvent(eventEmission, gameObject);
+            AkSoundEngine.PostEvent(eventEmissionStart, gameObject);
             chat = FindObjectOfType<Chat>();
         }
         else
@@ -50,8 +47,7 @@ public class Radar : NetworkBehaviour {
             cam.GetComponent<AudioListener>().enabled = false;
         }
 
-        script = GameObject.Find("Radar Camera").GetComponent<NoiseAndScratches>();
-        script.activate = false;
+        script = transform.Find("Radar Camera").GetComponent<NoiseAndScratches>();
     }
 
     void Update() {
@@ -62,16 +58,10 @@ public class Radar : NetworkBehaviour {
             Balayage.detect = false;
         }
 
-        for (int i = 0; i < radarObjects.Count; i++) {
-            if (Vector3.Distance(radarObjects[i].transform.position, transform.position) > switchDistance) {
-                helpTransform.LookAt(radarObjects[i].transform);
-                //borderObjects[i].transform.position = transform.position + switchDistance * helpTransform.forward;
-            }
-        }
-
         if (brouille)
         {
             tempsBrouille -= Time.deltaTime;
+            SetNoise(5f * tempsBrouille / tempsBrouilleMax);
         }
         else
         {
@@ -91,9 +81,11 @@ public class Radar : NetworkBehaviour {
         if (tempsBrouille < 0f)
         {
             tempsBrouille = 0f;
-            script.activate = false;
-            brouille = false;
             SetTransmission(true);
+            SetNoise(0f);
+
+            balais = Instantiate(balayagePrefab, transform.position, Quaternion.Euler(90f, 0f, 0f)) as GameObject;
+            balais.transform.parent = transform;
         }
 
         if (OVRInput.GetDown(OVRInput.Button.Two) || Input.GetKeyDown(KeyCode.W))
@@ -108,26 +100,39 @@ public class Radar : NetworkBehaviour {
 	}
 
     [Command]
-    public void CmdBrouille()
+    public void CmdBrouille(float time)
     {
-        RpcBrouille();
+        RpcBrouille(time);
     }
 
     [ClientRpc]
-    void RpcBrouille()
+    void RpcBrouille(float time)
     {
-        script.activate = true;
-        brouille = true;
+        tempsBrouilleMax = time;
+        tempsBrouille = time;
         SetTransmission(false);
+        Destroy(balais);
+        tempsBalayage = 0f;
+        SetNoise(5f);
     }
 
     void SetTransmission(bool tr)
     {
+        brouille = !tr;
         text.gameObject.SetActive(!tr);
         if (isLocalPlayer)
         {
             chat.SetTransmission(tr);
+            AkSoundEngine.PostEvent(tr ? eventEmissionStart : eventEmissionStop, gameObject);
         }
+    }
+
+    void SetNoise(float val)
+    {
+        script.grainIntensityMin = val;
+        script.grainIntensityMax = val;
+        script.scratchIntensityMin = val;
+        script.scratchIntensityMax = val;
     }
 
     [ClientRpc]
@@ -146,15 +151,6 @@ public class Radar : NetworkBehaviour {
             fleche.transform.LookAt(fleche.transform.position + player.transform.forward);
         }
     }
-
-	void createRadarObjects (){
-		radarObjects = new List <GameObject>();
-		foreach(GameObject o in trackedObjects){
-            Vector3 position = o.transform.position;
-			GameObject k = Instantiate (radarPrefab, position, Quaternion.identity) as GameObject;
-			radarObjects.Add(k);
-		}
-	}
 
     void ResetPosition()
     {
