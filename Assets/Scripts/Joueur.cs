@@ -6,12 +6,16 @@ using UnityEngine.UI;
 public class Joueur : NetworkBehaviour {
 
     [Header("Commandes Joueur")]
-    public OVRInput.Button boutonPause;
-    public OVRInput.Button[] boutonsLampe;
-    public OVRInput.Button boutonToit;
+    public OVRInput.RawButton boutonPause;
+    public OVRInput.RawButton[] boutonsLampe;
+    public OVRInput.RawButton boutonToit;
     public MenuPause menuPause;
     public Lampe lampe;
     public string eventAmbiance = "ambiance";
+    [Range(0f, 1f)]
+    public float frequenceVibration = 1f;
+    [Range(0f, 1f)]
+    public float amplitudeVibration = 1f;
 
     [Header("Options")]
     public Slider stick;
@@ -37,6 +41,13 @@ public class Joueur : NetworkBehaviour {
         }
         controller = GetComponent<OVRPlayerController>();
         lumieresToits = GameObject.FindGameObjectsWithTag("Toit");
+        foreach (GameObject obj in lumieresToits)
+        {
+            if (obj.GetComponent<Light>() != null)
+            {
+                obj.SetActive(false);
+            }
+        }
     }
 
     // Update is called once per frame
@@ -70,7 +81,7 @@ public class Joueur : NetworkBehaviour {
             CmdPause();
         }
 
-        foreach (OVRInput.Button bouton in boutonsLampe)
+        foreach (OVRInput.RawButton bouton in boutonsLampe)
         {
             if (OVRInput.GetDown(bouton))
             {
@@ -109,8 +120,9 @@ public class Joueur : NetworkBehaviour {
             Debug.Log("attaque");
             Destroy(col.gameObject);
             nbAttaques++;
+            OVRInput.SetControllerVibration(frequenceVibration, amplitudeVibration);
             float tempsBrouille = 3 * Mathf.Log(nbAttaques + 1);
-            radar.CmdBrouille(tempsBrouille);
+            //radar.CmdBrouille(tempsBrouille);
             lampe.SetFreq(tempsBrouille);
         }
     }

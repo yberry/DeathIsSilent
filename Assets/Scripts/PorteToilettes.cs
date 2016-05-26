@@ -3,9 +3,8 @@ using UnityEngine.EventSystems;
 
 public class PorteToilettes : MonoBehaviour, IPointerDownHandler
 {
-
     public bool sensHoraireOuverture;
-    [Range(0f, 90f)]
+    [Range(-90f, 90f)]
     public float angleOuverture = 60f;
     public float vitesseOuverture = 50f;
     public static float distanceOuverture = 2f;
@@ -17,12 +16,6 @@ public class PorteToilettes : MonoBehaviour, IPointerDownHandler
     private Transform pos;
     private bool tourne = false;
 
-    // Use this for initialization
-    void Start()
-    {
-        pos = Camera.main.transform;
-    }
-
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.white;
@@ -32,6 +25,11 @@ public class PorteToilettes : MonoBehaviour, IPointerDownHandler
     // Update is called once per frame
     void Update()
     {
+        if (pos == null)
+        {
+            pos = Camera.main.transform;
+        }
+
         if (!tourne)
         {
             return;
@@ -58,21 +56,21 @@ public class PorteToilettes : MonoBehaviour, IPointerDownHandler
             Turn();
 
         }
-        if (!ouverte && angle != 0f)
+        if (!ouverte && angle != angleOuverture - 90f)
         {
             if (vitesseOuverture == 0f)
             {
-                angle = 0f;
+                angle = angleOuverture - 90f;
                 tourne = false;
             }
             else
             {
-                if (angle > 0f)
+                if (angle > angleOuverture - 90f)
                 {
                     angle -= vitesseOuverture * Time.deltaTime;
-                    if (angle < 0f)
+                    if (angle < angleOuverture - 90f)
                     {
-                        angle = 0f;
+                        angle = angleOuverture - 90f;
                         tourne = false;
                     }
                 }
@@ -83,9 +81,9 @@ public class PorteToilettes : MonoBehaviour, IPointerDownHandler
 
     void Turn()
     {
-        float x = transform.localRotation.eulerAngles.x;
+        float x = transform.parent.localRotation.eulerAngles.x;
         float new_angle = sensHoraireOuverture ? angle : -angle;
-        transform.localRotation = Quaternion.Euler(x, new_angle, 0f);
+        transform.parent.localRotation = Quaternion.Euler(x, new_angle, 0f);
     }
 
     public void OnPointerDown(PointerEventData eventData)
