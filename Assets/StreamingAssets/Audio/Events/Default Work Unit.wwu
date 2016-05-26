@@ -25,7 +25,7 @@
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="musique_ambiance" ID="{4305B19A-E8EB-4967-99CC-487CBE7F7EE7}">
+				<Event Name="ambiance" ID="{4305B19A-E8EB-4967-99CC-487CBE7F7EE7}">
 					<ChildrenList>
 						<Action Name="Play" ID="{5AC02743-765B-4576-B4D4-C273BCD95458}" ShortID="1033161666" Type="Play" Scope="One" Global="false">
 							<ElementList>

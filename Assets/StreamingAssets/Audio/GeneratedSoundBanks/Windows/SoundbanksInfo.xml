@@ -19,9 +19,9 @@
 			<ShortName>SoundBank</ShortName>
 			<Path>SoundBank.bnk</Path>
 			<IncludedEvents>
+				<Event Id="2981377429" Name="ambiance"/>
 				<Event Id="128625444" Name="door_close" MaxAttenuation="10.000000"/>
 				<Event Id="535830432" Name="door_open" MaxAttenuation="10.000000"/>
-				<Event Id="2352118965" Name="musique_ambiance"/>
 				<Event Id="1034121807" Name="radar_detect"/>
 				<Event Id="3537011154" Name="radar_emit_start"/>
 				<Event Id="4245466506" Name="radar_emit_stop" MaxAttenuation="0.000000"/>

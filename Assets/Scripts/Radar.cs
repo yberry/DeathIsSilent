@@ -16,6 +16,7 @@ public class Radar : NetworkBehaviour {
     public string eventEmissionStop = "radar_emit_stop";
     public string eventDetection = "radar_detect";
     public Text text;
+    public KeyCode[] boutonsVueSub;
 
     private bool brouille = false;
     private float tempsBrouilleMax = 10f;
@@ -52,10 +53,20 @@ public class Radar : NetworkBehaviour {
 
     void Update() {
 
-        if (isLocalPlayer && Balayage.detect)
+        if (isLocalPlayer)
         {
-            AkSoundEngine.PostEvent(eventDetection, Balayage.detected);
-            Balayage.detect = false;
+            if (Balayage.detect)
+            {
+                AkSoundEngine.PostEvent(eventDetection, Balayage.detected);
+                Balayage.detect = false;
+            }
+            foreach (KeyCode key in boutonsVueSub)
+            {
+                if (Input.GetKeyDown(key))
+                {
+                    vueSubjective = !vueSubjective;
+                }
+            }
         }
 
         if (brouille)
@@ -86,11 +97,6 @@ public class Radar : NetworkBehaviour {
 
             balais = Instantiate(balayagePrefab, transform.position, Quaternion.Euler(90f, 0f, 0f)) as GameObject;
             balais.transform.parent = transform;
-        }
-
-        if (OVRInput.GetDown(OVRInput.Button.Two) || Input.GetKeyDown(KeyCode.W))
-        {
-            vueSubjective = !vueSubjective;
         }
 
         if (isServer)

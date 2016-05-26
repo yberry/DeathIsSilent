@@ -8,9 +8,10 @@ public class Joueur : NetworkBehaviour {
     [Header("Commandes Joueur")]
     public OVRInput.Button boutonPause;
     public OVRInput.Button[] boutonsLampe;
+    public OVRInput.Button boutonToit;
     public MenuPause menuPause;
     public Lampe lampe;
-    public string eventAmbiance = "musique_ambiance";
+    public string eventAmbiance = "ambiance";
 
     [Header("Options")]
     public Slider stick;
@@ -22,6 +23,7 @@ public class Joueur : NetworkBehaviour {
     private Chat chat;
     private OVRPlayerController controller;
     private int nbAttaques = 0;
+    private GameObject[] lumieresToits;
 
     void Start()
     {
@@ -34,6 +36,7 @@ public class Joueur : NetworkBehaviour {
             voix.value = PlayerPrefs.GetFloat("voix");
         }
         controller = GetComponent<OVRPlayerController>();
+        lumieresToits = GameObject.FindGameObjectsWithTag("Toit");
     }
 
     // Update is called once per frame
@@ -53,6 +56,14 @@ public class Joueur : NetworkBehaviour {
         
         //ambiance.volume = PlayerPrefs.GetFloat("musique");
         chat.SetVolume(PlayerPrefs.GetFloat("voix"));
+
+        if (OVRInput.GetDown(boutonToit))
+        {
+            foreach (GameObject obj in lumieresToits)
+            {
+                obj.SetActive(!obj.activeInHierarchy);
+            }
+        }
 
         if (OVRInput.GetDown(boutonPause))
         {

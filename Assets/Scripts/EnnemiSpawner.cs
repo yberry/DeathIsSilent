@@ -23,7 +23,7 @@ public class EnnemiSpawner : NetworkBehaviour {
 
     private GameObject ennemi;
 
-    private const float y = 1f;
+    private const float y = 0.6f;
 
 	// Use this for initialization
 	void Start () {

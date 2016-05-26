@@ -210,6 +210,7 @@
     <Compile Include="Assets\Scripts\ParticulesMur.cs" />
     <Compile Include="Assets\Scripts\Porte.cs" />
     <Compile Include="Assets\Scripts\PorteRadar.cs" />
+    <Compile Include="Assets\Scripts\PorteToilettes.cs" />
     <Compile Include="Assets\Scripts\Radar.cs" />
     <Compile Include="Assets\Scripts\RendererExtensions.cs" />
     <Compile Include="Assets\Scripts\Zone.cs" />

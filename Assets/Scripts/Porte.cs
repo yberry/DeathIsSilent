@@ -11,9 +11,9 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
     public static float distanceOuverture = 2f;
     public string eventOuverture = "door_open";
     public string eventFermeture = "door_close";
-    [SyncVar]
-    public float angle = 0f;
 
+    [SyncVar]
+    private float angle = 0f;
     [SyncVar]
     private bool ouverte = false;
     private Transform pos;

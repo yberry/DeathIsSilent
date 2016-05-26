@@ -9,7 +9,7 @@
 						<ObjectRef Name="door_open" ID="{563F9132-BFF7-41D2-A8FA-7D9166C89996}" WorkUnitID="{62A9C6F4-C9BF-4870-BED6-DD8A7532CD41}" Filter="7" Origin="Manual"/>
 						<ObjectRef Name="radar_emit_start" ID="{06C78762-83FF-45EA-994C-3BE1DB2B31E4}" WorkUnitID="{62A9C6F4-C9BF-4870-BED6-DD8A7532CD41}" Filter="7" Origin="Manual"/>
 						<ObjectRef Name="radar_emit_stop" ID="{16720A73-C1D7-4850-B1CD-89F438DF5A53}" WorkUnitID="{62A9C6F4-C9BF-4870-BED6-DD8A7532CD41}" Filter="7" Origin="Manual"/>
-						<ObjectRef Name="musique_ambiance" ID="{4305B19A-E8EB-4967-99CC-487CBE7F7EE7}" WorkUnitID="{62A9C6F4-C9BF-4870-BED6-DD8A7532CD41}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="ambiance" ID="{4305B19A-E8EB-4967-99CC-487CBE7F7EE7}" WorkUnitID="{62A9C6F4-C9BF-4870-BED6-DD8A7532CD41}" Filter="7" Origin="Manual"/>
 						<ObjectRef Name="radar_detect" ID="{1650FFBE-3C47-49A3-90A0-4787D46683F2}" WorkUnitID="{62A9C6F4-C9BF-4870-BED6-DD8A7532CD41}" Filter="7" Origin="Manual"/>
 					</ObjectInclusionList>
 					<ObjectExclusionList/>
