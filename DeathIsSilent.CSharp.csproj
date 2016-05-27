@@ -205,6 +205,7 @@
     <Compile Include="Assets\Scripts\OVRPointer\OVRRayPointerEventData.cs" />
     <Compile Include="Assets\Scripts\OVRPointer\OVRRaycaster.cs" />
     <Compile Include="Assets\Scripts\OVRPointer\ParticleGazeCursor.cs" />
+    <Compile Include="Assets\Scripts\Oeil.cs" />
     <Compile Include="Assets\Scripts\Options.cs" />
     <Compile Include="Assets\Scripts\OptionsSlideMusic.cs" />
     <Compile Include="Assets\Scripts\ParticulesMur.cs" />

@@ -3,10 +3,13 @@
 [RequireComponent(typeof(Light))]
 public class Lampe : MonoBehaviour {
 
+    [Tooltip("Intensité minimum de la lampe quand elle clignote")]
     [Range(0f, 8f)]
     public float intensiteMin;
+    [Tooltip("Intensité maximum de la lampe quand elle clignote (par défaut)")]
     [Range(0f, 8f)]
     public float intensiteMax;
+    [Tooltip("Colliders du champ lumineux de la lampe")]
     public Collider[] cones;
 
     private Light lampe;

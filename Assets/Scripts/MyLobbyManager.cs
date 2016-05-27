@@ -68,12 +68,13 @@ public class MyLobbyManager : NetworkLobbyManager {
 
     public void CheckIp(string ip)
     {
+        address.text = address.text.ToLower();
         rejoindre.interactable = IsValidIp(ip);
     }
 
     bool IsValidIp(string ip)
     {
-        if (ip == "localhost")
+        if (ip.ToLower() == "localhost")
         {
             return true;
         }

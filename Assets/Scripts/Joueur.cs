@@ -16,6 +16,7 @@ public class Joueur : NetworkBehaviour {
     public float frequenceVibration = 1f;
     [Range(0f, 1f)]
     public float amplitudeVibration = 1f;
+    public bool switchToit = true;
 
     [Header("Options")]
     public Slider stick;
@@ -68,7 +69,7 @@ public class Joueur : NetworkBehaviour {
         //ambiance.volume = PlayerPrefs.GetFloat("musique");
         chat.SetVolume(PlayerPrefs.GetFloat("voix"));
 
-        if (OVRInput.GetDown(boutonToit))
+        if (switchToit && OVRInput.GetDown(boutonToit))
         {
             foreach (GameObject obj in lumieresToits)
             {

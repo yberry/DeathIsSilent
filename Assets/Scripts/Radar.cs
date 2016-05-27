@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-using System.Collections.Generic;
 using UnityStandardAssets.ImageEffects;
 [AddComponentMenu("Image Effects/GlitchEffect")]
 
@@ -57,6 +56,7 @@ public class Radar : NetworkBehaviour {
         {
             if (Balayage.detect)
             {
+                // Son + ou - aigu en fonction de tempsBalayage
                 AkSoundEngine.PostEvent(eventDetection, Balayage.detected);
                 Balayage.detect = false;
             }
@@ -81,7 +81,8 @@ public class Radar : NetworkBehaviour {
             {
                 balais.transform.localScale = balais.transform.localScale * (vitesse + 1) / vitesse;
             }
-            else {
+            else
+            {
                 Destroy(balais);
                 tempsBalayage = 0f;
                 balais = Instantiate(balayagePrefab, transform.position, Quaternion.Euler(90f, 0f, 0f)) as GameObject;

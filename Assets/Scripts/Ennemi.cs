@@ -13,8 +13,8 @@ public class Ennemi : NetworkBehaviour {
     public float vitesseAttaque = 2f;
     [Tooltip("Layers visibles par l'ennemi")]
     public LayerMask mask;
-    [Tooltip("Disques représentant le champ de vision de l'ennemi")]
-    public MeshFilter[] yeux;
+    [Tooltip("Lampes représentant le champ de vision de l'ennemi")]
+    public Oeil[] yeux;
     [Tooltip("Event sonore pour le monstre")]
     public string eventMonstre = "enemy";
 
@@ -63,18 +63,18 @@ public class Ennemi : NetworkBehaviour {
             }
         }
 
-        foreach (MeshFilter oeil in yeux)
+        foreach (Oeil oeil in yeux)
         {
             Vector3 origin, dir;
             if (rand % 3 == 0)
             {
-                origin = oeil.transform.parent.position;
-                dir = transform.TransformPoint(oeil.mesh.vertices[Random.Range(0, oeil.mesh.vertexCount)]) - origin;
+                origin = oeil.transform.position;
+                dir = oeil.GetRandomDir();
             }
             else if (rand % 3 == 1)
             {
-                origin = oeil.transform.parent.position;
-                dir = oeil.transform.parent.forward;
+                origin = oeil.transform.position;
+                dir = oeil.transform.forward;
             }
             else
             {
@@ -86,7 +86,7 @@ public class Ennemi : NetworkBehaviour {
             Debug.DrawRay(origin, 5 * dir, Color.green);
             if (Physics.Raycast(origin, dir, out hit1, Mathf.Infinity, mask))
             {
-                //Debug.Log(hit1.collider);
+                Debug.Log(hit1.collider);
                 if (hit1.collider == lumieres[0] || hit1.collider == lumieres[1])
                 {
                     if (Physics.Raycast(hit1.point, joueur.position - hit1.point, out hit2, Mathf.Infinity, mask))
