@@ -8,6 +8,12 @@ public class MenuPause : MonoBehaviour {
     public RectTransform menuOptions;
 
     private RectTransform currentMenu;
+    private MyLobbyManager lobbyManager;
+
+    void Start()
+    {
+        lobbyManager = FindObjectOfType<MyLobbyManager>();
+    }
 
     public void Active()
     {
@@ -50,6 +56,7 @@ public class MenuPause : MonoBehaviour {
 
     public void Quit()
     {
-        Application.Quit();
+        lobbyManager.StopHost();
+        AkSoundEngine.PostEvent("ambiance_stop", gameObject);
     }
 }

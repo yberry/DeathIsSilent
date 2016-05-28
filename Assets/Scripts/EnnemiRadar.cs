@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.Networking;
 
-public class EnnemiRadar : NetworkBehaviour {
+public class EnnemiRadar : MonoBehaviour {
 
     public bool dejaEuCollision = false;
     public float timeLimited;
@@ -42,7 +41,7 @@ public class EnnemiRadar : NetworkBehaviour {
         }
         if (tempsDisparition <= 0f)
         {
-            //Destroy(transform.parent.gameObject);
+            Destroy(transform.parent.gameObject);
         }
     }
 }

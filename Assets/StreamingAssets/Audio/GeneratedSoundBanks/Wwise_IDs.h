@@ -13,7 +13,7 @@ namespace AK
 {
     namespace EVENTS
     {
-        static const AkUniqueID AMBIANCE = 2981377429U;
+        static const AkUniqueID AMBIANCE_START = 778605252U;
         static const AkUniqueID DOOR_CLOSE = 128625444U;
         static const AkUniqueID DOOR_OPEN = 535830432U;
         static const AkUniqueID RADAR_DETECT = 1034121807U;

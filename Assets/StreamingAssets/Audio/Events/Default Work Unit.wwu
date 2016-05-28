@@ -25,7 +25,7 @@
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="ambiance" ID="{4305B19A-E8EB-4967-99CC-487CBE7F7EE7}">
+				<Event Name="ambiance_start" ID="{4305B19A-E8EB-4967-99CC-487CBE7F7EE7}">
 					<ChildrenList>
 						<Action Name="Play" ID="{5AC02743-765B-4576-B4D4-C273BCD95458}" ShortID="1033161666" Type="Play" Scope="One" Global="false">
 							<ElementList>
@@ -64,6 +64,17 @@
 							<ElementList>
 								<Element ID="{C957D3BC-4FE3-46F4-8FDB-5085C452D2C9}" Global="false">
 									<ObjectRef Name="radaremission" ID="{9CFA68B7-3938-4CA8-94BF-5696EDA7CC71}" WorkUnitID="{78438926-37C7-42CC-8B61-7E93AF1711C5}"/>
+								</Element>
+							</ElementList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="ambiance_stop" ID="{680427CC-F261-43A4-A373-58C690C91A79}">
+					<ChildrenList>
+						<Action Name="Stop" ID="{893A3D42-886B-4CAD-922F-53EA675F8515}" ShortID="41854182" Type="Stop" Scope="One" Global="false">
+							<ElementList>
+								<Element ID="{15BFA1E9-88C6-4752-9274-003E10670AC2}" Global="false">
+									<ObjectRef Name="DeathIsSilent-Ambiance0205" ID="{49C0C38F-930B-406F-80EA-747561936F48}" WorkUnitID="{78438926-37C7-42CC-8B61-7E93AF1711C5}"/>
 								</Element>
 							</ElementList>
 						</Action>

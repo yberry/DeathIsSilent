@@ -2,11 +2,17 @@
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class MyLobbyManager : NetworkLobbyManager {
 
+    [Header("Eléments Interface")]
+    [Tooltip("Addresse IP de connexion")]
     public InputField address;
+    [Tooltip("Bouton pour rejoindre une partie")]
     public Button rejoindre;
+    [Tooltip("Texte d'état de connexion")]
+    public Text connexion;
 
     public RectTransform menuPrincipal;
     public RectTransform menuReseau;
@@ -19,6 +25,11 @@ public class MyLobbyManager : NetworkLobbyManager {
     {
         currentMenu = menuPrincipal;
         SetSelection();
+    }
+
+    void Update()
+    {
+        SetConnexion(PhotonVoiceNetwork.instance.client.IsConnectedAndReady);
     }
 
     void SetSelection()
@@ -104,6 +115,27 @@ public class MyLobbyManager : NetworkLobbyManager {
         StartClient();
     }
 
+    public override void OnStartClient(NetworkClient lobbyClient)
+    {
+        base.OnStartClient(lobbyClient);
+        SetConnexion(false);
+        PhotonNetwork.ConnectUsingSettings(string.Format("1.{0}", SceneManager.GetActiveScene().name));
+    }
+
+    void SetConnexion(bool conn)
+    {
+        if (conn)
+        {
+            connexion.text = "Connecté au chat";
+            connexion.color = new Color(145f / 255f, 1f, 1f / 255f);
+        }
+        else
+        {
+            connexion.text = "Connexion au chat en cours...";
+            connexion.color = new Color(1f, 248f / 255f, 1f / 255f);
+        }
+    }
+
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
@@ -157,12 +189,16 @@ public class MyLobbyManager : NetworkLobbyManager {
     {
         base.OnStopHost();
         ChangeTo(menuReseau);
+        PhotonNetwork.Disconnect();
+        Destroy(FindObjectOfType<Chat>().gameObject);
     }
 
     public override void OnStopClient()
     {
         base.OnStopClient();
         ChangeTo(menuReseau);
+        PhotonNetwork.Disconnect();
+        Destroy(FindObjectOfType<Chat>().gameObject);
     }
 
     public void ButtonQuit()

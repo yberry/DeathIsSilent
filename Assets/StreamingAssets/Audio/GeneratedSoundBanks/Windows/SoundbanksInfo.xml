@@ -19,7 +19,7 @@
 			<ShortName>SoundBank</ShortName>
 			<Path>SoundBank.bnk</Path>
 			<IncludedEvents>
-				<Event Id="2981377429" Name="ambiance"/>
+				<Event Id="778605252" Name="ambiance_start"/>
 				<Event Id="128625444" Name="door_close" MaxAttenuation="10.000000"/>
 				<Event Id="535830432" Name="door_open" MaxAttenuation="10.000000"/>
 				<Event Id="1034121807" Name="radar_detect"/>

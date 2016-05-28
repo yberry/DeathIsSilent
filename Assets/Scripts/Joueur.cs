@@ -71,10 +71,7 @@ public class Joueur : NetworkBehaviour {
 
         if (switchToit && OVRInput.GetDown(boutonToit))
         {
-            foreach (GameObject obj in lumieresToits)
-            {
-                obj.SetActive(!obj.activeInHierarchy);
-            }
+            CmdToit();
         }
 
         if (OVRInput.GetDown(boutonPause))
@@ -88,6 +85,21 @@ public class Joueur : NetworkBehaviour {
             {
                 lampe.Switch();
             }
+        }
+    }
+
+    [Command]
+    void CmdToit()
+    {
+        RpcToit();
+    }
+
+    [ClientRpc]
+    void RpcToit()
+    {
+        foreach (GameObject obj in lumieresToits)
+        {
+            obj.SetActive(!obj.activeInHierarchy);
         }
     }
 
@@ -123,7 +135,7 @@ public class Joueur : NetworkBehaviour {
             nbAttaques++;
             OVRInput.SetControllerVibration(frequenceVibration, amplitudeVibration);
             float tempsBrouille = 3 * Mathf.Log(nbAttaques + 1);
-            //radar.CmdBrouille(tempsBrouille);
+            radar.CmdBrouille(tempsBrouille);
             lampe.SetFreq(tempsBrouille);
         }
     }

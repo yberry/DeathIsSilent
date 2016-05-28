@@ -1,8 +1,8 @@
 Event	ID	Name			Wwise Object Path	Notes
 	128625444	door_close			\Default Work Unit\door_close	
 	535830432	door_open			\Default Work Unit\door_open	
+	778605252	ambiance_start			\Default Work Unit\ambiance_start	
 	1034121807	radar_detect			\Default Work Unit\radar_detect	
-	2981377429	ambiance			\Default Work Unit\ambiance	
 	3537011154	radar_emit_start			\Default Work Unit\radar_emit_start	
 	4245466506	radar_emit_stop			\Default Work Unit\radar_emit_stop	
 

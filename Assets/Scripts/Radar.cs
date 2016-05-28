@@ -6,16 +6,21 @@ using UnityStandardAssets.ImageEffects;
 
 public class Radar : NetworkBehaviour {
 
-	public GameObject radarPrefab;
+    [Tooltip("Préfab de l'onde de balayage")]
     public GameObject balayagePrefab;
     public float tempsBalayageLimite;
     public int vitesse;
+    [Tooltip("Flèche représentant le joueur sur le radar")]
     public GameObject fleche;
     public string eventEmissionStart = "radar_emit_start";
     public string eventEmissionStop = "radar_emit_stop";
     public string eventDetection = "radar_detect";
+    [Tooltip("Texte d'information sur la coupure de communication")]
     public Text text;
+    [Tooltip("Touches permettant de passer en vue subjective")]
     public KeyCode[] boutonsVueSub;
+    [Tooltip("Activer le mini-radar sur l'écran du joueur à l'oculus")]
+    public bool miniCamera = true;
 
     private bool brouille = false;
     private float tempsBrouilleMax = 10f;
@@ -27,7 +32,7 @@ public class Radar : NetworkBehaviour {
     private Chat chat;
 
     [SyncVar]
-    bool vueSubjective = true;
+    private bool vueSubjective = true;
 
     void Start () {
         player = GameObject.FindGameObjectWithTag("Player");
@@ -43,8 +48,15 @@ public class Radar : NetworkBehaviour {
         else
         {
             Camera cam = transform.Find("Radar Camera").GetComponent<Camera>();
-            cam.rect = new Rect(2f / 3f, 0f, 1f / 3f, 1f / 3f);
-            cam.GetComponent<AudioListener>().enabled = false;
+            if (miniCamera)
+            {
+                cam.rect = new Rect(2f / 3f, 0f, 1f / 3f, 1f / 3f);
+                cam.GetComponent<AudioListener>().enabled = false;
+            }
+            else
+            {
+                cam.gameObject.SetActive(false);
+            }
         }
 
         script = transform.Find("Radar Camera").GetComponent<NoiseAndScratches>();
