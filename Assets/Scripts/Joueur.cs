@@ -11,7 +11,7 @@ public class Joueur : NetworkBehaviour {
     public OVRInput.RawButton boutonToit;
     public MenuPause menuPause;
     public Lampe lampe;
-    public string eventAmbiance = "ambiance";
+    public string eventAmbiance;
     [Range(0f, 1f)]
     public float frequenceVibration = 1f;
     [Range(0f, 1f)]

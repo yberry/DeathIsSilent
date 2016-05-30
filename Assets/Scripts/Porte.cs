@@ -104,7 +104,7 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (Vector3.Distance(pos.position, transform.position) < distanceOuverture)
+        if (Vector3.Distance(pos.position, transform.position) < distanceOuverture && !tourne)
         {
             tourne = true;
             ouverte = !ouverte;

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 
+[RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Collider))]
 public class Ennemi : NetworkBehaviour {
 
@@ -16,7 +17,11 @@ public class Ennemi : NetworkBehaviour {
     [Tooltip("Lampes représentant le champ de vision de l'ennemi")]
     public Oeil[] yeux;
     [Tooltip("Event sonore pour le monstre")]
-    public string eventMonstre = "enemy";
+    public string eventMonstre;
+    [Tooltip("Event sonore pour l'attaque du monstre")]
+    public string eventAttack;
+    [Tooltip("Event sonore après l'attaque du monstre")]
+    public string eventSafe;
 
     private bool deplacementRandom = false;
     [SyncVar]
@@ -33,6 +38,8 @@ public class Ennemi : NetworkBehaviour {
     private RaycastHit hit2;
     private int rand = 0;
 
+    private Animator animator;
+
 	// Use this for initialization
 	void Start () {
         joueur = GameObject.FindGameObjectWithTag("Player").transform;
@@ -40,7 +47,9 @@ public class Ennemi : NetworkBehaviour {
         if (isServer)
         {
             AkSoundEngine.PostEvent(eventMonstre, gameObject);
+            AkSoundEngine.SetSwitch("Monster", "idle", gameObject);
         }
+        animator = GetComponent<Animator>();
 	}
 	
 	// Update is called once per frame
@@ -103,7 +112,11 @@ public class Ennemi : NetworkBehaviour {
 
                 if (detecteLumiere && hit1.transform == joueur)
                 {
-                    detecteJoueur = true;
+                    if (!detecteJoueur)
+                    {
+                        detecteJoueur = true;
+                        AkSoundEngine.PostEvent(eventAttack, gameObject);
+                    }
                     Debug.Log("détection joueur");
                 }
             }
@@ -156,6 +169,7 @@ public class Ennemi : NetworkBehaviour {
     void OnDestroy()
     {
         Debug.Log("destruction");
+        AkSoundEngine.PostEvent(eventSafe, gameObject);
         if (isServer)
         {
             EnnemiSpawner.instance.MonstreAbsent();

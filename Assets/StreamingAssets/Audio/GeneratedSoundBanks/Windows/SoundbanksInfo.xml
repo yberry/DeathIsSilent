@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="10" SoundbankVersion="113">
 	<RootPaths>
-		<ProjectRoot>C:\Users\berry.yanis\Documents\DeathIsSilent\Assets\StreamingAssets\Audio\</ProjectRoot>
-		<SourceFilesRoot>C:\Users\berry.yanis\Documents\DeathIsSilent\Assets\StreamingAssets\Audio\.cache\Windows\</SourceFilesRoot>
+		<ProjectRoot>C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\</ProjectRoot>
+		<SourceFilesRoot>C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\</SourceFilesRoot>
 		<SoundBanksRoot>C:\Users\berry.yanis\Documents\DeathIsSilent\Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\</SoundBanksRoot>
 		<ExternalSourcesInputFile></ExternalSourcesInputFile>
-		<ExternalSourcesOutputRoot>C:\Users\berry.yanis\Documents\DeathIsSilent\Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\</ExternalSourcesOutputRoot>
+		<ExternalSourcesOutputRoot>C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\GeneratedSoundBanks\Windows\</ExternalSourcesOutputRoot>
 	</RootPaths>
 	<DialogueEvents/>
 	<StreamedFiles/>
@@ -15,37 +15,207 @@
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="1661994096" Language="SFX">
-			<ShortName>SoundBank</ShortName>
-			<Path>SoundBank.bnk</Path>
+		<SoundBank Id="4072029455" Language="SFX">
+			<ShortName>New_SoundBank</ShortName>
+			<Path>New_SoundBank.bnk</Path>
 			<IncludedEvents>
-				<Event Id="778605252" Name="ambiance_start"/>
-				<Event Id="128625444" Name="door_close" MaxAttenuation="10.000000"/>
-				<Event Id="535830432" Name="door_open" MaxAttenuation="10.000000"/>
-				<Event Id="1034121807" Name="radar_detect"/>
-				<Event Id="3537011154" Name="radar_emit_start"/>
-				<Event Id="4245466506" Name="radar_emit_stop" MaxAttenuation="0.000000"/>
+				<Event Id="2376328173" Name="Monster"/>
+				<Event Id="2959533290" Name="Play_Amb"/>
+				<Event Id="2292458263" Name="Play_Door_Close"/>
+				<Event Id="1660008929" Name="Play_Door_Open"/>
+				<Event Id="314495013" Name="Play_Radar_Beep"/>
+				<Event Id="2046989910" Name="Play_Radar_Wave"/>
+				<Event Id="4224100558" Name="Player_Attacked"/>
+				<Event Id="3240726218" Name="Player_Safe"/>
 			</IncludedEvents>
 			<IncludedMemoryFiles>
-				<File Id="194924502" Language="SFX">
-					<ShortName>DeathIsSilent-Ambiance0205.wav</ShortName>
-					<Path>SFX\DeathIsSilent-Ambiance0205_4B8CC0C5.wem</Path>
+				<File Id="38988171" Language="SFX">
+					<ShortName>machine2.wav</ShortName>
+					<Path>SFX\machine2_9E69E797.wem</Path>
 				</File>
-				<File Id="230968701" Language="SFX">
-					<ShortName>ouverture.wav</ShortName>
-					<Path>SFX\ouverture_4FAA74E2.wem</Path>
+				<File Id="117524056" Language="SFX">
+					<ShortName>AmbLow7.wav</ShortName>
+					<Path>SFX\AmbLow7_9E69E797.wem</Path>
 				</File>
-				<File Id="675195721" Language="SFX">
-					<ShortName>radarennemi.wav</ShortName>
-					<Path>SFX\radarennemi_9E69E797.wem</Path>
+				<File Id="122858343" Language="SFX">
+					<ShortName>Door_CloseSqueak_B.wav</ShortName>
+					<Path>SFX\Door_CloseSqueak_B_9E69E797.wem</Path>
 				</File>
-				<File Id="722183276" Language="SFX">
-					<ShortName>radaremission.wav</ShortName>
-					<Path>SFX\radaremission_4B8CC0C5.wem</Path>
+				<File Id="130699465" Language="SFX">
+					<ShortName>DoorSqueak2.wav</ShortName>
+					<Path>SFX\DoorSqueak2_9E69E797.wem</Path>
 				</File>
-				<File Id="810504215" Language="SFX">
-					<ShortName>fermeture.wav</ShortName>
-					<Path>SFX\fermeture_A0F5E904.wem</Path>
+				<File Id="142975268" Language="SFX">
+					<ShortName>machine1.wav</ShortName>
+					<Path>SFX\machine1_9E69E797.wem</Path>
+				</File>
+				<File Id="171257235" Language="SFX">
+					<ShortName>cloche8.wav</ShortName>
+					<Path>SFX\cloche8_9E69E797.wem</Path>
+				</File>
+				<File Id="202024251" Language="SFX">
+					<ShortName>Door_OpenSqueak_1.wav</ShortName>
+					<Path>SFX\Door_OpenSqueak_1_9E69E797.wem</Path>
+				</File>
+				<File Id="236654998" Language="SFX">
+					<ShortName>AmbLow8.wav</ShortName>
+					<Path>SFX\AmbLow8_9E69E797.wem</Path>
+				</File>
+				<File Id="253165534" Language="SFX">
+					<ShortName>cloche6.wav</ShortName>
+					<Path>SFX\cloche6_9E69E797.wem</Path>
+				</File>
+				<File Id="285237926" Language="SFX">
+					<ShortName>Amb2.wav</ShortName>
+					<Path>SFX\Amb2_9E69E797.wem</Path>
+				</File>
+				<File Id="289921134" Language="SFX">
+					<ShortName>AmbLow5.wav</ShortName>
+					<Path>SFX\AmbLow5_9E69E797.wem</Path>
+				</File>
+				<File Id="290562202" Language="SFX">
+					<ShortName>cloche4.wav</ShortName>
+					<Path>SFX\cloche4_9E69E797.wem</Path>
+				</File>
+				<File Id="330967322" Language="SFX">
+					<ShortName>Start.wav</ShortName>
+					<Path>SFX\Start_9E69E797.wem</Path>
+				</File>
+				<File Id="335844977" Language="SFX">
+					<ShortName>Door_CloseSqueak_A.wav</ShortName>
+					<Path>SFX\Door_CloseSqueak_A_9E69E797.wem</Path>
+				</File>
+				<File Id="347268334" Language="SFX">
+					<ShortName>AmbLow3.wav</ShortName>
+					<Path>SFX\AmbLow3_9E69E797.wem</Path>
+				</File>
+				<File Id="391437489" Language="SFX">
+					<ShortName>AmbLow2.wav</ShortName>
+					<Path>SFX\AmbLow2_9E69E797.wem</Path>
+				</File>
+				<File Id="430590362" Language="SFX">
+					<ShortName>machine3.wav</ShortName>
+					<Path>SFX\machine3_9E69E797.wem</Path>
+				</File>
+				<File Id="450072806" Language="SFX">
+					<ShortName>cloche1.wav</ShortName>
+					<Path>SFX\cloche1_9E69E797.wem</Path>
+				</File>
+				<File Id="456498214" Language="SFX">
+					<ShortName>attacknoise.wav</ShortName>
+					<Path>SFX\attacknoise_9E69E797.wem</Path>
+				</File>
+				<File Id="488600339" Language="SFX">
+					<ShortName>attacknoise-LOOP.wav</ShortName>
+					<Path>SFX\attacknoise-LOOP_4B8CC0C5.wem</Path>
+				</File>
+				<File Id="522217848" Language="SFX">
+					<ShortName>Amb4.wav</ShortName>
+					<Path>SFX\Amb4_9E69E797.wem</Path>
+				</File>
+				<File Id="543534211" Language="SFX">
+					<ShortName>DoorClose.wav</ShortName>
+					<Path>SFX\DoorClose_9E69E797.wem</Path>
+				</File>
+				<File Id="556216135" Language="SFX">
+					<ShortName>Amb7.wav</ShortName>
+					<Path>SFX\Amb7_9E69E797.wem</Path>
+				</File>
+				<File Id="581550575" Language="SFX">
+					<ShortName>cloche5.wav</ShortName>
+					<Path>SFX\cloche5_9E69E797.wem</Path>
+				</File>
+				<File Id="599608427" Language="SFX">
+					<ShortName>cloche9.wav</ShortName>
+					<Path>SFX\cloche9_9E69E797.wem</Path>
+				</File>
+				<File Id="613083818" Language="SFX">
+					<ShortName>AmbLow9.wav</ShortName>
+					<Path>SFX\AmbLow9_9E69E797.wem</Path>
+				</File>
+				<File Id="621643441" Language="SFX">
+					<ShortName>Amb8.wav</ShortName>
+					<Path>SFX\Amb8_9E69E797.wem</Path>
+				</File>
+				<File Id="684948027" Language="SFX">
+					<ShortName>AmbLow1.wav</ShortName>
+					<Path>SFX\AmbLow1_9E69E797.wem</Path>
+				</File>
+				<File Id="700933665" Language="SFX">
+					<ShortName>DoorSqueak1.wav</ShortName>
+					<Path>SFX\DoorSqueak1_9E69E797.wem</Path>
+				</File>
+				<File Id="718327252" Language="SFX">
+					<ShortName>AmbLow6.wav</ShortName>
+					<Path>SFX\AmbLow6_9E69E797.wem</Path>
+				</File>
+				<File Id="724319294" Language="SFX">
+					<ShortName>AmbLow4.wav</ShortName>
+					<Path>SFX\AmbLow4_9E69E797.wem</Path>
+				</File>
+				<File Id="740156813" Language="SFX">
+					<ShortName>Door_latch_3.wav</ShortName>
+					<Path>SFX\Door_latch_3_9E69E797.wem</Path>
+				</File>
+				<File Id="768297130" Language="SFX">
+					<ShortName>cloche7.wav</ShortName>
+					<Path>SFX\cloche7_9E69E797.wem</Path>
+				</File>
+				<File Id="769515044" Language="SFX">
+					<ShortName>Radar_Wave.wav</ShortName>
+					<Path>SFX\Radar_Wave_9E69E797.wem</Path>
+				</File>
+				<File Id="770092917" Language="SFX">
+					<ShortName>DoorSqueak3.wav</ShortName>
+					<Path>SFX\DoorSqueak3_9E69E797.wem</Path>
+				</File>
+				<File Id="794221497" Language="SFX">
+					<ShortName>Amb1.wav</ShortName>
+					<Path>SFX\Amb1_9E69E797.wem</Path>
+				</File>
+				<File Id="796719234" Language="SFX">
+					<ShortName>Door_latch_2.wav</ShortName>
+					<Path>SFX\Door_latch_2_9E69E797.wem</Path>
+				</File>
+				<File Id="809563980" Language="SFX">
+					<ShortName>Amb6.wav</ShortName>
+					<Path>SFX\Amb6_9E69E797.wem</Path>
+				</File>
+				<File Id="819768824" Language="SFX">
+					<ShortName>machine5.wav</ShortName>
+					<Path>SFX\machine5_9E69E797.wem</Path>
+				</File>
+				<File Id="821285074" Language="SFX">
+					<ShortName>cloche2.wav</ShortName>
+					<Path>SFX\cloche2_9E69E797.wem</Path>
+				</File>
+				<File Id="910580893" Language="SFX">
+					<ShortName>cloche3.wav</ShortName>
+					<Path>SFX\cloche3_9E69E797.wem</Path>
+				</File>
+				<File Id="996883605" Language="SFX">
+					<ShortName>Radar_Bip.wav</ShortName>
+					<Path>SFX\Radar_Bip_9E69E797.wem</Path>
+				</File>
+				<File Id="1018031233" Language="SFX">
+					<ShortName>Door_latch_1.wav</ShortName>
+					<Path>SFX\Door_latch_1_9E69E797.wem</Path>
+				</File>
+				<File Id="1024033393" Language="SFX">
+					<ShortName>Amb3.wav</ShortName>
+					<Path>SFX\Amb3_9E69E797.wem</Path>
+				</File>
+				<File Id="1024160717" Language="SFX">
+					<ShortName>Amb5.wav</ShortName>
+					<Path>SFX\Amb5_9E69E797.wem</Path>
+				</File>
+				<File Id="1036780817" Language="SFX">
+					<ShortName>machine4.wav</ShortName>
+					<Path>SFX\machine4_9E69E797.wem</Path>
+				</File>
+				<File Id="1052801955" Language="SFX">
+					<ShortName>Door_OpenSqueak_2.wav</ShortName>
+					<Path>SFX\Door_OpenSqueak_2_9E69E797.wem</Path>
 				</File>
 			</IncludedMemoryFiles>
 		</SoundBank>

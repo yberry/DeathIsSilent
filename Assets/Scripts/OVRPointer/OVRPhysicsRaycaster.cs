@@ -29,6 +29,9 @@ namespace UnityEngine.EventSystems
     [RequireComponent(typeof(OVRCameraRig))]
     public class OVRPhysicsRaycaster : BaseRaycaster
     {
+
+        public Light lampe;
+
         /// <summary>
         /// Const to use for clarity when no event mask is set
         /// </summary>
@@ -107,7 +110,7 @@ namespace UnityEngine.EventSystems
             {
                 for (int b = 0, bmax = hits.Length; b < bmax; ++b)
                 {
-                    if (Vector3.Distance(transform.position, hits[b].transform.position) < Porte.distanceOuverture)
+                    if (Vector3.Distance(transform.position, hits[b].transform.position) < Porte.distanceOuverture && lampe.enabled)
                     {
                         var result = new RaycastResult
                         {

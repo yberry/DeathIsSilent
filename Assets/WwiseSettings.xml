@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <WwiseSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <WwiseProjectPath>StreamingAssets/Audio/DeathIsSilent.wproj</WwiseProjectPath>
+  <WwiseProjectPath>../../death-is-silent-sound-design/DISWwise/DISWwise/DISWwise.wproj</WwiseProjectPath>
   <SoundbankPath>Audio/GeneratedSoundBanks/Windows/</SoundbankPath>
   <CreateWwiseGlobal>true</CreateWwiseGlobal>
   <CreateWwiseListener>false</CreateWwiseListener>
