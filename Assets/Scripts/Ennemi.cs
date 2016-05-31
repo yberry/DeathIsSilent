@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 
-[RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Collider))]
 public class Ennemi : NetworkBehaviour {
 
@@ -22,6 +21,8 @@ public class Ennemi : NetworkBehaviour {
     public string eventAttack;
     [Tooltip("Event sonore après l'attaque du monstre")]
     public string eventSafe;
+    [Tooltip("Animateur du monstre")]
+    public Animator animator;
 
     private bool deplacementRandom = false;
     [SyncVar]
@@ -37,8 +38,7 @@ public class Ennemi : NetworkBehaviour {
     private RaycastHit hit1;
     private RaycastHit hit2;
     private int rand = 0;
-
-    private Animator animator;
+    private Collider col;
 
 	// Use this for initialization
 	void Start () {
@@ -49,7 +49,7 @@ public class Ennemi : NetworkBehaviour {
             AkSoundEngine.PostEvent(eventMonstre, gameObject);
             AkSoundEngine.SetSwitch("Monster", "idle", gameObject);
         }
-        animator = GetComponent<Animator>();
+        col = GetComponent<Collider>();
 	}
 	
 	// Update is called once per frame
@@ -95,8 +95,7 @@ public class Ennemi : NetworkBehaviour {
             Debug.DrawRay(origin, 5 * dir, Color.green);
             if (Physics.Raycast(origin, dir, out hit1, Mathf.Infinity, mask))
             {
-                Debug.Log(hit1.collider);
-                if (hit1.collider == lumieres[0] || hit1.collider == lumieres[1])
+                if (hit1.collider == lumieres[0] || hit1.collider == lumieres[1] || col.bounds.Intersects(lumieres[0].bounds) || col.bounds.Intersects(lumieres[1].bounds))
                 {
                     if (Physics.Raycast(hit1.point, joueur.position - hit1.point, out hit2, Mathf.Infinity, mask))
                     {
