@@ -66,7 +66,7 @@ public class Radar : NetworkBehaviour {
         {
             if (Balayage.detect)
             {
-                // Son + ou - aigu en fonction de tempsBalayage
+                AkSoundEngine.SetRTPCValue("Radar_Distance", balais.transform.localScale.z * 100f / limitScale);
                 AkSoundEngine.PostEvent(eventDetection, Balayage.detected);
                 Balayage.detect = false;
             }

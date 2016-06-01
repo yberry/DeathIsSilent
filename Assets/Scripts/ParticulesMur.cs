@@ -12,9 +12,10 @@ public class ParticulesMur : MonoBehaviour {
     {
         system = GetComponent<ParticleSystem>();
         duration = system.duration;
+        system.Stop();
     }
 
-    void OnTriggerEnter(Collider col)
+    /*void OnTriggerEnter(Collider col)
     {
         if (col.gameObject.layer == LayerMask.NameToLayer("Default"))
         {
@@ -51,5 +52,5 @@ public class ParticulesMur : MonoBehaviour {
                 particules = false;
             }
         }
-    }
+    }*/
 }

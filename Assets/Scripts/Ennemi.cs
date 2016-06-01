@@ -17,6 +17,8 @@ public class Ennemi : NetworkBehaviour {
     public Oeil[] yeux;
     [Tooltip("Event sonore pour le monstre")]
     public string eventMonstre;
+    [Tooltip("Event sonore pour la destruction du monstre")]
+    public string eventDestroy;
     [Tooltip("Event sonore pour l'attaque du monstre")]
     public string eventAttack;
     [Tooltip("Event sonore après l'attaque du monstre")]
@@ -35,25 +37,35 @@ public class Ennemi : NetworkBehaviour {
     private bool detecteJoueur = false;
     private Transform joueur;
     private Collider[] lumieres;
+    private float rangeLight;
     private RaycastHit hit1;
     private RaycastHit hit2;
     private int rand = 0;
+
     private Collider col;
+    private bool attaque = false;
 
 	// Use this for initialization
 	void Start () {
         joueur = GameObject.FindGameObjectWithTag("Player").transform;
-        lumieres = FindObjectOfType<Lampe>().cones;
+        Lampe lampe = FindObjectOfType<Lampe>();
+        lumieres = lampe.cones;
+        rangeLight = lampe.GetComponent<Light>().range;
         if (isServer)
         {
             AkSoundEngine.PostEvent(eventMonstre, gameObject);
-            AkSoundEngine.SetSwitch("Monster", "idle", gameObject);
+            AkSoundEngine.SetState("Monster_States", "idle");
         }
         col = GetComponent<Collider>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("marche_cycle"))
+        {
+            AkSoundEngine.SetState("Monster_States", "move");
+        }
 
         if (!detecteLumiere)
         {
@@ -114,11 +126,21 @@ public class Ennemi : NetworkBehaviour {
                     if (!detecteJoueur)
                     {
                         detecteJoueur = true;
+                        AkSoundEngine.SetState("Monster_States", "attack");
                         AkSoundEngine.PostEvent(eventAttack, gameObject);
                     }
                     Debug.Log("détection joueur");
                 }
             }
+        }
+
+        float dist = Vector3.Distance(transform.position, joueur.position);
+        Debug.Log("rtpc : " + dist * 5f);
+        AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", dist * 5f);
+
+        if (attaque && dist > rangeLight)
+        {
+            Destroy(gameObject);
         }
 	}
 
@@ -147,7 +169,8 @@ public class Ennemi : NetworkBehaviour {
 
     void DetectionLumiere()
     {
-        cibleTemp = Vector3.MoveTowards(cibleTemp, joueur.position, vitesseNormale * Time.deltaTime);
+        cible = new Vector3(joueur.position.x, transform.position.y, joueur.position.z);
+        cibleTemp = Vector3.MoveTowards(cibleTemp, cible, vitesseNormale * Time.deltaTime);
         transform.LookAt(cibleTemp);
         transform.position = Vector3.MoveTowards(transform.position, cibleTemp, vitesseNormale * Time.deltaTime);
         tempsDeplacementLumiere -= Time.deltaTime;
@@ -160,14 +183,22 @@ public class Ennemi : NetworkBehaviour {
 
     void DetectionJoueur()
     {
-        cibleTemp = Vector3.MoveTowards(cibleTemp, joueur.position, vitesseAttaque * Time.deltaTime);
+        cible = new Vector3(joueur.position.x, transform.position.y, joueur.position.z);
+        cibleTemp = Vector3.MoveTowards(cibleTemp, cible, vitesseAttaque * Time.deltaTime);
         transform.LookAt(cibleTemp);
         transform.position = Vector3.MoveTowards(transform.position, cibleTemp, vitesseAttaque * Time.deltaTime);
+        if (Vector3.Distance(transform.position, joueur.position) < 5f) {
+            AkSoundEngine.SetState("Monster_States", "attacking");
+            animator.SetTrigger("attaque");
+            attaque = true;
+        }
     }
 
     void OnDestroy()
     {
         Debug.Log("destruction");
+        AkSoundEngine.SetState("Monster_States", "None");
+        //AkSoundEngine.PostEvent(eventDestroy, gameObject);
         AkSoundEngine.PostEvent(eventSafe, gameObject);
         if (isServer)
         {
