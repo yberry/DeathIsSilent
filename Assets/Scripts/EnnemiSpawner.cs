@@ -7,8 +7,8 @@ public class EnnemiSpawner : NetworkBehaviour {
     public GameObject ennemiPrefab;
     [Tooltip("Zones délimitantes du bâtiment")]
     public Collider[] colliders;
-    [Tooltip("Distance minimum d'apparition de l'ennemi par rapport au joueur")]
-    public float distanceApparition = 5f;
+    [Tooltip("Distance d'apparition de l'ennemi par rapport au joueur")]
+    public float distanceApparition = 7f;
 
     public static EnnemiSpawner instance;
 
@@ -33,7 +33,7 @@ public class EnnemiSpawner : NetworkBehaviour {
         }
         probaApparition = new float[4]
         {
-            1f / 50f,
+            1f / 40f,
             1f / 25f,
             1f / 20f,
             1f / 15f
@@ -97,17 +97,17 @@ public class EnnemiSpawner : NetworkBehaviour {
         Vector3 min = bounds[currentZone].min;
         Vector3 max = bounds[currentZone].max;
 
-        float x = Random.Range(min.x + extents.x, max.x - extents.x);
-        float z = Random.Range(min.z + extents.z, max.z - extents.z);
+        float angle = Random.Range(0f, 2 * Mathf.PI);
+        float x = joueur.position.x + distanceApparition * Mathf.Cos(angle);
+        float z = joueur.position.z + distanceApparition * Mathf.Sin(angle);
 
-        Vector3 pos = new Vector3(x, y, z);
-
-        while (Vector3.Distance(joueur.position, pos) < distanceApparition)
+        while (x < min.x + extents.x || x > max.x - extents.x || z < min.z + extents.z || z > max.z - extents.z)
         {
-            pos.x = Random.Range(min.x + extents.x, max.x - extents.x);
-            pos.z = Random.Range(min.z + extents.z, max.z - extents.z);
+            angle = Random.Range(0f, 2 * Mathf.PI);
+            x = joueur.position.x + distanceApparition * Mathf.Cos(angle);
+            z = joueur.position.z + distanceApparition * Mathf.Sin(angle);
         }
-        return pos;
+        return new Vector3(x, y, z);
     }
 
     public void EnterZone(int zone)

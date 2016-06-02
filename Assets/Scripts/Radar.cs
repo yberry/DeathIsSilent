@@ -8,10 +8,14 @@ public class Radar : NetworkBehaviour {
 
     [Tooltip("Préfab de l'onde de balayage")]
     public GameObject balayagePrefab;
+    [Tooltip("Limite de taille de l'onde")]
     public float limitScale = 800f;
+    [Tooltip("Vitesse de l'onde")]
     public int vitesse;
     [Tooltip("Flèche représentant le joueur sur le radar")]
     public GameObject fleche;
+    [Tooltip("Lumière représentant la lampe")]
+    public Light lumiere;
     public string eventEmissionStart;
     public string eventEmissionStop;
     public string eventDetection;
@@ -25,7 +29,6 @@ public class Radar : NetworkBehaviour {
     private bool brouille = false;
     private float tempsBrouilleMax = 10f;
     private float tempsBrouille;
-    private float tempsBalayage;
     private GameObject balais;
     private GameObject player;
     private NoiseAndScratches script;
@@ -38,7 +41,6 @@ public class Radar : NetworkBehaviour {
         player = GameObject.FindGameObjectWithTag("Player");
         ResetPosition();
         StartWave();
-        tempsBalayage = 0f;
         if (isLocalPlayer)
         {
             chat = FindObjectOfType<Chat>();
@@ -72,11 +74,9 @@ public class Radar : NetworkBehaviour {
             }
             foreach (KeyCode key in boutonsVueSub)
             {
-                Debug.Log(key);
-                if (Input.anyKeyDown)
+                if (Input.GetKeyDown(key))
                 {
-                    Debug.Log("espace");
-                    vueSubjective = !vueSubjective;
+                    CmdVue();
                 }
             }
         }
@@ -88,7 +88,6 @@ public class Radar : NetworkBehaviour {
         }
         else
         {
-            tempsBalayage += Time.deltaTime;
             if (balais.transform.localScale.z < limitScale)
             {
                 balais.transform.localScale = balais.transform.localScale * (vitesse + 1) / vitesse;
@@ -96,7 +95,6 @@ public class Radar : NetworkBehaviour {
             else
             {
                 Destroy(balais);
-                tempsBalayage = 0f;
                 StartWave();
             }
         }
@@ -116,6 +114,12 @@ public class Radar : NetworkBehaviour {
         }
 	}
 
+    [Command]
+    void CmdVue()
+    {
+        vueSubjective = !vueSubjective;
+    }
+
     void StartWave()
     {
         balais = Instantiate(balayagePrefab, transform.position, Quaternion.Euler(90f, 0f, 0f)) as GameObject;
@@ -124,6 +128,18 @@ public class Radar : NetworkBehaviour {
         {
             AkSoundEngine.PostEvent(eventEmissionStart, gameObject);
         }
+    }
+
+    [Command]
+    public void CmdSwitch()
+    {
+        RpcSwitch();
+    }
+
+    [ClientRpc]
+    void RpcSwitch()
+    {
+        lumiere.enabled = !lumiere.enabled;
     }
 
     [Command]
@@ -139,7 +155,6 @@ public class Radar : NetworkBehaviour {
         tempsBrouille = time;
         SetTransmission(false);
         Destroy(balais);
-        tempsBalayage = 0f;
         SetNoise(5f);
     }
 

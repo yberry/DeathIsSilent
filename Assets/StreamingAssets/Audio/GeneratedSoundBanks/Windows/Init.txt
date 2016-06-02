@@ -11,6 +11,7 @@ State	ID	Name	State Group			Notes
 
 Game Parameter	ID	Name			Wwise Object Path	Notes
 	1078146560	Monster_Distance_Reverb			\Default Work Unit\Monster_Distance_Reverb	
+	4179668880	Master_Volume			\Default Work Unit\Master_Volume	
 
 Audio Bus	ID	Name			Wwise Object Path	Notes
 	805203703	Master Secondary Bus			\Default Work Unit\Master Secondary Bus	

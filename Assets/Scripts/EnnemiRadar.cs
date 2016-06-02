@@ -41,7 +41,7 @@ public class EnnemiRadar : MonoBehaviour {
         }
         if (tempsDisparition <= 0f)
         {
-            //Destroy(transform.parent.gameObject);
+            Destroy(transform.parent.gameObject);
         }
     }
 }

@@ -23,6 +23,7 @@ public class Joueur : NetworkBehaviour {
     public Slider musique;
     public Slider voix;
 
+    [SyncVar]
     private bool pause = false;
     private Radar radar;
     private Chat chat;
@@ -65,8 +66,8 @@ public class Joueur : NetworkBehaviour {
         {
             return;
         }
-        
-        //ambiance.volume = PlayerPrefs.GetFloat("musique");
+
+        AkSoundEngine.SetRTPCValue("Master_Volume", PlayerPrefs.GetFloat("musique"));
         chat.SetVolume(PlayerPrefs.GetFloat("voix"));
 
         if (switchToit && OVRInput.GetDown(boutonToit))
@@ -84,6 +85,7 @@ public class Joueur : NetworkBehaviour {
             if (OVRInput.GetDown(bouton))
             {
                 lampe.Switch();
+                radar.CmdSwitch();
             }
         }
     }

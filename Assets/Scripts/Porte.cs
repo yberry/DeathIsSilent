@@ -19,13 +19,15 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
     private Transform pos;
     private PorteRadar porteRadar;
     private bool tourne = false;
-    
-	// Use this for initialization
-	void Start () {
+    private Light lumiere;
+
+    // Use this for initialization
+    void Start () {
         pos = Camera.main.transform;
         string numPorte = transform.parent.name;
         string piece = transform.parent.parent.name;
         porteRadar = GameObject.FindGameObjectWithTag("BatimentRadar").transform.Find(piece).Find(numPorte).Find(transform.name).GetComponent<PorteRadar>();
+        lumiere = pos.GetComponentInChildren<Light>();
     }
 
     void OnDrawGizmosSelected()
@@ -104,7 +106,7 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (Vector3.Distance(pos.position, transform.position) < distanceOuverture && !tourne)
+        if (Vector3.Distance(pos.position, transform.position) < distanceOuverture && !tourne && lumiere.enabled)
         {
             tourne = true;
             ouverte = !ouverte;

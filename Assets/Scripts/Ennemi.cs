@@ -9,6 +9,8 @@ public class Ennemi : NetworkBehaviour {
     public float tempsDeplacementLumiere = 3f;
     [Tooltip("Vitesse normale de l'ennemi")]
     public float vitesseNormale = 1f;
+    [Tooltip("Distance d'attaque de l'ennemi")]
+    public float distanceAttaque = 5f;
     [Tooltip("Vitesse d'attaque de l'ennemi")]
     public float vitesseAttaque = 2f;
     [Tooltip("Layers visibles par l'ennemi")]
@@ -107,7 +109,7 @@ public class Ennemi : NetworkBehaviour {
             Debug.DrawRay(origin, 5 * dir, Color.green);
             if (Physics.Raycast(origin, dir, out hit1, Mathf.Infinity, mask))
             {
-                if (hit1.collider == lumieres[0] || hit1.collider == lumieres[1] || col.bounds.Intersects(lumieres[0].bounds) || col.bounds.Intersects(lumieres[1].bounds))
+                if (hit1.collider == lumieres[0] || hit1.collider == lumieres[1] || lumieres[0].enabled && col.bounds.Intersects(lumieres[0].bounds) || lumieres[1].enabled && col.bounds.Intersects(lumieres[1].bounds))
                 {
                     if (Physics.Raycast(hit1.point, joueur.position - hit1.point, out hit2, Mathf.Infinity, mask))
                     {
@@ -135,8 +137,7 @@ public class Ennemi : NetworkBehaviour {
         }
 
         float dist = Vector3.Distance(transform.position, joueur.position);
-        Debug.Log("rtpc : " + dist * 5f);
-        AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", dist * 5f);
+        AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", dist * 15f);
 
         if (attaque && dist > rangeLight)
         {
@@ -187,7 +188,7 @@ public class Ennemi : NetworkBehaviour {
         cibleTemp = Vector3.MoveTowards(cibleTemp, cible, vitesseAttaque * Time.deltaTime);
         transform.LookAt(cibleTemp);
         transform.position = Vector3.MoveTowards(transform.position, cibleTemp, vitesseAttaque * Time.deltaTime);
-        if (Vector3.Distance(transform.position, joueur.position) < 5f) {
+        if (Vector3.Distance(transform.position, joueur.position) < distanceAttaque) {
             AkSoundEngine.SetState("Monster_States", "attacking");
             animator.SetTrigger("attaque");
             attaque = true;
@@ -198,7 +199,7 @@ public class Ennemi : NetworkBehaviour {
     {
         Debug.Log("destruction");
         AkSoundEngine.SetState("Monster_States", "None");
-        //AkSoundEngine.PostEvent(eventDestroy, gameObject);
+        AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", 200f);
         AkSoundEngine.PostEvent(eventSafe, gameObject);
         if (isServer)
         {

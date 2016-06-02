@@ -12,7 +12,7 @@ public class Options : MonoBehaviour {
         }
         if (!PlayerPrefs.HasKey("musique") || start)
         {
-            PlayerPrefs.SetFloat("musique", 0.25f);
+            PlayerPrefs.SetFloat("musique", 100f);
         }
         if (!PlayerPrefs.HasKey("voix") || start)
         {

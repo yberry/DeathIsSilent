@@ -14,6 +14,7 @@ public class Lampe : MonoBehaviour {
 
     private Light lampe;
     private float frequenceClignotement = 0f;
+    private float max = 1f;
     private Collider col;
 
     // Use this for initialization
@@ -35,12 +36,13 @@ public class Lampe : MonoBehaviour {
                 frequenceClignotement = 0f;
             }
         }
-        lampe.intensity = (Mathf.Cos(Time.time * frequenceClignotement / 10) * (intensiteMax - intensiteMin) + intensiteMax + intensiteMin) / 2;
+        lampe.intensity = (1f - frequenceClignotement / max) * (Mathf.Cos(Time.time * frequenceClignotement / 10) * (intensiteMax - intensiteMin) + intensiteMax + intensiteMin) / 2;
     }
 
     public void SetFreq(float freq)
     {
         frequenceClignotement = freq;
+        max = freq;
     }
 
     public void Switch()
