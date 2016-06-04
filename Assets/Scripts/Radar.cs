@@ -13,7 +13,7 @@ public class Radar : NetworkBehaviour {
     [Tooltip("Vitesse de l'onde")]
     public int vitesse;
     [Tooltip("Flèche représentant le joueur sur le radar")]
-    public GameObject fleche;
+    public Transform fleche;
     [Tooltip("Lumière représentant la lampe")]
     public Light lumiere;
     public string eventEmissionStart;
@@ -182,15 +182,17 @@ public class Radar : NetworkBehaviour {
     {
         ResetPosition();
 
+        Quaternion zero = Quaternion.Euler(0f, 0f, 0f);
+
         if (vueSubjective)
         {
             transform.LookAt(transform.position + player.transform.forward);
-            fleche.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            fleche.localRotation = zero;
         }
         else
         {
-            transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-            fleche.transform.LookAt(fleche.transform.position + player.transform.forward);
+            transform.rotation = zero;
+            fleche.LookAt(fleche.transform.position + player.transform.forward);
         }
     }
 

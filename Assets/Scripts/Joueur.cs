@@ -84,10 +84,22 @@ public class Joueur : NetworkBehaviour {
         {
             if (OVRInput.GetDown(bouton))
             {
-                lampe.Switch();
+                CmdSwitch();
                 radar.CmdSwitch();
             }
         }
+    }
+
+    [Command]
+    void CmdSwitch()
+    {
+        RpcSwitch();
+    }
+
+    [ClientRpc]
+    void RpcSwitch()
+    {
+        lampe.Switch();
     }
 
     [Command]

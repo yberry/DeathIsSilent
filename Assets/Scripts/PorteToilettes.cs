@@ -15,6 +15,7 @@ public class PorteToilettes : MonoBehaviour, IPointerDownHandler
 
     private Transform pos;
     private bool tourne = false;
+    private Light lumiere;
 
     void OnDrawGizmosSelected()
     {
@@ -28,6 +29,7 @@ public class PorteToilettes : MonoBehaviour, IPointerDownHandler
         if (pos == null)
         {
             pos = Camera.main.transform;
+            lumiere = pos.GetComponentInChildren<Light>();
         }
 
         if (!tourne)
@@ -88,7 +90,7 @@ public class PorteToilettes : MonoBehaviour, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (Vector3.Distance(pos.position, transform.position) < distanceOuverture)
+        if (Vector3.Distance(pos.position, transform.position) < distanceOuverture && lumiere.enabled)
         {
             tourne = true;
             ouverte = !ouverte;

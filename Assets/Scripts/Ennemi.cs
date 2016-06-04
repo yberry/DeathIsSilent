@@ -59,6 +59,9 @@ public class Ennemi : NetworkBehaviour {
             AkSoundEngine.SetState("Monster_States", "idle");
         }
         col = GetComponent<Collider>();
+
+        cible = new Vector3(joueur.position.x, transform.position.y, joueur.position.z);
+        transform.LookAt(cible);
 	}
 	
 	// Update is called once per frame
@@ -109,16 +112,20 @@ public class Ennemi : NetworkBehaviour {
             Debug.DrawRay(origin, 5 * dir, Color.green);
             if (Physics.Raycast(origin, dir, out hit1, Mathf.Infinity, mask))
             {
-                if (hit1.collider == lumieres[0] || hit1.collider == lumieres[1] || lumieres[0].enabled && col.bounds.Intersects(lumieres[0].bounds) || lumieres[1].enabled && col.bounds.Intersects(lumieres[1].bounds))
+                foreach (Collider lumiere in lumieres)
                 {
-                    if (Physics.Raycast(hit1.point, joueur.position - hit1.point, out hit2, Mathf.Infinity, mask))
+                    if (hit1.collider == lumiere || lumiere.enabled && col.bounds.Intersects(lumiere.bounds))
                     {
-                        if (hit2.transform == joueur)
+                        if (Physics.Raycast(hit1.point, joueur.position - hit1.point, out hit2, Mathf.Infinity, mask))
                         {
-                            detecteLumiere = true;
-                            tempsDeplacementLumiere = 3f;
-                            deplacementRandom = false;
-                            Debug.Log("détection lumière");
+                            if (hit2.transform == joueur)
+                            {
+                                detecteLumiere = true;
+                                tempsDeplacementLumiere = 3f;
+                                deplacementRandom = false;
+                                animator.SetTrigger("reperage");
+                                Debug.Log("détection lumière");
+                            }
                         }
                     }
                 }
@@ -137,7 +144,7 @@ public class Ennemi : NetworkBehaviour {
         }
 
         float dist = Vector3.Distance(transform.position, joueur.position);
-        AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", dist * 15f);
+        AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", dist * 25f);
 
         if (attaque && dist > rangeLight)
         {
@@ -149,6 +156,10 @@ public class Ennemi : NetworkBehaviour {
     {
         if (!deplacementRandom)
         {
+            if (!animator.GetCurrentAnimatorStateInfo(0).IsName("marche_cycle"))
+            {
+                return;
+            }
             cibleTemp = transform.position + 5 * transform.forward;
             float angle = Mathf.Deg2Rad * Random.Range(-120f, 120f);
             cible = cibleTemp + 5 * new Vector3(Mathf.Cos(angle) * transform.forward.x - Mathf.Sin(angle) * transform.forward.z, 0f, Mathf.Sin(angle) * transform.forward.x + Mathf.Cos(angle) * transform.forward.z);
@@ -164,6 +175,16 @@ public class Ennemi : NetworkBehaviour {
             if (tempsDeplacementRandom <= 0f)
             {
                 deplacementRandom = false;
+                if (Vector3.Dot(transform.right, joueur.position - transform.position) > 0f)
+                {
+                    transform.localScale = new Vector3(-1, 1, 1);
+                }
+                else
+                {
+                    transform.localScale = Vector3.one;
+                }
+                animator.SetTrigger("observe");
+                AkSoundEngine.SetState("Monster_States", "idle");
             }
         }
     }
