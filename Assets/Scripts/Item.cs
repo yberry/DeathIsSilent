@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.EventSystems;
 
-public class Item : MonoBehaviour, IPointerDownHandler {
+public class Item : NetworkBehaviour, IPointerDownHandler {
 
     [Tooltip("Objectif de l'exploration")]
     public bool objectif;
@@ -21,7 +22,7 @@ public class Item : MonoBehaviour, IPointerDownHandler {
     public void OnPointerDown(PointerEventData eventData)
     {
         obtenu = true;
-        if (objectif)
+        if (objectif && isServer)
         {
             EnnemiSpawner.instance.ActiveFin();
         }

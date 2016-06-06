@@ -4,7 +4,6 @@ using UnityEngine.Networking;
 [RequireComponent(typeof(Collider))]
 public class Ennemi : NetworkBehaviour {
 
-    public Camera vision;
     [Tooltip("Temps de déplacement vers le joueur après avoir détecté la lumière")]
     public float tempsDeplacementLumiere = 3f;
     [Tooltip("Vitesse normale de l'ennemi")]
