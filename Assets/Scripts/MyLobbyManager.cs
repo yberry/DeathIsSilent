@@ -16,6 +16,7 @@ public class MyLobbyManager : NetworkLobbyManager {
 
     public RectTransform menuPrincipal;
     public RectTransform menuReseau;
+    public RectTransform menuConnexion;
     public RectTransform menuOptions;
     public RectTransform menuAttente;
 
@@ -115,13 +116,6 @@ public class MyLobbyManager : NetworkLobbyManager {
         StartClient();
     }
 
-    public override void OnStartClient(NetworkClient lobbyClient)
-    {
-        base.OnStartClient(lobbyClient);
-        SetConnexion(false);
-        PhotonNetwork.ConnectUsingSettings(string.Format("1.{0}", SceneManager.GetActiveScene().name));
-    }
-
     void SetConnexion(bool conn)
     {
         if (conn)
@@ -136,13 +130,22 @@ public class MyLobbyManager : NetworkLobbyManager {
         }
     }
 
+    public override void OnStartClient(NetworkClient lobbyClient)
+    {
+        base.OnStartClient(lobbyClient);
+        backDelegate = DelegateStopClient;
+        menuConnexion.gameObject.SetActive(true);
+    }
+
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
+        menuConnexion.gameObject.SetActive(false);
+        SetConnexion(false);
+        PhotonNetwork.ConnectUsingSettings(string.Format("1.{0}", SceneManager.GetActiveScene().name));
         if (!NetworkServer.active)
         {
             ChangeTo(menuAttente);
-            backDelegate = DelegateStopClient;
         }
     }
 
@@ -197,6 +200,7 @@ public class MyLobbyManager : NetworkLobbyManager {
     {
         base.OnStopClient();
         ChangeTo(menuReseau);
+        menuConnexion.gameObject.SetActive(false);
         PhotonNetwork.Disconnect();
         Destroy(FindObjectOfType<Chat>().gameObject);
     }

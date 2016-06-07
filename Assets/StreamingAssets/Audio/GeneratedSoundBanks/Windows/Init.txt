@@ -19,6 +19,3 @@ Audio Bus	ID	Name			Wwise Object Path	Notes
 	2376328173	Monster			\Default Work Unit\Master Audio Bus\Monster	
 	3803692087	Master Audio Bus			\Default Work Unit\Master Audio Bus	
 
-Effect plug-ins	ID	Name	Type				Notes
-	1858266461	MonsterReverb	Wwise RoomVerb			
-

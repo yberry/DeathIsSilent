@@ -21,7 +21,11 @@ State	ID	Name	State Group			Notes
 	3011204530	move	Monster_States			
 
 Game Parameter	ID	Name			Wwise Object Path	Notes
+	1078146560	Monster_Distance_Reverb			\Default Work Unit\Monster_Distance_Reverb	
 	3549405019	Radar_Distance			\Default Work Unit\Radar_Distance	
+
+Effect plug-ins	ID	Name	Type				Notes
+	1858266461	MonsterReverb	Wwise RoomVerb			
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	1796267	ClacMonstre_Idle11	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\ClacMonstre_Idle11_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Monster\Idle\ClacMonstre_Idle11		13340

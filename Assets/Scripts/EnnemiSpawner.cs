@@ -61,6 +61,7 @@ public class EnnemiSpawner : NetworkBehaviour {
                 if (bound.Intersects(col.bounds) || bound.Contains(col.bounds.center))
                 {
                     interieur = true;
+                    return;
                 }
             }
 

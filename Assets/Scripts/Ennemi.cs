@@ -129,7 +129,7 @@ public class Ennemi : NetworkBehaviour {
                     }
                 }
 
-                if (detecteLumiere && hit1.transform == joueur)
+                if (detecteLumiere && hit1.transform == joueur && lumieres[0].enabled && lumieres[1].enabled)
                 {
                     if (!detecteJoueur)
                     {
@@ -143,7 +143,7 @@ public class Ennemi : NetworkBehaviour {
         }
 
         float dist = Vector3.Distance(transform.position, joueur.position);
-        AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", dist * 25f);
+        AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", dist * 15f);
 
         if (attaque && dist > rangeLight)
         {

@@ -69,6 +69,11 @@ public class OVRPlayerController : NetworkBehaviour
 	/// </summary>
 	public bool HmdRotatesY = true;
 
+    /// <summary>
+    ///  If true, can move along vertical axis even with the oculus
+    /// </summary>
+    public bool MoveVertical = false;
+
 	/// <summary>
 	/// Modifies the strength of gravity.
 	/// </summary>
@@ -316,8 +321,15 @@ public class OVRPlayerController : NetworkBehaviour
 		float rotateInfluence = SimulationRate * Time.deltaTime * RotationAmount * RotationScaleMultiplier;
 
 #if !UNITY_ANDROID || UNITY_EDITOR
-		if (!SkipMouseRotation)
-			euler.y += Input.GetAxis("Mouse X") * rotateInfluence * 3.25f;
+        if (!SkipMouseRotation)
+        {
+            euler.y += Input.GetAxis("Mouse X") * rotateInfluence * 3.25f;
+            if (MoveVertical)
+            {
+                euler.x -= Input.GetAxis("Mouse Y") * rotateInfluence * 3.25f;
+            }
+        }
+
 #endif
 
 		moveInfluence = SimulationRate * Time.deltaTime * Acceleration * 0.1f * MoveScale * MoveScaleMultiplier;
@@ -349,6 +361,10 @@ public class OVRPlayerController : NetworkBehaviour
 		Vector2 secondaryAxis = OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick);
 
 		euler.y += secondaryAxis.x * rotateInfluence;
+        if (MoveVertical)
+        {
+            euler.x -= secondaryAxis.y * rotateInfluence;
+        }
 
 		transform.rotation = Quaternion.Euler(euler);
 	}
