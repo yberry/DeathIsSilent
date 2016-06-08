@@ -218,8 +218,11 @@ public class Ennemi : NetworkBehaviour {
     void OnDestroy()
     {
         Debug.Log("destruction");
-        AkSoundEngine.SetState("Monster_States", "None");
-        AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", 200f);
+        if (!attaque)
+        {
+            AkSoundEngine.SetState("Monster_States", "None");
+            AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", 200f);
+        }
         AkSoundEngine.PostEvent(eventSafe, gameObject);
         if (isServer)
         {

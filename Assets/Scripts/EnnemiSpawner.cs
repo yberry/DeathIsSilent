@@ -9,8 +9,6 @@ public class EnnemiSpawner : NetworkBehaviour {
     public Collider[] colliders;
     [Tooltip("Distance d'apparition de l'ennemi par rapport au joueur")]
     public float distanceApparition = 7f;
-    [Tooltip("Posiiton d'apparition du monstre final")]
-    public Transform finalPosition;
 
     public static EnnemiSpawner instance;
 
@@ -140,17 +138,5 @@ public class EnnemiSpawner : NetworkBehaviour {
     public void MonstreAbsent()
     {
         monstrePresent = false;
-    }
-
-    public void ActiveFin()
-    {
-        if (monstrePresent)
-        {
-            Destroy(ennemi);
-            monstrePresent = false;
-        }
-        ennemi = Instantiate(ennemiPrefab, finalPosition.position, Quaternion.identity) as GameObject;
-        NetworkServer.Spawn(ennemi);
-        monstrePresent = true;
     }
 }

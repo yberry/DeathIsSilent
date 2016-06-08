@@ -213,7 +213,6 @@
     <Compile Include="Assets\Scripts\PorteRadar.cs" />
     <Compile Include="Assets\Scripts\PorteToilettes.cs" />
     <Compile Include="Assets\Scripts\Radar.cs" />
-    <Compile Include="Assets\Scripts\RendererExtensions.cs" />
     <Compile Include="Assets\Scripts\Zone.cs" />
     <Compile Include="Assets\Scripts\ZoneEvents.cs" />
     <Compile Include="Assets\Wwise\Deployment\API\Generated\Common\AKRESULT.cs" />

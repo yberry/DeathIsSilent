@@ -7,12 +7,22 @@ public class MenuPause : MonoBehaviour {
     public RectTransform menuPause;
     public RectTransform menuOptions;
 
+    public string eventQuit;
+
     private RectTransform currentMenu;
     private MyLobbyManager lobbyManager;
 
     void Start()
     {
         lobbyManager = FindObjectOfType<MyLobbyManager>();
+    }
+
+    void Update()
+    {
+        if (EventSystem.current.currentSelectedGameObject == null)
+        {
+            SetSelection();
+        }
     }
 
     public void Active()
@@ -57,6 +67,6 @@ public class MenuPause : MonoBehaviour {
     public void Quit()
     {
         lobbyManager.StopHost();
-        AkSoundEngine.PostEvent("ambiance_stop", gameObject);
+        AkSoundEngine.PostEvent(eventQuit, gameObject);
     }
 }

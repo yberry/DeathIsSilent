@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class Item : NetworkBehaviour, IPointerDownHandler {
 
@@ -9,9 +10,11 @@ public class Item : NetworkBehaviour, IPointerDownHandler {
 
     private bool obtenu = false;
 
+    private static List<Item> items = new List<Item>();
+
     // Use this for initialization
     void Start () {
-	
+        items.Add(this);
 	}
 	
 	// Update is called once per frame
@@ -24,7 +27,25 @@ public class Item : NetworkBehaviour, IPointerDownHandler {
         obtenu = true;
         if (objectif && isServer)
         {
-            EnnemiSpawner.instance.ActiveFin();
+            
         }
+    }
+
+    public static int NbObtenus()
+    {
+        int nb = 0;
+        foreach (Item item in items)
+        {
+            if (item.obtenu)
+            {
+                nb++;
+            }
+        }
+        return nb;
+    }
+
+    public static bool TousObtenus()
+    {
+        return NbObtenus() == items.Count;
     }
 }
