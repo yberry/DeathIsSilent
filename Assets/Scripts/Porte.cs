@@ -64,7 +64,7 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
             Turn();
             
         }
-        if (!ouverte && angle != 0f)
+        else if (!ouverte && angle != 0f)
         {
             if (vitesseOuverture == 0f)
             {
@@ -84,6 +84,10 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
                 }
             }
             Turn();
+        }
+        else
+        {
+            tourne = false;
         }
     }
 
@@ -111,6 +115,18 @@ public class Porte : NetworkBehaviour, IPointerDownHandler {
             tourne = true;
             ouverte = !ouverte;
             AkSoundEngine.PostEvent(ouverte ? eventOuverture : eventFermeture, gameObject);
+        }
+    }
+
+    public static void FermetureGenerale()
+    {
+        foreach (Porte porte in FindObjectsOfType<Porte>())
+        {
+            if (porte.ouverte)
+            {
+                porte.ouverte = false;
+                porte.tourne = true;
+            }
         }
     }
 }

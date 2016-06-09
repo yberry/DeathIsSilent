@@ -2,6 +2,7 @@
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityStandardAssets.ImageEffects;
+using System.Collections;
 [AddComponentMenu("Image Effects/GlitchEffect")]
 
 public class Radar : NetworkBehaviour {
@@ -14,6 +15,8 @@ public class Radar : NetworkBehaviour {
     public int vitesse;
     [Tooltip("Flèche représentant le joueur sur le radar")]
     public Transform fleche;
+    [Tooltip("Fondu enchaîné de la mort")]
+    public Image fondu;
     [Tooltip("Lumière représentant la lampe")]
     public Light lumiere;
     public string eventEmissionStart;
@@ -102,6 +105,7 @@ public class Radar : NetworkBehaviour {
         if (tempsBrouille < 0f)
         {
             tempsBrouille = 0f;
+            brouille = false;
             SetTransmission(true);
             SetNoise(0f);
 
@@ -143,6 +147,18 @@ public class Radar : NetworkBehaviour {
     }
 
     [Command]
+    public void CmdColor(Color color)
+    {
+        RpcColor(color);
+    }
+
+    [ClientRpc]
+    void RpcColor(Color color)
+    {
+        fondu.color = color;
+    }
+
+    [Command]
     public void CmdBrouille(float time)
     {
         RpcBrouille(time);
@@ -153,14 +169,33 @@ public class Radar : NetworkBehaviour {
     {
         tempsBrouilleMax = time;
         tempsBrouille = time;
+        brouille = true;
         SetTransmission(false);
         Destroy(balais);
         SetNoise(5f);
     }
 
+    [Command]
+    public void CmdCoupe(float temps)
+    {
+        RpcCoupe(temps);
+    }
+
+    [ClientRpc]
+    void RpcCoupe(float temps)
+    {
+        StartCoroutine(Coupe(temps));
+    }
+
+    IEnumerator Coupe(float temps)
+    {
+        SetTransmission(false);
+        yield return new WaitForSeconds(temps);
+        SetTransmission(true);
+    }
+
     void SetTransmission(bool tr)
     {
-        brouille = !tr;
         text.gameObject.SetActive(!tr);
         if (isLocalPlayer)
         {

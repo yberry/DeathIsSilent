@@ -209,6 +209,7 @@
     <None Include="Assets\Shaders\Particle-Alpha-Premultiply-AfterTrans.shader" />
     <None Include="Assets\Shaders\UI-OptionalZTest.shader" />
     <None Include="Assets\Shaders\UI-OptionalZTestFont.shader" />
+    <None Include="Assets\Shaders\Ztop.shader" />
     <None Include="Assets\Standard Assets\Characters\FirstPersonCharacter\FirstPersonCharacterGuidelines.txt" />
     <None Include="Assets\Standard Assets\Characters\RollerBall\RollerBallGuidelines.txt" />
     <None Include="Assets\Standard Assets\Characters\ThirdPersonCharacter\ThirdPersonCharacterGuidelines.txt" />

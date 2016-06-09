@@ -184,8 +184,10 @@
     <Compile Include="Assets\SampleScenes\Scripts\NetworkLobbyHook.cs" />
     <Compile Include="Assets\SampleScenes\Scripts\NetworkSpaceship.cs" />
     <Compile Include="Assets\SampleScenes\Scripts\NetworkSpaceshipBullet.cs" />
+    <Compile Include="Assets\Scripts\AffichageItems.cs" />
     <Compile Include="Assets\Scripts\Balayage.cs" />
     <Compile Include="Assets\Scripts\Chat.cs" />
+    <Compile Include="Assets\Scripts\CheckPoint.cs" />
     <Compile Include="Assets\Scripts\ChoixOptions.cs" />
     <Compile Include="Assets\Scripts\DisplayAudioVideo.cs" />
     <Compile Include="Assets\Scripts\Ennemi.cs" />
@@ -214,7 +216,6 @@
     <Compile Include="Assets\Scripts\PorteToilettes.cs" />
     <Compile Include="Assets\Scripts\Radar.cs" />
     <Compile Include="Assets\Scripts\Zone.cs" />
-    <Compile Include="Assets\Scripts\ZoneEvents.cs" />
     <Compile Include="Assets\Wwise\Deployment\API\Generated\Common\AKRESULT.cs" />
     <Compile Include="Assets\Wwise\Deployment\API\Generated\Common\AkActionOnEventType.cs" />
     <Compile Include="Assets\Wwise\Deployment\API\Generated\Common\AkAudioFormat.cs" />
@@ -328,6 +329,7 @@
     <None Include="Assets\Shaders\Particle-Alpha-Premultiply-AfterTrans.shader" />
     <None Include="Assets\Shaders\UI-OptionalZTest.shader" />
     <None Include="Assets\Shaders\UI-OptionalZTestFont.shader" />
+    <None Include="Assets\Shaders\Ztop.shader" />
     <None Include="Assets\Standard Assets\Characters\FirstPersonCharacter\FirstPersonCharacterGuidelines.txt" />
     <None Include="Assets\Standard Assets\Characters\RollerBall\RollerBallGuidelines.txt" />
     <None Include="Assets\Standard Assets\Characters\ThirdPersonCharacter\ThirdPersonCharacterGuidelines.txt" />

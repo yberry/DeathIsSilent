@@ -7,7 +7,7 @@ public class GetIp : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        GetComponent<Text>().text = "Votre IP : " + Network.player.ipAddress;
+        GetComponent<Text>().text = "Votre IP : " + GetUnityIp();
 	}
 
     string GetUnityIp()

@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using System.Collections;
 
 public class Item : NetworkBehaviour, IPointerDownHandler {
 
@@ -9,25 +11,32 @@ public class Item : NetworkBehaviour, IPointerDownHandler {
     public bool objectif;
 
     private bool obtenu = false;
+    private Sprite sprite;
 
     private static List<Item> items = new List<Item>();
 
     // Use this for initialization
     void Start () {
         items.Add(this);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+        if (objectif)
+        {
+            return;
+        }
+        Texture2D texture = GetComponent<Renderer>().material.mainTexture as Texture2D;
+        sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+    }
 
     public void OnPointerDown(PointerEventData eventData)
     {
         obtenu = true;
+        gameObject.layer = LayerMask.NameToLayer("Default");
         if (objectif && isServer)
         {
-            
+            //Fin du jeu
+        }
+        else
+        {
+            FindObjectOfType<Joueur>().Affiche(sprite);
         }
     }
 
@@ -44,8 +53,8 @@ public class Item : NetworkBehaviour, IPointerDownHandler {
         return nb;
     }
 
-    public static bool TousObtenus()
+    public static int MaxItems()
     {
-        return NbObtenus() == items.Count;
+        return items.Count - 1;
     }
 }

@@ -56,6 +56,9 @@ public class MyLobbyPlayer : NetworkLobbyPlayer {
         {
             readyButton.GetComponent<Image>().sprite = ON;
             readyButton.interactable = false;
+            ColorBlock colors = readyButton.colors;
+            colors.disabledColor = Color.white;
+            readyButton.colors = colors;
         }
         else
         {

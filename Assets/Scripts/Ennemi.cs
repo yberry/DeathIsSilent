@@ -12,6 +12,11 @@ public class Ennemi : NetworkBehaviour {
     public float distanceAttaque = 5f;
     [Tooltip("Vitesse d'attaque de l'ennemi")]
     public float vitesseAttaque = 2f;
+    [Tooltip("Probabilité que le radar se brouille à l'apparition du monstre")]
+    [Range(0, 100)]
+    public int probaBrouille = 25;
+    [Tooltip("Temps de brouillage")]
+    public float tempsBrouille = 3f;
     [Tooltip("Layers visibles par l'ennemi")]
     public LayerMask mask;
     [Tooltip("Lampes représentant le champ de vision de l'ennemi")]
@@ -37,6 +42,7 @@ public class Ennemi : NetworkBehaviour {
     private bool detecteLumiere = false;
     private bool detecteJoueur = false;
     private Transform joueur;
+    private Radar radar;
     private Collider[] lumieres;
     private float rangeLight;
     private RaycastHit hit1;
@@ -49,6 +55,7 @@ public class Ennemi : NetworkBehaviour {
 	// Use this for initialization
 	void Start () {
         joueur = GameObject.FindGameObjectWithTag("Player").transform;
+        radar = FindObjectOfType<Radar>();
         Lampe lampe = FindObjectOfType<Lampe>();
         lumieres = lampe.cones;
         rangeLight = lampe.GetComponent<Light>().range;
@@ -61,6 +68,13 @@ public class Ennemi : NetworkBehaviour {
 
         cible = new Vector3(joueur.position.x, transform.position.y, joueur.position.z);
         transform.LookAt(cible);
+
+        if (Random.Range(0, 100) < probaBrouille)
+        {
+            radar.CmdCoupe(tempsBrouille);
+        }
+
+        animator.SetFloat("speed", 1f);
 	}
 	
 	// Update is called once per frame
@@ -123,6 +137,7 @@ public class Ennemi : NetworkBehaviour {
                                 tempsDeplacementLumiere = 3f;
                                 deplacementRandom = false;
                                 animator.SetTrigger("reperage");
+                                animator.SetFloat("speed", 2f);
                                 Debug.Log("détection lumière");
                             }
                         }
@@ -143,7 +158,7 @@ public class Ennemi : NetworkBehaviour {
         }
 
         float dist = Vector3.Distance(transform.position, joueur.position);
-        AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", dist * 15f);
+        AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", dist * 20f);
 
         if (attaque && dist > rangeLight)
         {
