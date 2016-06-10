@@ -197,6 +197,7 @@
     <Compile Include="Assets\Scripts\Item.cs" />
     <Compile Include="Assets\Scripts\Joueur.cs" />
     <Compile Include="Assets\Scripts\Lampe.cs" />
+    <Compile Include="Assets\Scripts\LampeRadar.cs" />
     <Compile Include="Assets\Scripts\MenuPause.cs" />
     <Compile Include="Assets\Scripts\MyLobbyManager.cs" />
     <Compile Include="Assets\Scripts\MyLobbyPlayer.cs" />

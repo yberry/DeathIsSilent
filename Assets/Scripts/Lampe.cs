@@ -12,7 +12,8 @@ public class Lampe : MonoBehaviour {
     [Tooltip("Colliders du champ lumineux de la lampe")]
     public Collider[] cones;
 
-    private Light lampe;
+    [HideInInspector]
+    public Light lampe;
     private float frequenceClignotement = 0f;
     private float max = 1f;
     private Collider col;

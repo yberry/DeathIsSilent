@@ -9,6 +9,8 @@ public class EnnemiSpawner : NetworkBehaviour {
     public Collider[] colliders;
     [Tooltip("Distance d'apparition de l'ennemi par rapport au joueur")]
     public float distanceApparition = 7f;
+    [Tooltip("Position du monstre final")]
+    public Transform finalPosition;
 
     public static EnnemiSpawner instance;
 
@@ -24,6 +26,7 @@ public class EnnemiSpawner : NetworkBehaviour {
     private GameObject ennemi;
 
     private const float y = 0f;
+    private bool stop = false;
 
 	// Use this for initialization
 	void Start () {
@@ -50,6 +53,11 @@ public class EnnemiSpawner : NetworkBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        if (stop)
+        {
+            return;
+        }
+
         if (monstrePresent)
         {
             bool interieur = false;
@@ -81,15 +89,17 @@ public class EnnemiSpawner : NetworkBehaviour {
             if (Random.Range(0f, 1f) < probaApparition[currentZone])
             {
                 Debug.Log("spawn");
-                SpawnEnemy();
+                SpawnEnemy(GetSpawnPosition());
             }
         }
 	}
 
-    void SpawnEnemy()
+    void SpawnEnemy(Vector3 position)
     {
-        ennemi = Instantiate(ennemiPrefab, GetSpawnPosition(), Quaternion.identity) as GameObject;
+        ennemi = Instantiate(ennemiPrefab, position, Quaternion.identity) as GameObject;
         NetworkServer.Spawn(ennemi);
+        Vector3 cible = new Vector3(joueur.position.x, y, joueur.position.z);
+        ennemi.transform.LookAt(cible);
         monstrePresent = true;
     }
 
@@ -138,5 +148,15 @@ public class EnnemiSpawner : NetworkBehaviour {
     public void MonstreAbsent()
     {
         monstrePresent = false;
+    }
+
+    public void End()
+    {
+        if (monstrePresent)
+        {
+            Destroy(ennemi);
+        }
+        SpawnEnemy(finalPosition.position);
+        stop = true;
     }
 }

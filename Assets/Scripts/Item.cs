@@ -9,34 +9,30 @@ public class Item : NetworkBehaviour, IPointerDownHandler {
 
     [Tooltip("Objectif de l'exploration")]
     public bool objectif;
+    public Sprite sprite;
 
     private bool obtenu = false;
-    private Sprite sprite;
 
     private static List<Item> items = new List<Item>();
 
     // Use this for initialization
     void Start () {
         items.Add(this);
-        if (objectif)
-        {
-            return;
-        }
-        Texture2D texture = GetComponent<Renderer>().material.mainTexture as Texture2D;
-        sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
         obtenu = true;
         gameObject.layer = LayerMask.NameToLayer("Default");
-        if (objectif && isServer)
+        Joueur joueur = FindObjectOfType<Joueur>();
+        if (objectif)
         {
-            //Fin du jeu
+            EnnemiSpawner.instance.End();
+            StartCoroutine(joueur.PlayEnd());
         }
         else
         {
-            FindObjectOfType<Joueur>().Affiche(sprite);
+            joueur.Affiche(sprite);
         }
     }
 

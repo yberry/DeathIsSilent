@@ -12,7 +12,8 @@ public class Options : MonoBehaviour {
         }
         if (!PlayerPrefs.HasKey("musique") || start)
         {
-            PlayerPrefs.SetFloat("musique", 100f);
+            PlayerPrefs.SetFloat("musique", 50f);
+            AkSoundEngine.SetRTPCValue("Master_Volume", 50f);
         }
         if (!PlayerPrefs.HasKey("voix") || start)
         {
@@ -28,6 +29,7 @@ public class Options : MonoBehaviour {
     public void SetMusique(float value)
     {
         PlayerPrefs.SetFloat("musique", value);
+        AkSoundEngine.SetRTPCValue("Master_Volume", value);
     }
 
     public void SetVoix(float value)

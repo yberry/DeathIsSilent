@@ -16,7 +16,9 @@ public class Radar : NetworkBehaviour {
     [Tooltip("Flèche représentant le joueur sur le radar")]
     public Transform fleche;
     [Tooltip("Fondu enchaîné de la mort")]
-    public Image fondu;
+    public RawImage fondu;
+    [Tooltip("Vidéo de fin")]
+    public MovieTexture video;
     [Tooltip("Lumière représentant la lampe")]
     public Light lumiere;
     public string eventEmissionStart;
@@ -36,6 +38,7 @@ public class Radar : NetworkBehaviour {
     private GameObject player;
     private NoiseAndScratches script;
     private Chat chat;
+    private AudioSource source;
 
     [SyncVar]
     private bool vueSubjective = true;
@@ -63,6 +66,8 @@ public class Radar : NetworkBehaviour {
         }
 
         script = transform.Find("Radar Camera").GetComponent<NoiseAndScratches>();
+
+        source = fondu.GetComponent<AudioSource>();
     }
 
     void Update() {
@@ -135,27 +140,32 @@ public class Radar : NetworkBehaviour {
     }
 
     [Command]
-    public void CmdSwitch()
+    public void CmdColor(float alpha, bool end)
     {
-        RpcSwitch();
+        RpcColor(alpha, end);
     }
 
     [ClientRpc]
-    void RpcSwitch()
+    void RpcColor(float alpha, bool end)
     {
-        lumiere.enabled = !lumiere.enabled;
-    }
-
-    [Command]
-    public void CmdColor(Color color)
-    {
-        RpcColor(color);
-    }
-
-    [ClientRpc]
-    void RpcColor(Color color)
-    {
+        Color color = end ? Color.white : Color.black;
+        color.a = alpha;
         fondu.color = color;
+        if (end)
+        {
+            PlayEnd();
+        }
+    }
+
+    void PlayEnd()
+    {
+        if (video.isPlaying)
+        {
+            return;
+        }
+        fondu.texture = video;
+        video.Play();
+        source.Play();
     }
 
     [Command]

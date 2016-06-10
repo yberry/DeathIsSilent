@@ -37,6 +37,7 @@ public class Ennemi : NetworkBehaviour {
     private Vector3 cible;
     [SyncVar]
     private Vector3 cibleTemp;
+    [SyncVar]
     private float tempsDeplacementRandom;
 
     private bool detecteLumiere = false;
@@ -66,15 +67,12 @@ public class Ennemi : NetworkBehaviour {
         }
         col = GetComponent<Collider>();
 
-        cible = new Vector3(joueur.position.x, transform.position.y, joueur.position.z);
-        transform.LookAt(cible);
-
         if (Random.Range(0, 100) < probaBrouille)
         {
             radar.CmdCoupe(tempsBrouille);
         }
 
-        animator.SetFloat("speed", 1f);
+        animator.SetFloat("speed", 0.5f);
 	}
 	
 	// Update is called once per frame
@@ -137,7 +135,7 @@ public class Ennemi : NetworkBehaviour {
                                 tempsDeplacementLumiere = 3f;
                                 deplacementRandom = false;
                                 animator.SetTrigger("reperage");
-                                animator.SetFloat("speed", 2f);
+                                animator.SetFloat("speed", 1f);
                                 Debug.Log("détection lumière");
                             }
                         }

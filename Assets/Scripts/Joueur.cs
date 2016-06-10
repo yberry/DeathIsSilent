@@ -13,7 +13,8 @@ public class Joueur : NetworkBehaviour {
     public MenuPause menuPause;
     public AffichageItems affichageItems;
     public Lampe lampe;
-    public Image fondu;
+    public RawImage fondu;
+    public MovieTexture video;
     public float tempsMort = 2f;
     public float tempsVie = 1f;
     public string eventAmbiance;
@@ -36,6 +37,7 @@ public class Joueur : NetworkBehaviour {
     private OVRPlayerController controller;
     private int nbAttaques = 0;
     private GameObject[] lumieresToits;
+    private AudioSource source;
 
     void Start()
     {
@@ -46,6 +48,7 @@ public class Joueur : NetworkBehaviour {
             stick.value = PlayerPrefs.GetFloat("stick");
             musique.value = PlayerPrefs.GetFloat("musique");
             voix.value = PlayerPrefs.GetFloat("voix");
+            source = fondu.GetComponent<AudioSource>();
         }
         controller = GetComponent<OVRPlayerController>();
         lumieresToits = GameObject.FindGameObjectsWithTag("Toit");
@@ -73,7 +76,6 @@ public class Joueur : NetworkBehaviour {
             return;
         }
 
-        AkSoundEngine.SetRTPCValue("Master_Volume", PlayerPrefs.GetFloat("musique"));
         chat.SetVolume(PlayerPrefs.GetFloat("voix"));
 
         if (isDying)
@@ -96,7 +98,6 @@ public class Joueur : NetworkBehaviour {
             if (OVRInput.GetDown(bouton))
             {
                 CmdSwitch();
-                radar.CmdSwitch();
             }
         }
     }
@@ -173,16 +174,17 @@ public class Joueur : NetworkBehaviour {
 
     IEnumerator Mort()
     {
+        Porte.FermetureGenerale();
+
         while (fondu.color.a < 1f)
         {
             Color color = fondu.color;
             color.a += Time.deltaTime / tempsMort;
             fondu.color = color;
-            radar.CmdColor(color);
+            AkSoundEngine.SetRTPCValue("Master_Volume", PlayerPrefs.GetFloat("musique") * (1f - color.a));
+            radar.CmdColor(color.a, false);
             yield return new WaitForSeconds(Time.deltaTime);
         }
-
-        Porte.FermetureGenerale();
 
         Transform checkpoint = CheckPoint.GetCheckPoint();
         transform.position = checkpoint.position;
@@ -199,8 +201,27 @@ public class Joueur : NetworkBehaviour {
             Color color = fondu.color;
             color.a -= Time.deltaTime / tempsVie;
             fondu.color = color;
-            radar.CmdColor(color);
+            AkSoundEngine.SetRTPCValue("Master_Volume", PlayerPrefs.GetFloat("musique") * (1f - color.a));
+            radar.CmdColor(color.a, false);
             yield return new WaitForSeconds(Time.deltaTime);
+        }
+    }
+
+    public IEnumerator PlayEnd()
+    {
+        if (isLocalPlayer)
+        {
+            fondu.texture = video;
+            video.Play();
+            source.Play();
+            while (fondu.color.a < 1f)
+            {
+                Color color = fondu.color;
+                color.a += Time.deltaTime / tempsMort;
+                fondu.color = color;
+                radar.CmdColor(color.a, true);
+                yield return new WaitForSeconds(Time.deltaTime);
+            }
         }
     }
 }
