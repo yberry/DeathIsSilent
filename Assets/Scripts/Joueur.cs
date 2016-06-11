@@ -18,6 +18,7 @@ public class Joueur : NetworkBehaviour {
     public float tempsMort = 2f;
     public float tempsVie = 1f;
     public string eventAmbiance;
+    public string eventDeath;
     [Range(0f, 1f)]
     public float frequenceVibration = 1f;
     [Range(0f, 1f)]
@@ -38,6 +39,7 @@ public class Joueur : NetworkBehaviour {
     private int nbAttaques = 0;
     private GameObject[] lumieresToits;
     private AudioSource source;
+    private bool end = false;
 
     void Start()
     {
@@ -97,21 +99,21 @@ public class Joueur : NetworkBehaviour {
         {
             if (OVRInput.GetDown(bouton))
             {
-                CmdSwitch();
+                CmdSwitch(!lampe.lampe.enabled);
             }
         }
     }
 
     [Command]
-    void CmdSwitch()
+    void CmdSwitch(bool en)
     {
-        RpcSwitch();
+        RpcSwitch(en);
     }
 
     [ClientRpc]
-    void RpcSwitch()
+    void RpcSwitch(bool en)
     {
-        lampe.Switch();
+        lampe.Switch(en);
     }
 
     [Command]
@@ -163,26 +165,33 @@ public class Joueur : NetworkBehaviour {
         {
             return;
         }
-        Debug.Log("attaque");
-        Destroy(col.gameObject);
-        nbAttaques++;
-        OVRInput.SetControllerVibration(frequenceVibration, amplitudeVibration);
-        isDying = true;
-        lampe.GetComponent<Light>().enabled = false;
-        StartCoroutine(Mort());
+        if (!end)
+        {
+            Debug.Log("attaque");
+            Destroy(col.gameObject);
+            nbAttaques++;
+            OVRInput.SetControllerVibration(frequenceVibration, amplitudeVibration);
+            isDying = true;
+            CmdSwitch(false);
+            StartCoroutine(Mort());
+        }
+        else
+        {
+            StartCoroutine(PlayEnd());
+        }
     }
 
     IEnumerator Mort()
     {
         Porte.FermetureGenerale();
+        AkSoundEngine.PostEvent(eventDeath, gameObject);
 
         while (fondu.color.a < 1f)
         {
             Color color = fondu.color;
             color.a += Time.deltaTime / tempsMort;
             fondu.color = color;
-            AkSoundEngine.SetRTPCValue("Master_Volume", PlayerPrefs.GetFloat("musique") * (1f - color.a));
-            radar.CmdColor(color.a, false);
+            radar.CmdColor(color.a, end);
             yield return new WaitForSeconds(Time.deltaTime);
         }
 
@@ -192,7 +201,7 @@ public class Joueur : NetworkBehaviour {
 
         isDying = false;
 
-        lampe.GetComponent<Light>().enabled = true;
+        CmdSwitch(true);
         float tempsBrouille = 3 * Mathf.Log(nbAttaques + 1);
         radar.CmdBrouille(tempsBrouille);
         lampe.SetFreq(tempsBrouille);
@@ -201,27 +210,28 @@ public class Joueur : NetworkBehaviour {
             Color color = fondu.color;
             color.a -= Time.deltaTime / tempsVie;
             fondu.color = color;
-            AkSoundEngine.SetRTPCValue("Master_Volume", PlayerPrefs.GetFloat("musique") * (1f - color.a));
-            radar.CmdColor(color.a, false);
+            radar.CmdColor(color.a, end);
             yield return new WaitForSeconds(Time.deltaTime);
         }
     }
 
-    public IEnumerator PlayEnd()
+    public void End()
+    {
+        end = true;
+    }
+
+    IEnumerator PlayEnd()
     {
         if (isLocalPlayer)
         {
             fondu.texture = video;
+            fondu.color = Color.white;
+            radar.CmdColor(1f, end);
             video.Play();
             source.Play();
-            while (fondu.color.a < 1f)
-            {
-                Color color = fondu.color;
-                color.a += Time.deltaTime / tempsMort;
-                fondu.color = color;
-                radar.CmdColor(color.a, true);
-                yield return new WaitForSeconds(Time.deltaTime);
-            }
+            yield return new WaitForSeconds(video.duration);
+            Debug.Log("quit");
+            menuPause.Quit();
         }
     }
 }

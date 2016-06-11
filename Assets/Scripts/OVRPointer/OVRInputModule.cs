@@ -30,7 +30,7 @@ namespace UnityEngine.EventSystems
         public Transform rayTransform;
 
         [Tooltip("Gamepad button to act as gaze click")]
-        public OVRInput.Button joyPadClickButton = OVRInput.Button.One;
+        public OVRInput.RawButton joyPadClickButton = OVRInput.RawButton.A;
 
         [Tooltip("Keyboard button to act as gaze click")]
         public KeyCode gazeClickKey = KeyCode.Space;

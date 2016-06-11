@@ -35,7 +35,6 @@ public class MyLobbyPlayer : NetworkLobbyPlayer {
     {
         readyButton.GetComponent<Image>().sprite = OFF;
         readyButton.interactable = true;
-        readyButton.onClick.RemoveAllListeners();
         readyButton.onClick.AddListener(OnReadyClicked);
     }
 

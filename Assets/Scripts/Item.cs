@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
-using System.Collections;
 
 public class Item : NetworkBehaviour, IPointerDownHandler {
 
@@ -28,7 +26,6 @@ public class Item : NetworkBehaviour, IPointerDownHandler {
         if (objectif)
         {
             EnnemiSpawner.instance.End();
-            StartCoroutine(joueur.PlayEnd());
         }
         else
         {

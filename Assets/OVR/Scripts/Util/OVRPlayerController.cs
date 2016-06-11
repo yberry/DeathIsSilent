@@ -341,6 +341,7 @@ public class OVRPlayerController : NetworkBehaviour
         {
             accel = 1f;
         }
+        EnnemiSpawner.course = accel > 0.5f;
 		moveInfluence *= 1.0f + accel;
 #endif
 

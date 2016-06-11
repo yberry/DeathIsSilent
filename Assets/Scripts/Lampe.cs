@@ -46,12 +46,12 @@ public class Lampe : MonoBehaviour {
         max = freq;
     }
 
-    public void Switch()
+    public void Switch(bool en)
     {
-        lampe.enabled = !lampe.enabled;
+        lampe.enabled = en;
         foreach (Collider cone in cones)
         {
-            cone.enabled = !cone.enabled;
+            cone.enabled = en;
         }
     }
 }

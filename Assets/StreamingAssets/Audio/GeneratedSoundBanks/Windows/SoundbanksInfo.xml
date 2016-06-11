@@ -15,11 +15,14 @@
 			<ShortName>DIS_Soundbank</ShortName>
 			<Path>DIS_Soundbank.bnk</Path>
 			<IncludedEvents>
+				<Event Id="2376328173" Name="Monster"/>
 				<Event Id="2959533290" Name="Play_Amb"/>
+				<Event Id="1172822028" Name="Play_Death"/>
 				<Event Id="2292458263" Name="Play_Door_Close"/>
 				<Event Id="1660008929" Name="Play_Door_Open"/>
 				<Event Id="2670164187" Name="Play_EndGame"/>
-				<Event Id="4269137384" Name="Play_Monster"/>
+				<Event Id="1982372943" Name="Play_Menu_Clic"/>
+				<Event Id="1871533573" Name="Play_Menu_Move"/>
 				<Event Id="314495013" Name="Play_Radar_Beep"/>
 				<Event Id="2046989910" Name="Play_Radar_Wave"/>
 				<Event Id="4224100558" Name="Player_Attacked"/>
@@ -82,6 +85,14 @@
 					<ShortName>cloche8.wav</ShortName>
 					<Path>SFX\cloche8_9E69E797.wem</Path>
 				</File>
+				<File Id="176507355" Language="SFX">
+					<ShortName>Metal.s5_03.wav</ShortName>
+					<Path>SFX\Metal.s5_03_E09A8E11.wem</Path>
+				</File>
+				<File Id="181276685" Language="SFX">
+					<ShortName>ActionDeathEnd.wav</ShortName>
+					<Path>SFX\ActionDeathEnd_9E69E797.wem</Path>
+				</File>
 				<File Id="190708434" Language="SFX">
 					<ShortName>ClacMonstre_Attack01.wav</ShortName>
 					<Path>SFX\ClacMonstre_Attack01_9E69E797.wem</Path>
@@ -138,9 +149,17 @@
 					<ShortName>AmbLow2.wav</ShortName>
 					<Path>SFX\AmbLow2_9E69E797.wem</Path>
 				</File>
+				<File Id="404652361" Language="SFX">
+					<ShortName>Metal.s4_05.wav</ShortName>
+					<Path>SFX\Metal.s4_05_0EC84DEA.wem</Path>
+				</File>
 				<File Id="430590362" Language="SFX">
 					<ShortName>machine3.wav</ShortName>
 					<Path>SFX\machine3_9E69E797.wem</Path>
+				</File>
+				<File Id="432113528" Language="SFX">
+					<ShortName>Menu_Clic.wav</ShortName>
+					<Path>SFX\Menu_Clic_8FD5B35A.wem</Path>
 				</File>
 				<File Id="432954458" Language="SFX">
 					<ShortName>ClacMonstre_Idle07.wav</ShortName>
@@ -165,6 +184,10 @@
 				<File Id="543534211" Language="SFX">
 					<ShortName>DoorClose.wav</ShortName>
 					<Path>SFX\DoorClose_9E69E797.wem</Path>
+				</File>
+				<File Id="552121477" Language="SFX">
+					<ShortName>move1.wav</ShortName>
+					<Path>SFX\move1_9E69E797.wem</Path>
 				</File>
 				<File Id="552240209" Language="SFX">
 					<ShortName>ClacMonstre_Seek04.wav</ShortName>
@@ -193,6 +216,10 @@
 				<File Id="623382135" Language="SFX">
 					<ShortName>ClacMonstre_Idle01.wav</ShortName>
 					<Path>SFX\ClacMonstre_Idle01_9E69E797.wem</Path>
+				</File>
+				<File Id="643594911" Language="SFX">
+					<ShortName>move2.wav</ShortName>
+					<Path>SFX\move2_9E69E797.wem</Path>
 				</File>
 				<File Id="684948027" Language="SFX">
 					<ShortName>AmbLow1.wav</ShortName>

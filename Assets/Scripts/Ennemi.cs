@@ -156,7 +156,7 @@ public class Ennemi : NetworkBehaviour {
         }
 
         float dist = Vector3.Distance(transform.position, joueur.position);
-        AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", dist * 20f);
+        AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", dist * 25f);
 
         if (attaque && dist > rangeLight)
         {

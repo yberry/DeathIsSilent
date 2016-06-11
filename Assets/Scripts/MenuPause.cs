@@ -11,7 +11,6 @@ public class MenuPause : MonoBehaviour {
 
     private RectTransform currentMenu;
     private MyLobbyManager lobbyManager;
-    private bool isChanging = false;
 
     void Start()
     {
@@ -20,7 +19,7 @@ public class MenuPause : MonoBehaviour {
 
     void Update()
     {
-        if (EventSystem.current.currentSelectedGameObject == null && !isChanging)
+        if (EventSystem.current.currentSelectedGameObject == null)
         {
             SetSelection();
         }
@@ -47,7 +46,6 @@ public class MenuPause : MonoBehaviour {
 
     public void ChangeTo(RectTransform newMenu)
     {
-        isChanging = true;
         if (currentMenu != null)
         {
             currentMenu.gameObject.SetActive(false);
@@ -59,7 +57,6 @@ public class MenuPause : MonoBehaviour {
             currentMenu = newMenu;
             SetSelection();
         }
-        isChanging = false;
     }
 
     public void GoBackButton()
@@ -70,6 +67,6 @@ public class MenuPause : MonoBehaviour {
     public void Quit()
     {
         lobbyManager.StopHost();
-        AkSoundEngine.PostEvent(eventQuit, gameObject);
+        AkSoundEngine.SetRTPCValue("Master_Volume", 0f);
     }
 }

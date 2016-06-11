@@ -1,13 +1,16 @@
 Event	ID	Name			Wwise Object Path	Notes
 	314495013	Play_Radar_Beep			\Default Work Unit\Play_Radar_Beep	
+	1172822028	Play_Death			\Default Work Unit\Play_Death	
 	1660008929	Play_Door_Open			\Default Work Unit\Play_Door_Open	
+	1871533573	Play_Menu_Move			\Default Work Unit\Play_Menu_Move	
+	1982372943	Play_Menu_Clic			\Default Work Unit\Play_Menu_Clic	
 	2046989910	Play_Radar_Wave			\Default Work Unit\Play_Radar_Wave	
 	2292458263	Play_Door_Close			\Default Work Unit\Play_Door_Close	
+	2376328173	Monster			\Default Work Unit\Monster	
 	2670164187	Play_EndGame			\Default Work Unit\Play_EndGame	
 	2959533290	Play_Amb			\Default Work Unit\Play_Amb	
 	3240726218	Player_Safe			\Default Work Unit\Player_Safe	
 	4224100558	Player_Attacked			\Default Work Unit\Player_Attacked	
-	4269137384	Play_Monster			\Default Work Unit\Play_Monster	
 
 State Group	ID	Name			Wwise Object Path	Notes
 	805002222	Monster_States			\Default Work Unit\Monster_States	
@@ -21,11 +24,7 @@ State	ID	Name	State Group			Notes
 	3011204530	move	Monster_States			
 
 Game Parameter	ID	Name			Wwise Object Path	Notes
-	1078146560	Monster_Distance_Reverb			\Default Work Unit\Monster_Distance_Reverb	
 	3549405019	Radar_Distance			\Default Work Unit\Radar_Distance	
-
-Effect plug-ins	ID	Name	Type				Notes
-	1858266461	MonsterReverb	Wwise RoomVerb			
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	1796267	ClacMonstre_Idle11	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\ClacMonstre_Idle11_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Monster\Idle\ClacMonstre_Idle11		13340
@@ -42,6 +41,8 @@ In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	139125286	ClacMonstre_Seek03	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\ClacMonstre_Seek03_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Monster\Seek\ClacMonstre_Seek03		104380
 	142975268	machine1	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\machine1_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Global Amb\Machine\machine1		2149448
 	171257235	cloche8	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\cloche8_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Global Amb\Bell\cloche8		1058464
+	176507355	Death3	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\Metal.s5_03_E09A8E11.wem		\Actor-Mixer Hierarchy\Default Work Unit\Death_Stinger\Death3		1055696
+	181276685	Death1	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\ActionDeathEnd_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Death_Stinger\Death1		1302248
 	190708434	ClacMonstre_Attack01	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\ClacMonstre_Attack01_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Monster\Attack\ClacMonstre_Attack01		300792
 	202024251	Door_OpenSqueak_1	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\Door_OpenSqueak_1_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Door\Door_OpenSqueak\Door_OpenSqueak_1		187490
 	236654998	AmbLow8	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\AmbLow8_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Global Amb\AmbLow\AmbLow8		3528064
@@ -56,13 +57,16 @@ In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	350082883	ClacMonstre_Move03	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\ClacMonstre_Move03_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Monster\Move\ClacMonstre_Move03		247612
 	380980611	ClacMonstre_Idle06	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\ClacMonstre_Idle06_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Monster\Idle\ClacMonstre_Idle06		13592
 	391437489	AmbLow2	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\AmbLow2_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Global Amb\AmbLow\AmbLow2		3528064
+	404652361	Death2	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\Metal.s4_05_0EC84DEA.wem		\Actor-Mixer Hierarchy\Default Work Unit\Death_Stinger\Death2		722472
 	430590362	machine3	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\machine3_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Global Amb\Machine\machine3		2116864
+	432113528	Menu_Clic	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\Menu_Clic_8FD5B35A.wem		\Actor-Mixer Hierarchy\Default Work Unit\Menu_Clic		43252
 	432954458	ClacMonstre_Idle07	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\ClacMonstre_Idle07_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Monster\Idle\ClacMonstre_Idle07		18112
 	450072806	cloche1	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\cloche1_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Global Amb\Bell\cloche1		882064
 	456498214	attacknoise	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\attacknoise_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Player_Attacked\attacknoise		1396116
 	488600339	attacknoise_loop	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\attacknoise-LOOP_4B8CC0C5.wem		\Actor-Mixer Hierarchy\Default Work Unit\Player_Attacked\attacknoise_loop		1200412
 	522217848	Amb4	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\Amb4_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Global Amb\Amb\Amb4		2646064
 	543534211	DoorClose	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\DoorClose_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Door\DoorClose		187006
+	552121477	move1	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\move1_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Menu_Move\move1		46548
 	552240209	ClacMonstre_Seek04	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\ClacMonstre_Seek04_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Monster\Seek\ClacMonstre_Seek04		160056
 	556216135	Amb7	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\Amb7_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Global Amb\Amb\Amb7		2646064
 	581550575	cloche5	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\cloche5_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Global Amb\Bell\cloche5		847612
@@ -70,6 +74,7 @@ In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	613083818	AmbLow9	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\AmbLow9_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Global Amb\AmbLow\AmbLow9		3528064
 	621643441	Amb8	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\Amb8_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Global Amb\Amb\Amb8		2646064
 	623382135	ClacMonstre_Idle01	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\ClacMonstre_Idle01_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Monster\Idle\ClacMonstre_Idle01		12840
+	643594911	move2	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\move2_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Menu_Move\move2		22116
 	684948027	AmbLow1	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\AmbLow1_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Global Amb\AmbLow\AmbLow1		3528064
 	700933665	DoorSqueak1	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\DoorSqueak1_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Door\Door_Squeak\DoorSqueak1		176464
 	704338273	CriMonstre02	C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\SFX\CriMonstre02_9E69E797.wem		\Actor-Mixer Hierarchy\Default Work Unit\Monster\Attaking\Attacking\CriMonstre02		1206936
