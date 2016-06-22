@@ -17,7 +17,6 @@ public class EnnemiSpawner : NetworkBehaviour {
     private int currentZone = 0;
     private float temps = 0f;
     private float[] probaApparition;
-    private float[] probaApparitionCourse;
     private Bounds[] bounds;
     private bool monstrePresent = false;
     private Vector3 extents;
@@ -25,7 +24,7 @@ public class EnnemiSpawner : NetworkBehaviour {
     private GameObject ennemi;
 
     private const float y = 0f;
-    private bool stop = false;
+    public static bool stop = false;
 
     public static bool course = false;
 
@@ -42,13 +41,6 @@ public class EnnemiSpawner : NetworkBehaviour {
             1f / 20f,
             1f / 15f
         };
-        probaApparitionCourse = new float[4]
-        {
-            10f / 40f,
-            10f / 25f,
-            10f / 20f,
-            10f / 15f
-        };
         joueur = GameObject.FindGameObjectWithTag("Player").transform;
         currentZones = new bool[colliders.Length];
         bounds = new Bounds[colliders.Length];
@@ -61,7 +53,7 @@ public class EnnemiSpawner : NetworkBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (stop)
+        if (stop || Joueur.isDying || !CheckPoint.blockEscalier)
         {
             return;
         }
@@ -94,9 +86,9 @@ public class EnnemiSpawner : NetworkBehaviour {
         else
         {
             temps = 0f;
-            if (Random.Range(0f, 1f) < (course ? probaApparitionCourse[currentZone] : probaApparition[currentZone]))
+            float proba = probaApparition[currentZone] * (course ? 10 : 1);
+            if (Random.Range(0f, 1f) < proba)
             {
-                Debug.Log("spawn");
                 SpawnEnemy(GetSpawnPosition());
             }
         }
@@ -104,6 +96,7 @@ public class EnnemiSpawner : NetworkBehaviour {
 
     void SpawnEnemy(Vector3 position)
     {
+        Debug.Log("spawn");
         ennemi = Instantiate(ennemiPrefab, position, Quaternion.identity) as GameObject;
         NetworkServer.Spawn(ennemi);
         monstrePresent = true;
@@ -158,16 +151,13 @@ public class EnnemiSpawner : NetworkBehaviour {
 
     public void End()
     {
-        if (monstrePresent)
-        {
-            Destroy(ennemi);
-        }
+        stop = true;
         joueur.GetComponent<Joueur>().End();
         Vector3 forward = joueur.forward;
         forward.y = y;
         Vector3 pos = joueur.position;
         pos.y = y;
         SpawnEnemy(pos + 2 * forward.normalized);
-        stop = true;
+        ennemi.GetComponent<Ennemi>().Fin();
     }
 }

@@ -23,10 +23,10 @@ public class Ennemi : NetworkBehaviour {
     public Oeil[] yeux;
     [Tooltip("Event sonore pour le monstre")]
     public string eventMonstre;
-    [Tooltip("Event sonore pour la destruction du monstre")]
-    public string eventDestroy;
     [Tooltip("Event sonore pour l'attaque du monstre")]
     public string eventAttack;
+    [Tooltip("Event sonore pour la destruction du monstre")]
+    public string eventDestroy;
     [Tooltip("Event sonore après l'attaque du monstre")]
     public string eventSafe;
     [Tooltip("Animateur du monstre")]
@@ -52,6 +52,7 @@ public class Ennemi : NetworkBehaviour {
 
     private Collider col;
     private bool attaque = false;
+    private bool fin = false;
 
 	// Use this for initialization
 	void Start () {
@@ -72,6 +73,10 @@ public class Ennemi : NetworkBehaviour {
             radar.CmdCoupe(tempsBrouille);
         }
 
+        Vector3 pos = joueur.position;
+        pos.y = transform.position.y;
+        transform.LookAt(pos);
+
         animator.SetFloat("speed", 0.5f);
 	}
 	
@@ -81,6 +86,15 @@ public class Ennemi : NetworkBehaviour {
         if (animator.GetCurrentAnimatorStateInfo(0).IsName("marche_cycle"))
         {
             AkSoundEngine.SetState("Monster_States", "move");
+        }
+
+        if (fin)
+        {
+            detecteLumiere = true;
+            detecteJoueur = true;
+            cible = new Vector3(joueur.position.x, transform.position.y, joueur.position.z);
+            cibleTemp = cible;
+            transform.LookAt(cibleTemp);
         }
 
         if (!detecteLumiere)
@@ -156,9 +170,9 @@ public class Ennemi : NetworkBehaviour {
         }
 
         float dist = Vector3.Distance(transform.position, joueur.position);
-        AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", dist * 25f);
+        AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", dist * 35f);
 
-        if (attaque && dist > rangeLight)
+        if (attaque && dist > rangeLight && !fin)
         {
             Destroy(gameObject);
         }
@@ -236,10 +250,16 @@ public class Ennemi : NetworkBehaviour {
             AkSoundEngine.SetState("Monster_States", "None");
             AkSoundEngine.SetRTPCValue("Monster_Distance_Reverb", 200f);
         }
+        AkSoundEngine.PostEvent(eventDestroy, gameObject);
         AkSoundEngine.PostEvent(eventSafe, gameObject);
         if (isServer)
         {
             EnnemiSpawner.instance.MonstreAbsent();
         }
+    }
+
+    public void Fin()
+    {
+        fin = true;
     }
 }

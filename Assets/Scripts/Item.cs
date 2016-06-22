@@ -11,6 +11,7 @@ public class Item : NetworkBehaviour, IPointerDownHandler {
 
     private bool obtenu = false;
 
+    private const string eventVu = "Play_Find";
     private static List<Item> items = new List<Item>();
 
     // Use this for initialization
@@ -22,14 +23,14 @@ public class Item : NetworkBehaviour, IPointerDownHandler {
     {
         obtenu = true;
         gameObject.layer = LayerMask.NameToLayer("Default");
-        Joueur joueur = FindObjectOfType<Joueur>();
         if (objectif)
         {
             EnnemiSpawner.instance.End();
         }
         else
         {
-            joueur.Affiche(sprite);
+            AkSoundEngine.PostEvent(eventVu, gameObject);
+            FindObjectOfType<Joueur>().Affiche(sprite);
         }
     }
 
@@ -49,5 +50,10 @@ public class Item : NetworkBehaviour, IPointerDownHandler {
     public static int MaxItems()
     {
         return items.Count - 1;
+    }
+
+    public static void Vider()
+    {
+        items = new List<Item>();
     }
 }

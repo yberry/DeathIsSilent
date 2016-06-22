@@ -13,19 +13,38 @@ public class MyLobbyManager : NetworkLobbyManager {
     public Button rejoindre;
     [Tooltip("Texte d'état de connexion")]
     public Text connexion;
+    [Tooltip("Event sonore du menu")]
+    public string eventMenu;
 
     public RectTransform menuPrincipal;
     public RectTransform menuReseau;
     public RectTransform menuConnexion;
     public RectTransform menuOptions;
     public RectTransform menuAttente;
+    public Toggle oculus;
 
     private RectTransform currentMenu;
 
     void Start()
     {
+        AkSoundEngine.PostEvent(eventMenu, gameObject);
         currentMenu = menuPrincipal;
         SetSelection();
+
+        PlayerPrefs.SetInt("oculus", 1);
+        if (!PlayerPrefs.HasKey("stick"))
+        {
+            PlayerPrefs.SetFloat("stick", 1.5f);
+        }
+        if (!PlayerPrefs.HasKey("musique"))
+        {
+            PlayerPrefs.SetFloat("musique", 50f);
+            AkSoundEngine.SetRTPCValue("Master_Volume", 50f);
+        }
+        if (!PlayerPrefs.HasKey("voix"))
+        {
+            PlayerPrefs.SetFloat("voix", 1f);
+        }
     }
 
     void Update()
@@ -191,9 +210,13 @@ public class MyLobbyManager : NetworkLobbyManager {
     public override void OnStopHost()
     {
         base.OnStopHost();
+        EnnemiSpawner.stop = false;
+        Item.Vider();
+        CheckPoint.Reset();
         ChangeTo(menuReseau);
         PhotonNetwork.Disconnect();
         Destroy(FindObjectOfType<Chat>().gameObject);
+        SetSelection();
     }
 
     public override void OnStopClient()
@@ -203,6 +226,15 @@ public class MyLobbyManager : NetworkLobbyManager {
         menuConnexion.gameObject.SetActive(false);
         PhotonNetwork.Disconnect();
         Destroy(FindObjectOfType<Chat>().gameObject);
+        SetSelection();
+    }
+
+    public void ActiveOculus(bool oculus)
+    {
+        if (NetworkServer.active)
+        {
+            PlayerPrefs.SetInt("oculus", oculus ? 1 : 0);
+        }
     }
 
     public void ButtonQuit()

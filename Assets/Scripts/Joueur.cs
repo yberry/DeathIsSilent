@@ -7,23 +7,52 @@ using System.Collections;
 public class Joueur : NetworkBehaviour {
 
     [Header("Commandes Joueur")]
+    [Tooltip("Bouton de pause")]
     public OVRInput.RawButton boutonPause;
+    public KeyCode boutonPauseClavier;
+    [Tooltip("Boutons pour allumer/éteindre la lampe")]
     public OVRInput.RawButton[] boutonsLampe;
+    public KeyCode[] boutonsLampeClavier;
+    [Tooltip("Bouton pour enlever le toit")]
     public OVRInput.RawButton boutonToit;
-    public MenuPause menuPause;
-    public AffichageItems affichageItems;
-    public Lampe lampe;
-    public RawImage fondu;
-    public MovieTexture video;
+    [Tooltip("Possiblilité d'enlever le toit (pour le debug)")]
+    public bool switchToit = true;
+
+    [Header("Variables Joueur")]
+    [Tooltip("Temps que met le joueur pour mourir")]
     public float tempsMort = 2f;
+    [Tooltip("Temps que met le joueur pour ressuciter")]
     public float tempsVie = 1f;
+    [Tooltip("Event sonore de la musique")]
     public string eventAmbiance;
+    [Tooltip("Event sonore de la mort")]
     public string eventDeath;
+    [Tooltip("Event sonore pour la fin du jeu")]
+    public string eventEnd;
+    [Tooltip("Fréquence de vibration de la manette")]
     [Range(0f, 1f)]
     public float frequenceVibration = 1f;
+    [Tooltip("Amplitude de vibration de la manette")]
     [Range(0f, 1f)]
     public float amplitudeVibration = 1f;
-    public bool switchToit = true;
+    [Tooltip("Temps d'attente avant la vidéo")]
+    public float tempsAvantVideo = 11f;
+    [Tooltip("Temps d'attente pendant le générique")]
+    public float tempsGenerique = 5f;
+
+    [Header("Interface")]
+    [Tooltip("Menu de pause")]
+    public MenuPause menuPause;
+    [Tooltip("Interface d'affichage des items récupérés")]
+    public AffichageItems affichageItems;
+    [Tooltip("Lampe du joueur")]
+    public Lampe lampe;
+    [Tooltip("Image de fondu")]
+    public RawImage fondu;
+    [Tooltip("Vidéo de fin")]
+    public MovieTexture video;
+    [Tooltip("Credits")]
+    public Texture credits;
 
     [Header("Options")]
     public Slider stick;
@@ -32,7 +61,6 @@ public class Joueur : NetworkBehaviour {
 
     [SyncVar]
     private bool pause = false;
-    private bool isDying = false;
     private Radar radar;
     private Chat chat;
     private OVRPlayerController controller;
@@ -40,6 +68,8 @@ public class Joueur : NetworkBehaviour {
     private GameObject[] lumieresToits;
     private AudioSource source;
     private bool end = false;
+
+    public static bool isDying = false;
 
     void Start()
     {
@@ -51,6 +81,9 @@ public class Joueur : NetworkBehaviour {
             musique.value = PlayerPrefs.GetFloat("musique");
             voix.value = PlayerPrefs.GetFloat("voix");
             source = fondu.GetComponent<AudioSource>();
+
+            menuPause.Active();
+            menuPause.Desactive();
         }
         controller = GetComponent<OVRPlayerController>();
         lumieresToits = GameObject.FindGameObjectsWithTag("Toit");
@@ -90,7 +123,7 @@ public class Joueur : NetworkBehaviour {
             CmdToit();
         }
 
-        if (OVRInput.GetDown(boutonPause))
+        if (OVRInput.GetDown(boutonPause) || Input.GetKeyDown(boutonPauseClavier))
         {
             CmdPause();
         }
@@ -98,6 +131,13 @@ public class Joueur : NetworkBehaviour {
         foreach (OVRInput.RawButton bouton in boutonsLampe)
         {
             if (OVRInput.GetDown(bouton))
+            {
+                CmdSwitch(!lampe.lampe.enabled);
+            }
+        }
+        foreach (KeyCode bouton in boutonsLampeClavier)
+        {
+            if (Input.GetKeyDown(bouton))
             {
                 CmdSwitch(!lampe.lampe.enabled);
             }
@@ -156,7 +196,7 @@ public class Joueur : NetworkBehaviour {
 
     public void Affiche(Sprite sprite)
     {
-        affichageItems.Affiche(sprite);
+        StartCoroutine(affichageItems.Affiche(sprite));
     }
 
     void OnTriggerEnter(Collider col)
@@ -165,26 +205,23 @@ public class Joueur : NetworkBehaviour {
         {
             return;
         }
-        if (!end)
-        {
-            Debug.Log("attaque");
-            Destroy(col.gameObject);
-            nbAttaques++;
-            OVRInput.SetControllerVibration(frequenceVibration, amplitudeVibration);
-            isDying = true;
-            CmdSwitch(false);
-            StartCoroutine(Mort());
-        }
-        else
-        {
-            StartCoroutine(PlayEnd());
-        }
+        Debug.Log("attaque");
+        Destroy(col.gameObject);
+        nbAttaques++;
+        OVRInput.SetControllerVibration(frequenceVibration, amplitudeVibration);
+        isDying = true;
+        CmdSwitch(false);
+
+        StartCoroutine(end ? PlayEnd() : Mort());
     }
 
     IEnumerator Mort()
     {
-        Porte.FermetureGenerale();
         AkSoundEngine.PostEvent(eventDeath, gameObject);
+        Porte.FermetureGenerale();
+
+        float tempsBrouille = 3 * Mathf.Log(nbAttaques + 1);
+        radar.CmdBrouille(tempsMort + tempsVie + tempsBrouille);
 
         while (fondu.color.a < 1f)
         {
@@ -195,15 +232,13 @@ public class Joueur : NetworkBehaviour {
             yield return new WaitForSeconds(Time.deltaTime);
         }
 
-        Transform checkpoint = CheckPoint.GetCheckPoint();
-        transform.position = checkpoint.position;
-        transform.rotation = checkpoint.rotation;
+        transform.position = CheckPoint.GetCheckPointPosition();
+        transform.rotation = CheckPoint.GetCheckPointRotation();
 
         isDying = false;
 
         CmdSwitch(true);
-        float tempsBrouille = 3 * Mathf.Log(nbAttaques + 1);
-        radar.CmdBrouille(tempsBrouille);
+        
         lampe.SetFreq(tempsBrouille);
         while (fondu.color.a > 0f)
         {
@@ -222,16 +257,24 @@ public class Joueur : NetworkBehaviour {
 
     IEnumerator PlayEnd()
     {
+        AkSoundEngine.PostEvent(eventEnd, gameObject);
+        radar.CmdBrouille(tempsAvantVideo);
+        radar.CmdPlaySound(eventEnd);
         if (isLocalPlayer)
         {
+            yield return new WaitForSeconds(tempsAvantVideo);
             fondu.texture = video;
             fondu.color = Color.white;
             radar.CmdColor(1f, end);
             video.Play();
+            video.loop = true;
             source.Play();
             yield return new WaitForSeconds(video.duration);
-            Debug.Log("quit");
-            menuPause.Quit();
+            fondu.texture = credits;
+            video.Stop();
+            yield return new WaitForSeconds(tempsGenerique);
+            isDying = false;
+            FindObjectOfType<MyLobbyManager>().StopHost();
         }
     }
 }

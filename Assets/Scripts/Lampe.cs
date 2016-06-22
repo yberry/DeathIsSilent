@@ -11,6 +11,10 @@ public class Lampe : MonoBehaviour {
     public float intensiteMax;
     [Tooltip("Colliders du champ lumineux de la lampe")]
     public Collider[] cones;
+    [Tooltip("Event sonore pour allumer la lampe")]
+    public string eventON;
+    [Tooltip("Event sonore pour éteindre la lampe")]
+    public string eventOFF;
 
     [HideInInspector]
     public Light lampe;
@@ -48,6 +52,7 @@ public class Lampe : MonoBehaviour {
 
     public void Switch(bool en)
     {
+        AkSoundEngine.PostEvent(en ? eventON : eventOFF, gameObject);
         lampe.enabled = en;
         foreach (Collider cone in cones)
         {

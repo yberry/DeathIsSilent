@@ -7,8 +7,6 @@ public class MenuPause : MonoBehaviour {
     public RectTransform menuPause;
     public RectTransform menuOptions;
 
-    public string eventQuit;
-
     private RectTransform currentMenu;
     private MyLobbyManager lobbyManager;
 
@@ -67,6 +65,5 @@ public class MenuPause : MonoBehaviour {
     public void Quit()
     {
         lobbyManager.StopHost();
-        AkSoundEngine.SetRTPCValue("Master_Volume", 0f);
     }
 }

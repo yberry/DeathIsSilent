@@ -7,27 +7,37 @@ using System.Collections;
 
 public class Radar : NetworkBehaviour {
 
-    [Tooltip("Préfab de l'onde de balayage")]
-    public GameObject balayagePrefab;
+    [Header("Commandes Radar")]
+    [Tooltip("Touches permettant de passer en vue subjective")]
+    public KeyCode[] boutonsVueSub;
+
+    [Header("Variables Radar")]
     [Tooltip("Limite de taille de l'onde")]
     public float limitScale = 800f;
     [Tooltip("Vitesse de l'onde")]
-    public int vitesse;
+    public int vitesse = 45;
+    [Tooltip("Event sonore d'émission de l'onde")]
+    public string eventEmission;
+    [Tooltip("Event sonore de détection de l'ennemi")]
+    public string eventDetection;
+    [Tooltip("Event sonore pour couper la musique du menu")]
+    public string eventStopMenu;
+
+    [Header("Interface")]
+    [Tooltip("Préfab de l'onde de balayage")]
+    public GameObject balayagePrefab;
     [Tooltip("Flèche représentant le joueur sur le radar")]
     public Transform fleche;
     [Tooltip("Fondu enchaîné de la mort")]
     public RawImage fondu;
     [Tooltip("Vidéo de fin")]
     public MovieTexture video;
+    [Tooltip("Credits")]
+    public Texture credits;
     [Tooltip("Lumière représentant la lampe")]
     public Light lumiere;
-    public string eventEmissionStart;
-    public string eventEmissionStop;
-    public string eventDetection;
     [Tooltip("Texte d'information sur la coupure de communication")]
     public Text text;
-    [Tooltip("Touches permettant de passer en vue subjective")]
-    public KeyCode[] boutonsVueSub;
     [Tooltip("Activer le mini-radar sur l'écran du joueur à l'oculus")]
     public bool miniCamera = true;
 
@@ -41,31 +51,37 @@ public class Radar : NetworkBehaviour {
     private AudioSource source;
 
     [SyncVar]
-    private bool vueSubjective = true;
+    private bool vueSubjective = false;
 
     void Start () {
         player = GameObject.FindGameObjectWithTag("Player");
         ResetPosition();
         StartWave();
+
+        Camera cam = transform.Find("Radar Camera").GetComponent<Camera>();
+        if (cam.GetComponent<AkAudioListener>() == null)
+        {
+            AkAudioListener listener = cam.gameObject.AddComponent<AkAudioListener>();
+            listener.listenerId = 1;
+        }
+
         if (isLocalPlayer)
         {
+            AkSoundEngine.PostEvent(eventStopMenu, gameObject);
             chat = FindObjectOfType<Chat>();
         }
         else
         {
-            Camera cam = transform.Find("Radar Camera").GetComponent<Camera>();
-            if (miniCamera)
+            if (PlayerPrefs.GetInt("oculus") == 0)
             {
-                cam.rect = new Rect(2f / 3f, 0f, 1f / 3f, 1f / 3f);
-                cam.GetComponent<AudioListener>().enabled = false;
+                miniCamera = false;
             }
-            else
-            {
-                cam.gameObject.SetActive(false);
-            }
+            cam.rect = new Rect(miniCamera ? 2f / 3f : 1f, 0f, 1f / 3f, 1f / 3f);
+            cam.GetComponent<AudioListener>().enabled = false;
+            cam.GetComponent<AkAudioListener>().enabled = false;
         }
 
-        script = transform.Find("Radar Camera").GetComponent<NoiseAndScratches>();
+        script = cam.GetComponent<NoiseAndScratches>();
 
         source = fondu.GetComponent<AudioSource>();
     }
@@ -135,7 +151,7 @@ public class Radar : NetworkBehaviour {
         balais.transform.parent = transform;
         if (isLocalPlayer)
         {
-            AkSoundEngine.PostEvent(eventEmissionStart, gameObject);
+            AkSoundEngine.PostEvent(eventEmission, gameObject);
         }
     }
 
@@ -153,19 +169,38 @@ public class Radar : NetworkBehaviour {
         fondu.color = color;
         if (end)
         {
-            PlayEnd();
+            StartCoroutine(PlayEnd());
         }
     }
 
-    void PlayEnd()
+    IEnumerator PlayEnd()
     {
-        if (video.isPlaying)
-        {
-            return;
-        }
         fondu.texture = video;
         video.Play();
-        source.Play();
+        video.loop = true;
+        if (isLocalPlayer)
+        {
+            source.Play();
+        }
+        yield return new WaitForSeconds(video.duration);
+        video.Stop();
+        fondu.texture = credits;
+    }
+
+    [Command]
+    public void CmdPlaySound(string ev)
+    {
+        RpcPlaySound(ev);
+    }
+
+    [ClientRpc]
+    void RpcPlaySound(string ev)
+    {
+        fleche.GetComponent<Renderer>().enabled = false;
+        if (isLocalPlayer)
+        {
+            AkSoundEngine.PostEvent(ev, gameObject);
+        }
     }
 
     [Command]
@@ -210,7 +245,6 @@ public class Radar : NetworkBehaviour {
         if (isLocalPlayer)
         {
             chat.SetTransmission(tr);
-            AkSoundEngine.PostEvent(tr ? eventEmissionStart : eventEmissionStop, gameObject);
         }
     }
 

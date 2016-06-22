@@ -3,9 +3,11 @@
 public class CheckPoint : MonoBehaviour {
 
     public int numCheckpoint = 0;
+    public Transform murInvisible;
+
+    public static bool blockEscalier = false;
 
     private static int currentCheckpoint = 0;
-
     private static Transform currentTransform;
 
     void Start()
@@ -20,7 +22,12 @@ public class CheckPoint : MonoBehaviour {
     {
         if (other.tag == "Player")
         {
-            if (numCheckpoint > currentCheckpoint)
+            if (numCheckpoint == 0 && !blockEscalier)
+            {
+                murInvisible.Translate(-5.5f, 0f, 0f);
+                blockEscalier = true;
+            }
+            else if (numCheckpoint > currentCheckpoint)
             {
                 currentCheckpoint = numCheckpoint;
                 currentTransform = transform;
@@ -28,8 +35,19 @@ public class CheckPoint : MonoBehaviour {
         }
     }
 
-    public static Transform GetCheckPoint()
+    public static Vector3 GetCheckPointPosition()
     {
-        return currentTransform;
+        return currentTransform.position;
+    }
+
+    public static Quaternion GetCheckPointRotation()
+    {
+        return currentTransform.rotation;
+    }
+
+    public static void Reset()
+    {
+        currentCheckpoint = 0;
+        blockEscalier = false;
     }
 }
