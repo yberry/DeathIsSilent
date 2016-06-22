@@ -106,6 +106,10 @@ public class OVRPlayerController : NetworkBehaviour
 		var p = CameraRig.transform.localPosition;
 		p.z = OVRManager.profile.eyeDepth;
 		CameraRig.transform.localPosition = p;
+        if (isLocalPlayer)
+        {
+            MoveVertical = PlayerPrefs.GetInt("oculus") == 0;
+        }
 	}
 
 	void Awake()
@@ -151,8 +155,7 @@ public class OVRPlayerController : NetworkBehaviour
 
 	protected virtual void Update()
 	{
-        PhotonVoiceSpeaker[] speakers = FindObjectsOfType<PhotonVoiceSpeaker>();
-        foreach (PhotonVoiceSpeaker speaker in speakers)
+        foreach (PhotonVoiceSpeaker speaker in FindObjectsOfType<PhotonVoiceSpeaker>())
         {
             speaker.transform.parent = transform;
             speaker.transform.localPosition = Vector3.zero;
@@ -169,6 +172,7 @@ public class OVRPlayerController : NetworkBehaviour
         {
             cam.targetDisplay = 1;
             cam.GetComponent<AudioListener>().enabled = false;
+            cam.GetComponent<AkAudioListener>().enabled = false;
             return;
         }
 
