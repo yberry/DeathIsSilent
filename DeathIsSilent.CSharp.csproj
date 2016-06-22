@@ -212,7 +212,6 @@
     <Compile Include="Assets\Scripts\OVRPointer\ParticleGazeCursor.cs" />
     <Compile Include="Assets\Scripts\Oeil.cs" />
     <Compile Include="Assets\Scripts\Options.cs" />
-    <Compile Include="Assets\Scripts\ParticulesMur.cs" />
     <Compile Include="Assets\Scripts\Porte.cs" />
     <Compile Include="Assets\Scripts\PorteRadar.cs" />
     <Compile Include="Assets\Scripts\PorteToilettes.cs" />
