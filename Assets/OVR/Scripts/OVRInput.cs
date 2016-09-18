@@ -441,14 +441,14 @@ public class OVRInput
 
 	private bool GetResolvedButtonDown(Button virtualMask, RawButton rawMask, Controller controllerMask)
 	{
-#if OVR_LEGACY
+/*#if OVR_LEGACY
 		if (!OVRManager.instance.isVRPresent)
 			return false;
 #else
 		if (!OVRManager.isHmdPresent)
 			return false;
 #endif
-
+*/
 		bool down = false;
 
 		if ((controllerMask & Controller.Active) != 0)
