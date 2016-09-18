@@ -21,7 +21,6 @@ public class MyLobbyManager : NetworkLobbyManager {
     public RectTransform menuConnexion;
     public RectTransform menuOptions;
     public RectTransform menuAttente;
-    public Toggle oculus;
 
     private RectTransform currentMenu;
 
@@ -31,7 +30,7 @@ public class MyLobbyManager : NetworkLobbyManager {
         currentMenu = menuPrincipal;
         SetSelection();
 
-        PlayerPrefs.SetInt("oculus", 1);
+        PlayerPrefs.SetInt("oculus", 0);
         if (!PlayerPrefs.HasKey("stick"))
         {
             PlayerPrefs.SetFloat("stick", 1.5f);
@@ -59,10 +58,10 @@ public class MyLobbyManager : NetworkLobbyManager {
         EventSystem.current.SetSelectedGameObject(selectables[0].gameObject);
     }
 
-    public override GameObject OnLobbyServerCreateLobbyPlayer(NetworkConnection conn, short playerControllerId)
+    /*public override GameObject OnLobbyServerCreateLobbyPlayer(NetworkConnection conn, short playerControllerId)
     {
         return base.OnLobbyServerCreateLobbyPlayer(conn, playerControllerId);
-    }
+    }*/
 
     public override GameObject OnLobbyServerCreateGamePlayer(NetworkConnection conn, short playerControllerId)
     {

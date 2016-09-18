@@ -4,6 +4,9 @@ using UnityEngine.EventSystems;
 
 public class MenuPause : MonoBehaviour {
 
+    public OVRInput.RawButton boutonRetour;
+    public KeyCode boutonRetourClavier;
+
     public RectTransform menuPause;
     public RectTransform menuOptions;
 
@@ -20,6 +23,10 @@ public class MenuPause : MonoBehaviour {
         if (EventSystem.current.currentSelectedGameObject == null)
         {
             SetSelection();
+        }
+        if (OVRInput.GetDown(boutonRetour) || Input.GetKeyDown(boutonRetourClavier))
+        {
+            GoBackButton();
         }
     }
 

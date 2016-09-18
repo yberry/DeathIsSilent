@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class MyLobbyPlayer : NetworkLobbyPlayer {
 
     public Image readyImage;
-    public Button readyButton;
+    public Toggle readyToggle;
 
     public Sprite OFF;
     public Sprite ON;
@@ -15,6 +15,7 @@ public class MyLobbyPlayer : NetworkLobbyPlayer {
         base.OnClientEnterLobby();
         MyLobbyPlayerList.instance.AddPlayer(this);
 
+        readyToggle.GetComponent<Image>().sprite = OFF;
         if (isLocalPlayer)
         {
             SetupLocalPlayer();
@@ -33,37 +34,30 @@ public class MyLobbyPlayer : NetworkLobbyPlayer {
 
     void SetupLocalPlayer()
     {
-        readyButton.GetComponent<Image>().sprite = OFF;
-        readyButton.interactable = true;
-        readyButton.onClick.AddListener(OnReadyClicked);
+        readyToggle.interactable = true;
+        readyToggle.onValueChanged.AddListener(OnToggleClicked);
     }
 
     void SetupOtherPlayer()
     {
-        readyButton.GetComponent<Image>().sprite = OFF;
-        readyButton.interactable = false;
+        readyToggle.interactable = false;
     }
 
-    void OnReadyClicked()
+    void OnToggleClicked(bool ready)
     {
-        SendReadyToBeginMessage();
+        if (ready)
+        {
+            SendReadyToBeginMessage();
+        }
+        else
+        {
+            SendNotReadyToBeginMessage();
+        }
     }
 
     public override void OnClientReady(bool readyState)
     {
-        if (readyState)
-        {
-            readyButton.GetComponent<Image>().sprite = ON;
-            readyButton.interactable = false;
-            ColorBlock colors = readyButton.colors;
-            colors.disabledColor = Color.white;
-            readyButton.colors = colors;
-        }
-        else
-        {
-            readyButton.GetComponent<Image>().sprite = OFF;
-            readyButton.interactable = isLocalPlayer;
-        }
+        readyToggle.isOn = readyState;
     }
 
     public void OnDestroy()

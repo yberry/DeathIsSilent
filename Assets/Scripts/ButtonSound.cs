@@ -2,26 +2,38 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Button))]
+[RequireComponent(typeof(Selectable))]
 public class ButtonSound : MonoBehaviour, ISelectHandler {
-
-    private Button bouton;
 
     private const string eventMove = "Play_Menu_Move";
     private const string eventClic = "Play_Menu_Clic";
 
-	// Use this for initialization
-	void Start () {
-        bouton = GetComponent<Button>();
-        bouton.onClick.AddListener(PlayClic);
-	}
+    void Start()
+    {
+        Selectable selectable = GetComponent<Selectable>();
+        if (selectable is Button)
+        {
+            Button bouton = selectable as Button;
+            bouton.onClick.AddListener(Click);
+        }
+        else if (selectable is Toggle)
+        {
+            Toggle toggle = selectable as Toggle;
+            toggle.onValueChanged.AddListener(Click);
+        }
+    }
 	
 	public void OnSelect(BaseEventData eventData)
     {
         AkSoundEngine.PostEvent(eventMove, gameObject);
     }
 
-    void PlayClic()
+    void Click()
+    {
+        AkSoundEngine.PostEvent(eventClic, gameObject);
+    }
+
+    void Click(bool click)
     {
         AkSoundEngine.PostEvent(eventClic, gameObject);
     }
