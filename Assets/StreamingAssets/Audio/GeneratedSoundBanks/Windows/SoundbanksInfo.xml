@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="10" SoundbankVersion="113">
 	<RootPaths>
-		<ProjectRoot>C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\</ProjectRoot>
-		<SourceFilesRoot>C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\</SourceFilesRoot>
-		<SoundBanksRoot>C:\Users\berry.yanis\Documents\DeathIsSilent\Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\</SoundBanksRoot>
+		<ProjectRoot>C:\Users\Public\Documents\Unity Projects\death-is-silent-sound-design\DISWwise\DISWwise\</ProjectRoot>
+		<SourceFilesRoot>C:\Users\Public\Documents\Unity Projects\death-is-silent-sound-design\DISWwise\DISWwise\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>C:\Users\Public\Documents\Unity Projects\DeathIsSilent\Assets\StreamingAssets\Audio\GeneratedSoundBanks\Windows\</SoundBanksRoot>
 		<ExternalSourcesInputFile></ExternalSourcesInputFile>
-		<ExternalSourcesOutputRoot>C:\Users\berry.yanis\Documents\death-is-silent-sound-design\DISWwise\DISWwise\GeneratedSoundBanks\Windows\</ExternalSourcesOutputRoot>
+		<ExternalSourcesOutputRoot>C:\Users\Public\Documents\Unity Projects\death-is-silent-sound-design\DISWwise\DISWwise\GeneratedSoundBanks\Windows\</ExternalSourcesOutputRoot>
 	</RootPaths>
 	<DialogueEvents/>
 	<StreamedFiles/>
@@ -21,12 +21,22 @@
 				<Event Id="2292458263" Name="Play_Door_Close"/>
 				<Event Id="1660008929" Name="Play_Door_Open"/>
 				<Event Id="2670164187" Name="Play_EndGame"/>
+				<Event Id="3216656203" Name="Play_Find"/>
+				<Event Id="574141670" Name="Play_Lamp_Off"/>
+				<Event Id="1179077000" Name="Play_Lamp_On"/>
 				<Event Id="1982372943" Name="Play_Menu_Clic"/>
 				<Event Id="1871533573" Name="Play_Menu_Move"/>
+				<Event Id="1699343283" Name="Play_Music_Menu"/>
 				<Event Id="314495013" Name="Play_Radar_Beep"/>
 				<Event Id="2046989910" Name="Play_Radar_Wave"/>
+				<Event Id="2726703910" Name="Play_Rooms_Bubbles"/>
+				<Event Id="1789807539" Name="Play_Rooms_Drips"/>
+				<Event Id="767463792" Name="Play_Rooms_Pipes"/>
+				<Event Id="2035525376" Name="Play_Rooms_Wind_Howl"/>
 				<Event Id="4224100558" Name="Player_Attacked"/>
 				<Event Id="3240726218" Name="Player_Safe"/>
+				<Event Id="1495041834" Name="Stop_Monster"/>
+				<Event Id="106912753" Name="Stop_Music_Menu"/>
 			</IncludedEvents>
 			<IncludedMemoryFiles>
 				<File Id="1796267" Language="SFX">
@@ -40,6 +50,10 @@
 				<File Id="33668173" Language="SFX">
 					<ShortName>ClacMonstre_Idle08.wav</ShortName>
 					<Path>SFX\ClacMonstre_Idle08_9E69E797.wem</Path>
+				</File>
+				<File Id="37994864" Language="SFX">
+					<ShortName>Bulles.wav</ShortName>
+					<Path>SFX\Bulles_4B8CC0C5.wem</Path>
 				</File>
 				<File Id="38988171" Language="SFX">
 					<ShortName>machine2.wav</ShortName>
@@ -105,9 +119,17 @@
 					<ShortName>AmbLow8.wav</ShortName>
 					<Path>SFX\AmbLow8_9E69E797.wem</Path>
 				</File>
+				<File Id="242638858" Language="SFX">
+					<ShortName>Wind_Tuyaux01.wav</ShortName>
+					<Path>SFX\Wind_Tuyaux01_9E69E797.wem</Path>
+				</File>
 				<File Id="253165534" Language="SFX">
 					<ShortName>cloche6.wav</ShortName>
 					<Path>SFX\cloche6_9E69E797.wem</Path>
+				</File>
+				<File Id="276107287" Language="SFX">
+					<ShortName>Wind_Tuyaux02.wav</ShortName>
+					<Path>SFX\Wind_Tuyaux02_9E69E797.wem</Path>
 				</File>
 				<File Id="285237926" Language="SFX">
 					<ShortName>Amb2.wav</ShortName>
@@ -137,6 +159,10 @@
 					<ShortName>AmbLow3.wav</ShortName>
 					<Path>SFX\AmbLow3_9E69E797.wem</Path>
 				</File>
+				<File Id="350040112" Language="SFX">
+					<ShortName>Wind_Tuyaux05.wav</ShortName>
+					<Path>SFX\Wind_Tuyaux05_9E69E797.wem</Path>
+				</File>
 				<File Id="350082883" Language="SFX">
 					<ShortName>ClacMonstre_Move03.wav</ShortName>
 					<Path>SFX\ClacMonstre_Move03_9E69E797.wem</Path>
@@ -145,6 +171,10 @@
 					<ShortName>ClacMonstre_Idle06.wav</ShortName>
 					<Path>SFX\ClacMonstre_Idle06_9E69E797.wem</Path>
 				</File>
+				<File Id="389621878" Language="SFX">
+					<ShortName>Clic Lampe\LampOff01.wav</ShortName>
+					<Path>SFX\Clic Lampe\LampOff01_9E69E797.wem</Path>
+				</File>
 				<File Id="391437489" Language="SFX">
 					<ShortName>AmbLow2.wav</ShortName>
 					<Path>SFX\AmbLow2_9E69E797.wem</Path>
@@ -152,6 +182,10 @@
 				<File Id="404652361" Language="SFX">
 					<ShortName>Metal.s4_05.wav</ShortName>
 					<Path>SFX\Metal.s4_05_0EC84DEA.wem</Path>
+				</File>
+				<File Id="415457122" Language="SFX">
+					<ShortName>Clic Lampe\LampOn01.wav</ShortName>
+					<Path>SFX\Clic Lampe\LampOn01_9E69E797.wem</Path>
 				</File>
 				<File Id="430590362" Language="SFX">
 					<ShortName>machine3.wav</ShortName>
@@ -165,6 +199,10 @@
 					<ShortName>ClacMonstre_Idle07.wav</ShortName>
 					<Path>SFX\ClacMonstre_Idle07_9E69E797.wem</Path>
 				</File>
+				<File Id="445519475" Language="SFX">
+					<ShortName>Clic Lampe\LampOff03.wav</ShortName>
+					<Path>SFX\Clic Lampe\LampOff03_9E69E797.wem</Path>
+				</File>
 				<File Id="450072806" Language="SFX">
 					<ShortName>cloche1.wav</ShortName>
 					<Path>SFX\cloche1_9E69E797.wem</Path>
@@ -176,6 +214,10 @@
 				<File Id="488600339" Language="SFX">
 					<ShortName>attacknoise-LOOP.wav</ShortName>
 					<Path>SFX\attacknoise-LOOP_4B8CC0C5.wem</Path>
+				</File>
+				<File Id="514725721" Language="SFX">
+					<ShortName>Clic Lampe\LampOff02.wav</ShortName>
+					<Path>SFX\Clic Lampe\LampOff02_9E69E797.wem</Path>
 				</File>
 				<File Id="522217848" Language="SFX">
 					<ShortName>Amb4.wav</ShortName>
@@ -205,6 +247,14 @@
 					<ShortName>cloche9.wav</ShortName>
 					<Path>SFX\cloche9_9E69E797.wem</Path>
 				</File>
+				<File Id="609554894" Language="SFX">
+					<ShortName>Music DiS.wav</ShortName>
+					<Path>SFX\Music DiS_4B8CC0C5.wem</Path>
+				</File>
+				<File Id="611647154" Language="SFX">
+					<ShortName>Clic Lampe\LampOn02.wav</ShortName>
+					<Path>SFX\Clic Lampe\LampOn02_9E69E797.wem</Path>
+				</File>
 				<File Id="613083818" Language="SFX">
 					<ShortName>AmbLow9.wav</ShortName>
 					<Path>SFX\AmbLow9_9E69E797.wem</Path>
@@ -220,6 +270,10 @@
 				<File Id="643594911" Language="SFX">
 					<ShortName>move2.wav</ShortName>
 					<Path>SFX\move2_9E69E797.wem</Path>
+				</File>
+				<File Id="680806267" Language="SFX">
+					<ShortName>Clic Lampe\LampOn03.wav</ShortName>
+					<Path>SFX\Clic Lampe\LampOn03_9E69E797.wem</Path>
 				</File>
 				<File Id="684948027" Language="SFX">
 					<ShortName>AmbLow1.wav</ShortName>
@@ -240,6 +294,10 @@
 				<File Id="718712776" Language="SFX">
 					<ShortName>ClacMonstre_Seek01.wav</ShortName>
 					<Path>SFX\ClacMonstre_Seek01_9E69E797.wem</Path>
+				</File>
+				<File Id="721883443" Language="SFX">
+					<ShortName>Wind_Tuyaux03.wav</ShortName>
+					<Path>SFX\Wind_Tuyaux03_9E69E797.wem</Path>
 				</File>
 				<File Id="724319294" Language="SFX">
 					<ShortName>AmbLow4.wav</ShortName>
@@ -277,6 +335,10 @@
 					<ShortName>Door_latch_2.wav</ShortName>
 					<Path>SFX\Door_latch_2_9E69E797.wem</Path>
 				</File>
+				<File Id="800207836" Language="SFX">
+					<ShortName>Find.wav</ShortName>
+					<Path>SFX\Find_9E69E797.wem</Path>
+				</File>
 				<File Id="809563980" Language="SFX">
 					<ShortName>Amb6.wav</ShortName>
 					<Path>SFX\Amb6_9E69E797.wem</Path>
@@ -289,6 +351,14 @@
 					<ShortName>cloche2.wav</ShortName>
 					<Path>SFX\cloche2_9E69E797.wem</Path>
 				</File>
+				<File Id="831758960" Language="SFX">
+					<ShortName>Wind_Tuyaux04.wav</ShortName>
+					<Path>SFX\Wind_Tuyaux04_9E69E797.wem</Path>
+				</File>
+				<File Id="845277108" Language="SFX">
+					<ShortName>Wind_Howl.wav</ShortName>
+					<Path>SFX\Wind_Howl_4B8CC0C5.wem</Path>
+				</File>
 				<File Id="848768176" Language="SFX">
 					<ShortName>ClacMonstre_Seek02.wav</ShortName>
 					<Path>SFX\ClacMonstre_Seek02_9E69E797.wem</Path>
@@ -300,6 +370,10 @@
 				<File Id="890948085" Language="SFX">
 					<ShortName>ClacMonstre_Idle05.wav</ShortName>
 					<Path>SFX\ClacMonstre_Idle05_9E69E797.wem</Path>
+				</File>
+				<File Id="894451604" Language="SFX">
+					<ShortName>Drips.wav</ShortName>
+					<Path>SFX\Drips_4B8CC0C5.wem</Path>
 				</File>
 				<File Id="900396056" Language="SFX">
 					<ShortName>ClacMonstre_Idle02.wav</ShortName>
