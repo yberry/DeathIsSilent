@@ -86,7 +86,7 @@ public class EnnemiSpawner : NetworkBehaviour {
         else
         {
             temps = 0f;
-            float proba = probaApparition[currentZone] * (course ? 10 : 1);
+            float proba = probaApparition[currentZone] * (course ? 10f : 1f);
             if (Random.Range(0f, 1f) < proba)
             {
                 SpawnEnemy(GetSpawnPosition());
@@ -96,7 +96,6 @@ public class EnnemiSpawner : NetworkBehaviour {
 
     void SpawnEnemy(Vector3 position)
     {
-        Debug.Log("spawn");
         ennemi = Instantiate(ennemiPrefab, position, Quaternion.identity) as GameObject;
         NetworkServer.Spawn(ennemi);
         monstrePresent = true;
@@ -157,7 +156,7 @@ public class EnnemiSpawner : NetworkBehaviour {
         forward.y = y;
         Vector3 pos = joueur.position;
         pos.y = y;
-        SpawnEnemy(pos + 2 * forward.normalized);
+        SpawnEnemy(pos + 2f * forward.normalized);
         ennemi.GetComponent<Ennemi>().Fin();
     }
 }
