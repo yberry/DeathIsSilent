@@ -3,6 +3,7 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityStandardAssets.ImageEffects;
 using System.Collections;
+using System.Collections.Generic;
 [AddComponentMenu("Image Effects/GlitchEffect")]
 
 public class Radar : NetworkBehaviour {
@@ -38,9 +39,16 @@ public class Radar : NetworkBehaviour {
     public Light lumiere;
     [Tooltip("Texte d'information sur la coupure de communication")]
     public Text text;
+    [Tooltip("Nom de la pièce que le joueur traverse")]
+    public Text piece;
+    [Tooltip("Bouton radio pour la caméra rotative")]
+    public Toggle checkRot;
+    [Tooltip("Bouton radio pour la caméra fixe")]
+    public Toggle checkFixe;
     [Tooltip("Activer le mini-radar sur l'écran du joueur à l'oculus")]
     public bool miniCamera = true;
 
+    private List<string> pieces;
     private bool brouille = false;
     private float tempsBrouilleMax = 10f;
     private float tempsBrouille;
@@ -55,6 +63,7 @@ public class Radar : NetworkBehaviour {
 
     void Start () {
         player = GameObject.FindGameObjectWithTag("Player");
+        pieces = new List<string>();
         ResetPosition();
         StartWave();
 
@@ -140,9 +149,15 @@ public class Radar : NetworkBehaviour {
 	}
 
     [Command]
-    void CmdVue()
+    public void CmdVue()
     {
         vueSubjective = !vueSubjective;
+
+        checkRot.isOn = vueSubjective;
+        checkFixe.isOn = !vueSubjective;
+
+        checkRot.interactable = !vueSubjective;
+        checkFixe.interactable = vueSubjective;
     }
 
     void StartWave()
@@ -280,5 +295,28 @@ public class Radar : NetworkBehaviour {
         Vector3 position = player.transform.position;
         position.y = transform.position.y;
         transform.position = position;
+    }
+
+    public void EnterPiece(string p)
+    {
+        if (!pieces.Contains(p))
+        {
+            pieces.Add(p);
+        }
+        SetPiece();
+    }
+
+    public void ExitPiece(string p)
+    {
+        if (pieces.Contains(p))
+        {
+            pieces.Remove(p);
+        }
+        SetPiece();
+    }
+
+    void SetPiece()
+    {
+        piece.text = pieces[pieces.Count - 1];
     }
 }
