@@ -63,11 +63,12 @@ public class ServerSettings : ScriptableObject
     // custom server values (not used for PhotonCloud)
     public string ServerAddress = "";     // the address to be used (including region-suffix)
     public int ServerPort = 5055;
-
-    public string AppID = "";
-#if PHOTON_VOICE
-    public string VoiceAppID = "";
+#if PHOTON_VOICE    
+    public int VoiceServerPort = 5055;
 #endif
+    public string AppID = "";
+    public string VoiceAppID = "";
+
     public CloudRegionCode PreferredRegion;
     public CloudRegionFlag EnabledRegions = (CloudRegionFlag)(-1);
 

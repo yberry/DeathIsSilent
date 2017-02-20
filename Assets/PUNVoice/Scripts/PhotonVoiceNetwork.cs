@@ -29,25 +29,30 @@ public class PhotonVoiceNetwork : MonoBehaviour
     {
         get
         {
-            lock (instanceLock)
-            {
-                if (destroyed)
-                {
-                    return null;
-                }
-                if (_instance == null)
-                {
-                    _singleton = new GameObject();
-                    _instance = _singleton.AddComponent<PhotonVoiceNetwork>();
-                    _singleton.name = "PhotonVoiceNetworkSingleton";
-
-                    DontDestroyOnLoad(_singleton);
-                }
-                return _instance;
-            }
+            return getInstance();
         }
     }
 
+	internal static PhotonVoiceNetwork getInstance()
+	{
+		lock (instanceLock)
+		{
+			if (destroyed)
+			{
+				return null;
+			}
+			if (_instance == null)
+			{
+				_singleton = new GameObject();
+				_instance = _singleton.AddComponent<PhotonVoiceNetwork>();
+				_singleton.name = "PhotonVoiceNetworkSingleton";
+
+				DontDestroyOnLoad(_singleton);
+			}
+			return _instance;
+		}
+	}
+	
     void OnDestroy()
     {
         if (this != _instance)
@@ -56,23 +61,16 @@ public class PhotonVoiceNetwork : MonoBehaviour
         }
 
         destroyed = true;
+        this.client.Dispose();
     }
 
-    internal UnityVoiceClient client;
+    internal UnityVoiceFrontend client;
     PhotonVoiceNetwork()
     {
-        client = new UnityVoiceClient(this);
+        client = new UnityVoiceFrontend(this);
         //client.loadBalancingPeer.DebugOut = DebugLevel.ALL;
         //PhotonNetwork.logLevel = PhotonLogLevel.Full;
-
-        if (Microphone.devices.Length < 1)
-        {
-            Debug.LogError("PUNVoice: No microphone device found");
-        }
-
-        // debug only
-        // client.UseLossCompensation = false;
-        
+                
 		// client.loadBalancingPeer.QuickResendAttempts = 3;
         // client.loadBalancingPeer.SentCountAllowance = 7;
         // PhotonNetwork.networkingPeer.QuickResendAttempts = 3;
@@ -81,6 +79,20 @@ public class PhotonVoiceNetwork : MonoBehaviour
         //client.loadBalancingPeer.DebugOut = PhotonVoiceSettings.Instance.DebugLevel; // null ref while PhotonVoiceSettings is object's script
     }
 
+    [RuntimeInitializeOnLoadMethod]
+    static public void RuntimeInitializeOnLoad()
+    {
+        getInstance();
+    }
+
+    public void Awake()
+    {
+		if (Microphone.devices.Length < 1)
+        {
+            Debug.LogError("PUNVoice: No microphone device found");
+        }
+	}
+	
     /// <summary>
     /// Connects Voice client to a Master Server of region specified in settings, using the Name Server to find the IP.
     /// </summary>
@@ -92,11 +104,13 @@ public class PhotonVoiceNetwork : MonoBehaviour
 
         if (PhotonNetwork.PhotonServerSettings.HostType == ServerSettings.HostingOption.SelfHosted)
         {
-            Debug.Log("PUNVoice: connecting to master " + PhotonNetwork.networkingPeer.MasterServerAddress);
-            return instance.client.Connect(PhotonNetwork.networkingPeer.MasterServerAddress, null, null, null, null);
+            string voiceMasterAddress = string.Format("{0}:{1}",PhotonNetwork.PhotonServerSettings.ServerAddress,
+                PhotonNetwork.PhotonServerSettings.VoiceServerPort);
+            Debug.LogFormat("PUNVoice: connecting to master {0}", voiceMasterAddress);
+            return instance.client.Connect(voiceMasterAddress, null, null, null, null);
         }
         else {
-            Debug.Log("PUNVoice: connecting to region " + PhotonNetwork.networkingPeer.CloudRegion.ToString());
+            Debug.LogFormat("PUNVoice: connecting to region {0}", PhotonNetwork.networkingPeer.CloudRegion.ToString());
             return instance.client.ConnectToRegionMaster(PhotonNetwork.networkingPeer.CloudRegion.ToString());
         }
     }
@@ -108,7 +122,7 @@ public class PhotonVoiceNetwork : MonoBehaviour
     }
 
     /// <summary>Returns underlying Photon Voice client.</summary>
-    public static Voice.Client Client { get { return instance.client; } }
+    public static UnityVoiceFrontend Client { get { return instance.client; } }
 
     /// <summary>Returns Photon Voice client state.</summary>
     public static LoadBalancing.ClientState ClientState { get { return instance.client.State; } }
@@ -122,7 +136,7 @@ public class PhotonVoiceNetwork : MonoBehaviour
     /// If changed while joined PUN room, rejoin (recorders recreation) required.
     /// </summary>
     /// <remarks>
-    /// Use PhotonVoiceRecorder.MicrophoneDevice in PhotonVoiceRecorder.Awake() to set device per recorder.
+    /// Use PhotonVoiceRecorder.MicrophoneDevice to set device per recorder.
     /// </remarks>    
     public static string MicrophoneDevice
     {
@@ -138,7 +152,18 @@ public class PhotonVoiceNetwork : MonoBehaviour
             microphoneDevice = value;
             if (PhotonVoiceSettings.Instance.DebugInfo)
             {
-                Debug.Log("PUNVoice: Setting global microphone device to " + microphoneDevice);
+                Debug.LogFormat("PUNVoice: Setting global microphone device to {0}", microphoneDevice);
+            }
+            foreach (var r in FindObjectsOfType<PhotonVoiceRecorder>())
+            {
+                if (r.photonView.isMine)
+                {
+                    if (r.MicrophoneDevice == null)
+                    {
+                        // update mic device
+                        r.MicrophoneDevice = null;
+                    }
+                }
             }
         }
     }
@@ -185,22 +210,9 @@ public class PhotonVoiceNetwork : MonoBehaviour
     /// <remarks>
     /// audioStream.SamplingRate and voiceInfo.SamplingRate may do not match. Automatic resampling will occur in this case.
     /// </remarks>
-    public static Voice.LocalVoice CreateLocalVoice(Voice.IAudioStream audioClip, Voice.VoiceInfo voiceInfo)
+    public static Voice.LocalVoice CreateLocalVoice(Voice.IAudioStreamFloat audioClip, Voice.VoiceInfo voiceInfo)
     {
         return instance.client.CreateLocalVoice(audioClip, voiceInfo);
-    }
-
-    /// <summary>
-    /// Removes local voice (outgoing audio stream).
-    /// <param name="voice">Handler of outgoing stream to be removed.</param>
-    /// </summary>
-    public static void RemoveLocalVoice(Voice.LocalVoice voice)
-    {
-        // can be called from OnDestroy, check if still exists
-        if (!destroyed)
-        {
-            instance.client.RemoveLocalVoice(voice);
-        }
     }
 
     // PUN room joined
@@ -214,7 +226,7 @@ public class PhotonVoiceNetwork : MonoBehaviour
         // voice room check
         switch (this.client.State)
         {
-            case ExitGames.Client.Photon.LoadBalancing.ClientState.Joined:
+            case LoadBalancing.ClientState.Joined:
                 if (PhotonVoiceSettings.Instance.AutoConnect)
                 {
                     // trigger rejoin to the (possible other) room                    
@@ -272,19 +284,28 @@ public class PhotonVoiceNetwork : MonoBehaviour
     }
 }
 
-internal class UnityVoiceClient : Voice.Client
+public class UnityVoiceFrontend : Voice.LoadBalancingFrontend
 {
     // or could be dict of dicts like VoiceClient.remoteVoices counterpart
     private Dictionary<VoiceIdPair, PhotonVoiceSpeaker> voiceSpeakers = new Dictionary<VoiceIdPair, PhotonVoiceSpeaker>();
 
-    internal UnityVoiceClient(PhotonVoiceNetwork network)
-    {
-        this.OnRemoteVoiceInfoAction = OnRemoteVoiceInfo;
-        this.OnRemoteVoiceRemoveAction = OnRemoteVoiceRemove;
-        this.OnAudioFrameAction = OnAudioFrame;
+    // let user code set actions which we occupy; call them in our actions
+    public Action<int, byte, Voice.VoiceInfo> OnRemoteVoiceInfoAction { get; set; }
+    public Action<int, byte> OnRemoteVoiceRemoveAction { get; set; }
+    public Action<int, byte, float[]> OnAudioFrameAction { get; set; }
 
-        this.OnStateChangeAction = OnStateChange;
-        this.OnOpResponseAction = OnOpResponse;
+    new public Action<LoadBalancing.ClientState> OnStateChangeAction { get; set; }
+    new public Action<OperationResponse> OnOpResponseAction { get; set; }
+
+    internal UnityVoiceFrontend(PhotonVoiceNetwork network)
+    {
+        this.voiceClient.OnRemoteVoiceInfoAction += OnRemoteVoiceInfo;
+        this.voiceClient.OnRemoteVoiceRemoveAction += OnRemoteVoiceRemove;
+        this.voiceClient.OnAudioFrameFloatAction += OnAudioFrame;
+
+        base.OnStateChangeAction += OnStateChange;
+        base.OnOpResponseAction += OnOpResponse;
+
         this.loadBalancingPeer.DebugOut = DebugLevel.INFO;
     }
 
@@ -298,7 +319,7 @@ internal class UnityVoiceClient : Voice.Client
     /// </remarks>
     public void Reconnect()
     {
-        if (this.State == LoadBalancing.ClientState.Disconnected)
+        if (this.State == LoadBalancing.ClientState.Disconnected || this.State == LoadBalancing.ClientState.Uninitialized)
         {
             PhotonVoiceNetwork.Connect();
         }
@@ -311,7 +332,7 @@ internal class UnityVoiceClient : Voice.Client
 
     public override void DebugReturn(DebugLevel level, string message)
     {
-        message = "PUNVoice: " + message;
+        message = string.Format("PUNVoice: {0}", message);
         if (level == DebugLevel.ERROR)
         {
             Debug.LogError(message);
@@ -336,7 +357,7 @@ internal class UnityVoiceClient : Voice.Client
         {
             switch (resp.OperationCode)
             {
-                case ExitGames.Client.Photon.OperationCode.JoinGame:
+                case LoadBalancing.OperationCode.JoinGame:
                     PhotonVoiceRecorder[] recs = GameObject.FindObjectsOfType<PhotonVoiceRecorder>();
                     foreach (var r in recs)
                     {
@@ -345,11 +366,13 @@ internal class UnityVoiceClient : Voice.Client
                     break;
             }
         }
+
+        if (this.OnOpResponseAction != null) this.OnOpResponseAction(resp);
     }
 
     private void linkVoice(int playerId, byte voiceId, Voice.VoiceInfo voiceInfo, PhotonVoiceSpeaker speaker)
     {
-        speaker.OnVoiceLinked(voiceInfo.SamplingRate, voiceInfo.Channels, voiceInfo.EncoderDelay, PhotonVoiceSettings.Instance.PlayDelayMs);
+        speaker.OnVoiceLinked(voiceInfo.SamplingRate, voiceInfo.Channels, voiceInfo.FrameDurationSamples, PhotonVoiceSettings.Instance.PlayDelayMs);
         var key = new VoiceIdPair(playerId, voiceId);
         PhotonVoiceSpeaker oldSpeaker;
         if (this.voiceSpeakers.TryGetValue(key, out oldSpeaker))
@@ -360,22 +383,22 @@ internal class UnityVoiceClient : Voice.Client
             }
             else 
             {
-                Debug.Log("PUNVoice: Player " + playerId + " voice #" + voiceId + " speaker replaced");                
+                Debug.LogFormat("PUNVoice: Player {0} voice #{1} speaker replaced.", playerId, voiceId);                
             }
         }
         else 
         {
-            Debug.Log("PUNVoice: Player " + playerId + " voice #" + voiceId + " speaker created");
+            Debug.LogFormat("PUNVoice: Player {0} voice #{1} speaker created.", playerId, voiceId);
         }
         this.voiceSpeakers[key] = speaker;
     }
 
-    public void OnRemoteVoiceInfo(int playerId, byte voiceId, Voice.VoiceInfo voiceInfo)
+    public void OnRemoteVoiceInfo(int channelId, int playerId, byte voiceId, Voice.VoiceInfo voiceInfo, out object localUserObject)
     {
         var key = new VoiceIdPair(playerId, voiceId);
         if (this.voiceSpeakers.ContainsKey(key))
         {
-            Debug.LogWarning("PUNVoice: Info duplicate for voice #" + voiceId + " of player " + playerId);
+            Debug.LogWarningFormat("PUNVoice: Info duplicate for voice #{0} of player {1}", voiceId, playerId);
         }
 
         PhotonVoiceSpeaker speaker = null;
@@ -398,6 +421,9 @@ internal class UnityVoiceClient : Voice.Client
             this.linkVoice(playerId, voiceId, voiceInfo, speaker);
         }
 
+        if (this.OnRemoteVoiceInfoAction != null) this.OnRemoteVoiceInfoAction(playerId, voiceId, voiceInfo);
+
+        localUserObject = null;
     }
 
     // Try to link new PUN object with Speaker attached to remote voice.
@@ -413,17 +439,19 @@ internal class UnityVoiceClient : Voice.Client
         }
     }
 
-    public void OnRemoteVoiceRemove(int playerId, byte voiceId)
+    public void OnRemoteVoiceRemove(int channelId, int playerId, byte voiceId, object localUserObject)
     {
         var key = new VoiceIdPair(playerId, voiceId);
         if (!this.unlinkSpeaker(key))
         {
-            Debug.LogWarning("PUNVoice: Voice #" + voiceId + " of player " + playerId + " not found.");
+            Debug.LogWarningFormat("PUNVoice: Voice #{0} of player {1} not found.", voiceId, playerId);
         }
         else
         {
-            Debug.Log("PUNVoice: Player " + playerId + " voice #" + voiceId + " speaker unlinked");
+            Debug.LogFormat("PUNVoice: Player {0} voice # {1} speaker unlinked.", playerId, voiceId);
         }
+
+        if (this.OnRemoteVoiceRemoveAction != null) this.OnRemoteVoiceRemoveAction(playerId, voiceId);
     }
 
     private bool unlinkSpeaker(VoiceIdPair key)
@@ -445,7 +473,7 @@ internal class UnityVoiceClient : Voice.Client
             if (s.Value == speaker)
             {
                 toRemove.Add(s.Key);
-                Debug.Log("PUNVoice: Player " + s.Key.Key + " voice #" + s.Key.Value + " speaker unlinked");
+                Debug.LogFormat("PUNVoice: Player {0} voice # {1} speaker unlinked.", s.Key.Key, s.Key.Value);
             }
         }
         foreach (var k in toRemove)
@@ -454,7 +482,7 @@ internal class UnityVoiceClient : Voice.Client
         }
     }
 
-    public void OnAudioFrame(int playerId, byte voiceId, float[] frame)
+    public void OnAudioFrame(int channelId, int playerId, byte voiceId, float[] frame, object localUserObject)
     {
         PhotonVoiceSpeaker voiceSpeaker = null;
         if (this.voiceSpeakers.TryGetValue(new VoiceIdPair(playerId, voiceId), out voiceSpeaker))
@@ -463,22 +491,26 @@ internal class UnityVoiceClient : Voice.Client
         }
         else
         {
-            Debug.LogWarning("PUNVoice: Audio Frame event for not existing speaker for voice #" + voiceId + " of player " + playerId);
+            Debug.LogWarningFormat("PUNVoice: Audio Frame event for not existing speaker for voice #{0} of player {1}.",  
+                voiceId, playerId);
         }
+
+        if (this.OnAudioFrameAction != null) this.OnAudioFrameAction(playerId, voiceId, frame);
     }
 
     public void OnStateChange(LoadBalancing.ClientState state)
     {
         if (PhotonNetwork.logLevel >= PhotonLogLevel.Informational)
         {
-            Debug.Log("PUNVoice: Voice Client state: " + state);
+            Debug.LogFormat("PUNVoice: Voice Client state: {0}", state);
         }
         switch (state)
         {
             case LoadBalancing.ClientState.JoinedLobby:
                 if (PhotonNetwork.inRoom)
                 {
-                    this.OpJoinOrCreateRoom(PhotonNetwork.room.name + "_voice_", new LoadBalancing.RoomOptions() { IsVisible = false }, null);
+                    this.OpJoinOrCreateRoom(string.Format("{0}_voice_", PhotonNetwork.room.name), 
+                        new LoadBalancing.RoomOptions() { IsVisible = false }, null);
                 }
                 else
                 {
@@ -494,5 +526,7 @@ internal class UnityVoiceClient : Voice.Client
                 this.reconnect = false;
                 break;
         }
+
+        if (this.OnStateChangeAction != null) this.OnStateChangeAction(state);
     }
 }

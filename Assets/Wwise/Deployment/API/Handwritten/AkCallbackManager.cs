@@ -22,7 +22,7 @@ using UnityEditor;
 static public class AkCallbackManager
 {
     public delegate void EventCallback(object in_cookie, AkCallbackType in_type, object in_info);
-    public delegate void MonitoringCallback(ErrorCode in_errorCode, ErrorLevel in_errorLevel, uint in_playingID, IntPtr in_gameObjID, string in_msg);
+    public delegate void MonitoringCallback(ErrorCodes in_errorCode, ErrorLevel in_errorLevel, uint in_playingID, IntPtr in_gameObjID, string in_msg);
     public delegate void BankCallback(uint in_bankID, IntPtr in_InMemoryBankPtr, AKRESULT in_eLoadResult, uint in_memPoolId, object in_Cookie);
 
     public class EventCallbackPackage
@@ -186,7 +186,7 @@ static public class AkCallbackManager
 	/// \sa AkCallbackManager.SetMonitoringCallback
     public struct AkMonitoringMsg
     {
-        public ErrorCode errorCode;
+        public ErrorCodes errorCode;
         public ErrorLevel errorLevel;
         public uint playingID;
         public IntPtr gameObjID;
@@ -409,7 +409,7 @@ static public class AkCallbackManager
             {
                 AkMonitoringMsg monitorMsg = new AkMonitoringMsg();
 
-                monitorMsg.errorCode = (ErrorCode)Marshal.ReadInt32(pData);
+                monitorMsg.errorCode = (ErrorCodes)Marshal.ReadInt32(pData);
                 // WG-25449
                 GotoEndOfCurrentStructMember_ValueType<int>(ref pData);
 

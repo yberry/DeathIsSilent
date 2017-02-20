@@ -12,10 +12,17 @@ namespace POpusCodec
         private IntPtr _handle = IntPtr.Zero;
         private string _version = string.Empty;
         private const int MaxFrameSize = 5760;
+
+        // makes sense if OpusEncoder.UseInbandFEC and OpusEncoder.ExpectedPacketLossPercentage are set
+        // TODO: to implement FEC, decoder normally should decode previous frame while saving current for next decode() call (see opus_demo.c)
 #pragma warning disable 414 // "not used" warning
-        private bool _previousPacketInvalid = false; // TODO: _previousPacketInvalid breaks lost decoding currently
+        private bool _previousPacketInvalid = true;
 #pragma warning restore 414
-        private int _channelCount = 2;
+
+        private int _channelCount;
+
+        private static readonly float[] EmptyBufferFloat = new float[] { };
+        private static readonly short[] EmptyBufferShort = new short[] { };
 
         public string Version
         {
@@ -60,126 +67,96 @@ namespace POpusCodec
                 throw new OpusException(OpusStatusCode.AllocFail, "Memory was not allocated for the encoder");
             }
         }
+        
+        private float[] bufferFloat; // allocated for exactly 1 frame size as first valid frame received
 
-        public short[] DecodePacketLost()
-        {
-            _previousPacketInvalid = true;
-
-            var lastPacketDur = Wrapper.get_opus_decoder_ctl(_handle, OpusCtlGetRequest.LastPacketDurationRequest);
-
-            short[] tempData = new short[lastPacketDur /*MaxFrameSize*/ * _channelCount];
-
-            int numSamplesDecoded = Wrapper.opus_decode(_handle, null, tempData, 0, _channelCount);
-
-            if (numSamplesDecoded == 0)
-                return new short[] { };
-
-            short[] pcm = new short[numSamplesDecoded * _channelCount];
-            Buffer.BlockCopy(tempData, 0, pcm, 0, pcm.Length * sizeof(short));
-
-            return pcm;
-        }
-
-
-        private float[] lostDataFloats;     // this is just a empty float[] of the size of the missing package. it can be re-used
-        public float[] DecodePacketLostFloat()
-        {
-            _previousPacketInvalid = true;
-
-            var lastPacketDur = Wrapper.get_opus_decoder_ctl(_handle, OpusCtlGetRequest.LastPacketDurationRequest);
-
-            if (lostDataFloats == null || lostDataFloats.Length != (lastPacketDur /*MaxFrameSize*/*_channelCount))
-            {
-                lostDataFloats = new float[lastPacketDur /*MaxFrameSize*/ * _channelCount];
-            }
-
-            int numSamplesDecoded = Wrapper.opus_decode(_handle, null, lostDataFloats, 0, _channelCount);
-
-            if (numSamplesDecoded == 0)
-                return new float[] { };
-
-
-            if (pcm == null || pcm.Length != (numSamplesDecoded * _channelCount))
-            {
-                pcm = new float[numSamplesDecoded * _channelCount];
-            }
-            Buffer.BlockCopy(lostDataFloats, 0, pcm, 0, pcm.Length * sizeof(float));
-
-            return pcm;
-        }
-
-
-        public short[] DecodePacket(byte[] packetData)
-        {
-            short[] tempData = new short[MaxFrameSize * _channelCount];
-
-            int bandwidth = Wrapper.opus_packet_get_bandwidth(packetData);
-
-            int numSamplesDecoded = 0;
-
-            if (bandwidth == (int)OpusStatusCode.InvalidPacket)
-            {
-                numSamplesDecoded = Wrapper.opus_decode(_handle, null, tempData, 0, _channelCount);
-                _previousPacketInvalid = true;
-            }
-            else
-            {
-                _previousPacketBandwidth = (Bandwidth)bandwidth;
-                // TODO: _previousPacketInvalid breaks lost decoding currently
-                numSamplesDecoded = Wrapper.opus_decode(_handle, packetData, tempData, /* _previousPacketInvalid ? 1 :*/ 0, _channelCount);
-
-                _previousPacketInvalid = false;
-            }
-
-            if (numSamplesDecoded == 0)
-                return new short[] { };
-
-            short[] pcm = new short[numSamplesDecoded * _channelCount];
-            Buffer.BlockCopy(tempData, 0, pcm, 0, pcm.Length * sizeof(short));
-
-            return pcm;
-        }
-
-        float[] tempData;
+        // pass null to indicate packet loss
         public float[] DecodePacketFloat(byte[] packetData)
         {
-            if (tempData == null || tempData.Length != MaxFrameSize * _channelCount)
+            if (this.bufferFloat == null && packetData == null)
             {
-                tempData = new float[MaxFrameSize * _channelCount];
+                return EmptyBufferFloat;
             }
-
-            int bandwidth = Wrapper.opus_packet_get_bandwidth(packetData);
-
+            
             int numSamplesDecoded = 0;
 
-            if (bandwidth == (int)OpusStatusCode.InvalidPacket)
+            float[] buf;
+            if (this.bufferFloat == null)
             {
-                numSamplesDecoded = Wrapper.opus_decode(_handle, null, tempData, 0, _channelCount);
-                _previousPacketInvalid = true;
+                buf = new float[MaxFrameSize * _channelCount];                
             }
             else
             {
-                _previousPacketBandwidth = (Bandwidth)bandwidth;
-                // TODO: _previousPacketInvalid breaks lost decoding currently
-                numSamplesDecoded = Wrapper.opus_decode(_handle, packetData, tempData, /* _previousPacketInvalid ? 1 : */ 0, _channelCount);
+                buf = this.bufferFloat;
+            }
 
+            numSamplesDecoded = Wrapper.opus_decode(_handle, packetData, buf, 0, _channelCount);
+
+            if (packetData == null)
+            {
                 _previousPacketInvalid = false;
+            }
+            else
+            { 
+                int bandwidth = Wrapper.opus_packet_get_bandwidth(packetData);
+                _previousPacketInvalid = bandwidth == (int)OpusStatusCode.InvalidPacket;
             }
 
             if (numSamplesDecoded == 0)
-                return new float[] { };
+                return EmptyBufferFloat;
 
-            if (pcm == null || pcm.Length != (numSamplesDecoded*_channelCount))
+            if (this.bufferFloat == null)
             {
-                pcm = new float[numSamplesDecoded * _channelCount];
+                this.bufferFloat = new float[numSamplesDecoded * _channelCount];
+                Buffer.BlockCopy(buf, 0, this.bufferFloat, 0, numSamplesDecoded * sizeof(float));
             }
-            Buffer.BlockCopy(tempData, 0, pcm, 0, pcm.Length * sizeof(float));
-
-            return pcm;
+            return this.bufferFloat;
         }
 
-        private float[] pcm;    // we can re-use this array, as the clip is copying the data internally (and we add this to the clip immediately)
+        private short[] bufferShort; // allocated for exactly 1 frame size as first valid frame received
 
+        // pass null to indicate packet loss
+        public short[] DecodePacketShort(byte[] packetData)
+        {
+            if (this.bufferShort == null && packetData == null)
+            {
+                return EmptyBufferShort;
+            }
+
+            int numSamplesDecoded = 0;
+
+            short[] buf;
+            if (this.bufferShort == null)
+            {
+                buf = new short[MaxFrameSize * _channelCount];
+            }
+            else
+            {
+                buf = this.bufferShort;
+            }
+
+            numSamplesDecoded = Wrapper.opus_decode(_handle, packetData, buf, 0, _channelCount);
+
+            if (packetData == null)
+            {
+                _previousPacketInvalid = false;
+            }
+            else
+            {
+                int bandwidth = Wrapper.opus_packet_get_bandwidth(packetData);
+                _previousPacketInvalid = bandwidth == (int)OpusStatusCode.InvalidPacket;
+            }
+
+            if (numSamplesDecoded == 0)
+                return EmptyBufferShort;
+
+            if (this.bufferShort == null)
+            {
+                this.bufferShort = new short[numSamplesDecoded * _channelCount];
+                Buffer.BlockCopy(buf, 0, this.bufferShort, 0, numSamplesDecoded * sizeof(short));
+            }
+            return this.bufferShort;
+        }
         public void Dispose()
         {
             if (_handle != IntPtr.Zero)

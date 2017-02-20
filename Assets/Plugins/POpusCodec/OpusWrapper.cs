@@ -9,7 +9,7 @@ namespace POpusCodec
 {
     internal class Wrapper
     {
-		#if UNITY_IPHONE || (UNITY_STANDALONE_OSX && UNITY_EDITOR)
+#if UNITY_IPHONE && !UNITY_EDITOR
         [DllImport("__Internal", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         private static extern int opus_encoder_get_size(Channels channels);
 

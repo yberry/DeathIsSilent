@@ -15,7 +15,7 @@ public class ViewDrag : MonoBehaviour
 
     void Update()
     {
-        /*if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
             hit_position = Input.mousePosition;
             camera_position = transform.position;
@@ -25,7 +25,7 @@ public class ViewDrag : MonoBehaviour
         {
             current_position = Input.mousePosition;
             LeftMouseDrag();
-        }*/
+        }
     }
 
     public bool invert = false;

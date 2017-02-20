@@ -1,26 +1,31 @@
-//#define NEWDEV
 // ----------------------------------------------------------------------------
 // <copyright file="LoadBalancingPeer.cs" company="Exit Games GmbH">
-//   Loadbalancing Framework for Photon - Copyright (C) 2011 Exit Games GmbH
+//   Loadbalancing Framework for Photon - Copyright (C) 2016 Exit Games GmbH
 // </copyright>
 // <summary>
-//   Provides the operations needed to use the "loadbalancing" server
-//   application which is also used in Photon Cloud.
+//   Provides operations to use the LoadBalancing and Cloud photon servers.
 //   No logic is implemented here.
 // </summary>
 // <author>developer@photonengine.com</author>
 // ----------------------------------------------------------------------------
 
+#if UNITY_4_7 || UNITY_5 || UNITY_5_0 || UNITY_5_1 || UNITY_6_0
+#define UNITY
+#endif
+
 namespace ExitGames.Client.Photon.LoadBalancing
 {
     using System;
+    using System.Diagnostics;
     using System.Collections;
     using System.Collections.Generic;
     using ExitGames.Client.Photon;
 
-#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7 || UNITY_5 || UNITY_5_0 || UNITY_5_1 || UNITY_6
+    #if UNITY || NETFX_CORE
     using Hashtable = ExitGames.Client.Photon.Hashtable;
-#endif
+    using SupportClass = ExitGames.Client.Photon.SupportClass;
+    #endif
+
 
     /// <summary>
     /// A LoadbalancingPeer provides the operations and enum definitions needed to use the loadbalancing server application which is also used in Photon Cloud.
@@ -32,8 +37,9 @@ namespace ExitGames.Client.Photon.LoadBalancing
     {
         private readonly Dictionary<byte, object> opParameters = new Dictionary<byte, object>(); // used in OpRaiseEvent() (avoids lots of new Dictionary() calls)
 
+
         /// <summary>
-        /// Creates a Peer with selected connection protocol.
+        /// Creates a Peer with specified connection protocol. You need to set the Listener before using the peer.
         /// </summary>
         /// <remarks>Each connection protocol has it's own default networking ports for Photon.</remarks>
         /// <param name="protocolType">The preferred option is UDP.</param>
@@ -41,14 +47,68 @@ namespace ExitGames.Client.Photon.LoadBalancing
         {
             // this does not require a Listener, so:
             // make sure to set this.Listener before using a peer!
+
+            this.ConfigUnitySockets();
         }
 
         /// <summary>
-        /// Creates a Peer with default connection protocol (UDP).
+        /// Creates a Peer with specified connection protocol and a Listener for callbacks.
         /// </summary>
-        public LoadBalancingPeer(IPhotonPeerListener listener, ConnectionProtocol protocolType) : base(listener, protocolType)
+        public LoadBalancingPeer(IPhotonPeerListener listener, ConnectionProtocol protocolType) : this(protocolType)
         {
+            this.Listener = listener;
         }
+
+
+        [Conditional("UNITY")]
+        private void ConfigUnitySockets()
+        {
+            #pragma warning disable 0162    // the library variant defines if we should use PUN's SocketUdp variant (at all)
+            if (PhotonPeer.NoSocket)
+            {
+                #if !UNITY_EDITOR && (UNITY_PS3 || UNITY_ANDROID)
+                this.SocketImplementationConfig[ConnectionProtocol.Udp] = typeof(SocketUdpNativeDynamic);
+                #elif !UNITY_EDITOR && UNITY_IPHONE
+                this.SocketImplementationConfig[ConnectionProtocol.Udp] = typeof(SocketUdpNativeStatic);
+                #elif !UNITY_EDITOR && (UNITY_WINRT)
+                // this automatically uses a separate assembly-file with Win8-style Socket usage (not possible in Editor)
+                #else
+                Type udpSocket = Type.GetType("ExitGames.Client.Photon.SocketUdp, Assembly-CSharp");
+                this.SocketImplementationConfig[ConnectionProtocol.Udp] = udpSocket;
+                if (udpSocket == null)
+                {
+                    #if UNITY
+                    UnityEngine.Debug.Log("Could not find a suitable C# socket class. This Photon3Unity3D.dll only supports native socket plugins.");
+                    #endif
+                }
+                #endif
+            }
+            #pragma warning restore 0162
+
+
+            #if UNITY_WEBGL
+            if (this.TransportProtocol != ConnectionProtocol.WebSocket && this.TransportProtocol != ConnectionProtocol.WebSocketSecure)
+            {
+                UnityEngine.Debug.Log("For UNITY_WEBGL, use protocol WebSocketSecure. Overriding currently set protcol " + this.TransportProtocol + ".");
+                this.TransportProtocol = ConnectionProtocol.WebSocketSecure;
+            }
+            #endif
+
+
+            // to support WebGL export in Unity, we find and assign the SocketWebTcp class (if it's in the project).
+            // alternatively class SocketWebTcp might be in the Photon3Unity3D.dll
+            Type socketTcp = Type.GetType("ExitGames.Client.Photon.SocketWebTcp, Assembly-CSharp", false);
+            if (socketTcp == null)
+            {
+                socketTcp = Type.GetType("ExitGames.Client.Photon.SocketWebTcp, Assembly-CSharp-firstpass", false);
+            }
+            if (socketTcp != null)
+            {
+                this.SocketImplementationConfig[ConnectionProtocol.WebSocket] = socketTcp;
+                this.SocketImplementationConfig[ConnectionProtocol.WebSocketSecure] = socketTcp;
+            }
+        }
+
 
         public virtual bool OpGetRegions(string appId)
         {
@@ -59,21 +119,12 @@ namespace ExitGames.Client.Photon.LoadBalancing
         }
 
         /// <summary>
-        /// Calls OpJoinLobby(string name, LobbyType lobbyType).
-        /// </summary>
-        /// <returns>If the operation could be sent (requires connection).</returns>
-        public virtual bool OpJoinLobby()
-        {
-            return this.OpJoinLobby(TypedLobby.Default);
-        }
-
-        /// <summary>
         /// Joins the lobby on the Master Server, where you get a list of RoomInfos of currently open rooms.
         /// This is an async request which triggers a OnOperationResponse() call.
         /// </summary>
         /// <param name="lobby">The lobby join to.</param>
         /// <returns>If the operation could be sent (has to be connected).</returns>
-        public virtual bool OpJoinLobby(TypedLobby lobby)
+        public virtual bool OpJoinLobby(TypedLobby lobby = null)
         {
             if (this.DebugOut >= DebugLevel.INFO)
             {
@@ -156,28 +207,6 @@ namespace ExitGames.Client.Photon.LoadBalancing
             }
         }
 
-        public class EnterRoomParams
-        {
-            public string RoomName;
-            public RoomOptions RoomOptions;
-            public TypedLobby Lobby;
-            public Hashtable PlayerProperties;
-            public bool OnGameServer = true;    // defaults to true! better send more parameter than too few (GS needs all)
-            public bool CreateIfNotExists;
-            public string[] ExpectedUsers;
-            public int ActorNumber;
-        }
-
-        public class OpJoinRandomRoomParams
-        {
-            public Hashtable ExpectedCustomRoomProperties;
-            public byte ExpectedMaxPlayers;
-            public MatchmakingMode MatchingType;
-            public TypedLobby TypedLobby;
-            public string SqlLobbyFilter;
-            public string[] ExpectedUsers;
-        }
-
         /// <summary>
         /// Creates a room (on either Master or Game Server).
         /// The OperationResponse depends on the server the peer is connected to:
@@ -222,7 +251,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
                 this.RoomOptionsToOpParameters(op, opParams.RoomOptions);
             }
 
-            //UnityEngine.Debug.Log("CreateGame: " + SupportClass.DictionaryToString(op));
+            //this.Listener.DebugReturn(DebugLevel.INFO, "CreateGame: " + SupportClass.DictionaryToString(op));
             return this.OpCustom(OperationCode.CreateGame, op, true);
         }
 
@@ -261,10 +290,9 @@ namespace ExitGames.Client.Photon.LoadBalancing
                 }
             }
 
-            if (opParams.ActorNumber != 0)
+            if (opParams.RejoinOnly)
             {
                 op[ParameterCode.JoinMode] = (byte)JoinMode.RejoinOnly; // changed from JoinMode.JoinOrRejoin
-                op[ParameterCode.ActorNr] = opParams.ActorNumber;
             }
 
             if (opParams.ExpectedUsers != null && opParams.ExpectedUsers.Length > 0)
@@ -339,7 +367,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
                 opParameters[ParameterCode.Add] = opJoinRandomRoomParams.ExpectedUsers;
             }
 
-            // UnityEngine.Debug.LogWarning("OpJoinRandom: " + opParameters.ToStringFull());
+            //this.Listener.DebugReturn(DebugLevel.INFO, "OpJoinRandom: " + SupportClass.DictionaryToString(opParameters));
             return this.OpCustom(OperationCode.JoinRandomGame, opParameters, true);
         }
 
@@ -390,10 +418,10 @@ namespace ExitGames.Client.Photon.LoadBalancing
         /// </summary>
         /// <param name="actorNr">The payer ID (a.k.a. actorNumber) of the player to attach these properties to.</param>
         /// <param name="actorProperties">The properties to add or update.</param>
-        /// <param name="expectedProperties">The properties expected when update occurs. (CAS : "Check And Swap")</param>
-        /// <param name="webForward"></param>
+        /// <param name="expectedProperties">If set, these must be in the current properties-set (on the server) to set actorProperties: CAS.</param>
+        /// <param name="webflags">Set these to forward the properties to a WebHook as defined for this app (in Dashboard).</param>
         /// <returns>If the operation could be sent (requires connection).</returns>
-        protected internal bool OpSetPropertiesOfActor(int actorNr, Hashtable actorProperties, Hashtable expectedProperties = null, bool webForward = false)
+        protected internal bool OpSetPropertiesOfActor(int actorNr, Hashtable actorProperties, Hashtable expectedProperties = null, WebFlags webflags = null)
         {
             if (this.DebugOut >= DebugLevel.INFO)
             {
@@ -418,9 +446,9 @@ namespace ExitGames.Client.Photon.LoadBalancing
                 opParameters.Add(ParameterCode.ExpectedValues, expectedProperties);
             }
 
-            if (webForward)
+            if (webflags != null && webflags.HttpForward)
             {
-                opParameters[ParameterCode.EventForward] = true;
+                opParameters[ParameterCode.EventForward] = webflags.WebhookFlags;
             }
 
             return this.OpCustom((byte)OperationCode.SetProperties, opParameters, true, 0, false);
@@ -433,9 +461,9 @@ namespace ExitGames.Client.Photon.LoadBalancing
         /// </summary>
         /// <param name="gameProperties">The properties to add or update.</param>
         /// <param name="expectedProperties">The properties expected when update occurs. (CAS : "Check And Swap")</param>
-        /// <param name="webForward">"WebFlag" to indicate if request should be forwarded as "PathProperties" webhook or not.</param>
+        /// <param name="webflags">WebFlag to indicate if request should be forwarded as "PathProperties" webhook or not.</param>
         /// <returns>If the operation could be sent (has to be connected).</returns>
-        protected internal bool OpSetPropertiesOfRoom(Hashtable gameProperties, Hashtable expectedProperties = null, bool webForward = false)
+        protected internal bool OpSetPropertiesOfRoom(Hashtable gameProperties, Hashtable expectedProperties = null, WebFlags webflags = null)
         {
             if (this.DebugOut >= DebugLevel.INFO)
             {
@@ -450,9 +478,9 @@ namespace ExitGames.Client.Photon.LoadBalancing
                 opParameters.Add(ParameterCode.ExpectedValues, expectedProperties);
             }
 
-            if (webForward)
+            if (webflags!=null && webflags.HttpForward)
             {
-                opParameters[ParameterCode.EventForward] = true;
+                opParameters[ParameterCode.EventForward] = webflags.WebhookFlags;
             }
 
             return this.OpCustom((byte)OperationCode.SetProperties, opParameters, true, 0, false);
@@ -469,7 +497,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
         /// </remarks>
         /// <param name="appId">Your application's name or ID to authenticate. This is assigned by Photon Cloud (webpage).</param>
         /// <param name="appVersion">The client's version (clients with differing client appVersions are separated and players don't meet).</param>
-        /// <param name="authValues">Optional authentication values. The client can set no values or a UserId or some parameters for Custom Authentication by a server.</param>
+        /// <param name="authValues">Contains all values relevant for authentication. Even without account system (external Custom Auth), the clients are allowed to identify themselves.</param>
         /// <param name="regionCode">Optional region code, if the client should connect to a specific Photon Cloud Region.</param>
         /// <param name="getLobbyStatistics">Set to true on Master Server to receive "Lobby Statistics" events.</param>
         /// <returns>If the operation could be sent (has to be connected).</returns>
@@ -487,11 +515,15 @@ namespace ExitGames.Client.Photon.LoadBalancing
                 opParameters[ParameterCode.LobbyStats] = true;
             }
 
+            // shortcut, if we have a Token
             if (authValues != null && authValues.Token != null)
             {
                 opParameters[ParameterCode.Secret] = authValues.Token;
-                return this.OpCustom(OperationCode.Authenticate, opParameters, true, (byte) 0, false);
+                return this.OpCustom(OperationCode.Authenticate, opParameters, true, (byte)0, false);   // we don't have to encrypt, when we have a token (which is encrypted)
             }
+
+
+            // without a token, we send a complete op auth
 
             opParameters[ParameterCode.AppVersion] = appVersion;
             opParameters[ParameterCode.ApplicationId] = appId;
@@ -511,7 +543,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
 
                 if (authValues.AuthType != CustomAuthenticationType.None)
                 {
-                    opParameters[ParameterCode.ClientAuthenticationType] = (byte) authValues.AuthType;
+                    opParameters[ParameterCode.ClientAuthenticationType] = (byte)authValues.AuthType;
                     if (!string.IsNullOrEmpty(authValues.Token))
                     {
                         opParameters[ParameterCode.Secret] = authValues.Token;
@@ -534,6 +566,82 @@ namespace ExitGames.Client.Photon.LoadBalancing
         }
 
         /// <summary>
+        /// Sends this app's appId and appVersion to identify this application server side.
+        /// This is an async request which triggers a OnOperationResponse() call.
+        /// </summary>
+        /// <remarks>
+        /// This operation makes use of encryption, if that is established before.
+        /// See: EstablishEncryption(). Check encryption with IsEncryptionAvailable.
+        /// This operation is allowed only once per connection (multiple calls will have ErrorCode != Ok).
+        /// </remarks>
+        /// <param name="appId">Your application's name or ID to authenticate. This is assigned by Photon Cloud (webpage).</param>
+        /// <param name="appVersion">The client's version (clients with differing client appVersions are separated and players don't meet).</param>
+        /// <param name="authValues">Optional authentication values. The client can set no values or a UserId or some parameters for Custom Authentication by a server.</param>
+        /// <param name="regionCode">Optional region code, if the client should connect to a specific Photon Cloud Region.</param>
+        /// <param name="encryptionMode"></param>
+        /// <param name="expectedProtocol"></param>
+        /// <returns>If the operation could be sent (has to be connected).</returns>
+        public virtual bool OpAuthenticateOnce(string appId, string appVersion, AuthenticationValues authValues, string regionCode, EncryptionMode encryptionMode, ConnectionProtocol expectedProtocol)
+        {
+            if (this.DebugOut >= DebugLevel.INFO)
+            {
+                this.Listener.DebugReturn(DebugLevel.INFO, "OpAuthenticate()");
+            }
+
+
+            var opParameters = new Dictionary<byte, object>();
+
+            // shortcut, if we have a Token
+            if (authValues != null && authValues.Token != null)
+            {
+                opParameters[ParameterCode.Secret] = authValues.Token;
+                return this.OpCustom(OperationCode.AuthenticateOnce, opParameters, true, (byte)0, false);   // we don't have to encrypt, when we have a token (which is encrypted)
+            }
+
+
+            opParameters[ParameterCode.ExpectedProtocol] = (byte)expectedProtocol;
+            opParameters[ParameterCode.EncryptionMode] = (byte)encryptionMode;
+
+            opParameters[ParameterCode.AppVersion] = appVersion;
+            opParameters[ParameterCode.ApplicationId] = appId;
+
+            if (!string.IsNullOrEmpty(regionCode))
+            {
+                opParameters[ParameterCode.Region] = regionCode;
+            }
+
+            if (authValues != null)
+            {
+                if (!string.IsNullOrEmpty(authValues.UserId))
+                {
+                    opParameters[ParameterCode.UserId] = authValues.UserId;
+                }
+
+                if (authValues.AuthType != CustomAuthenticationType.None)
+                {
+                    opParameters[ParameterCode.ClientAuthenticationType] = (byte)authValues.AuthType;
+                    if (!string.IsNullOrEmpty(authValues.Token))
+                    {
+                        opParameters[ParameterCode.Secret] = authValues.Token;
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(authValues.AuthGetParameters))
+                        {
+                            opParameters[ParameterCode.ClientAuthenticationParams] = authValues.AuthGetParameters;
+                        }
+                        if (authValues.AuthPostData != null)
+                        {
+                            opParameters[ParameterCode.ClientAuthenticationData] = authValues.AuthPostData;
+                        }
+                    }
+                }
+            }
+
+            return this.OpCustom(OperationCode.AuthenticateOnce, opParameters, true, (byte)0, this.IsEncryptionAvailable);
+        }
+
+        /// <summary>
         /// Operation to handle this client's interest groups (for events in room).
         /// </summary>
         /// <remarks>
@@ -544,9 +652,9 @@ namespace ExitGames.Client.Photon.LoadBalancing
         ///
         /// Changes become active not immediately but when the server executes this operation (approximately RTT/2).
         /// </remarks>
-        /// <param name="groupsToRemove">Groups to remove from interest. Null will not leave any. A byte[0] will remove all.</param>
+        /// <param name="groupsToRemove">Groups to remove from interest. Null will not remove any. A byte[0] will remove all.</param>
         /// <param name="groupsToAdd">Groups to add to interest. Null will not add any. A byte[0] will add all current.</param>
-        /// <returns></returns>
+        /// <returns>If operation could be enqueued for sending. Sent when calling: Service or SendOutgoingCommands.</returns>
         public virtual bool OpChangeGroups(byte[] groupsToRemove, byte[] groupsToAdd)
         {
             if (this.DebugOut >= DebugLevel.ALL)
@@ -567,171 +675,6 @@ namespace ExitGames.Client.Photon.LoadBalancing
             return this.OpCustom((byte)OperationCode.ChangeGroups, opParameters, true, 0);
         }
 
-        /// <summary>
-        /// Send an event with custom code/type and any content to the other players in the same room.
-        /// </summary>
-        /// <remarks>This override explicitly uses another parameter order to not mix it up with the implementation for Hashtable only.</remarks>
-        /// <param name="eventCode">Identifies this type of event (and the content). Your game's event codes can start with 0.</param>
-        /// <param name="sendReliable">If this event has to arrive reliably (potentially repeated if it's lost).</param>
-        /// <param name="customEventContent">Any serializable datatype (including Hashtable like the other OpRaiseEvent overloads).</param>
-        /// <returns>If operation could be enqueued for sending. Sent when calling: Service or SendOutgoingCommands.</returns>
-        [Obsolete("Use overload with RaiseEventOptions to reduce parameter- and overload-clutter.")]
-        public virtual bool OpRaiseEvent(byte eventCode, bool sendReliable, object customEventContent)
-        {
-            return this.OpRaiseEvent(eventCode, customEventContent, sendReliable, null);
-        }
-
-        /// <summary>
-        /// Send an event with custom code/type and any content to the other players in the same room.
-        /// </summary>
-        /// <remarks>This override explicitly uses another parameter order to not mix it up with the implementation for Hashtable only.</remarks>
-        /// <param name="eventCode">Identifies this type of event (and the content). Your game's event codes can start with 0.</param>
-        /// <param name="sendReliable">If this event has to arrive reliably (potentially repeated if it's lost).</param>
-        /// <param name="customEventContent">Any serializable datatype (including Hashtable like the other OpRaiseEvent overloads).</param>
-        /// <param name="channelId">Command sequence in which this command belongs. Must be less than value of ChannelCount property. Default: 0.</param>
-        /// <param name="cache">Affects how the server will treat the event caching-wise. Can cache events for players joining later on or remove previously cached events. Default: DoNotCache.</param>
-        /// <param name="targetActors">List of ActorNumbers (in this room) to send the event to. Overrides caching. Default: null.</param>
-        /// <param name="receivers">Defines a target-player group. Default: Others.</param>
-        /// <param name="interestGroup">Defines to which interest group the event is sent. Players can subscribe or unsibscribe to groups. Group 0 is always sent to all. Default: 0.</param>
-        /// <returns>If operation could be enqueued for sending. Sent when calling: Service or SendOutgoingCommands.</returns>
-        [Obsolete("Use overload with RaiseEventOptions to reduce parameter- and overload-clutter.")]
-        public virtual bool OpRaiseEvent(byte eventCode, bool sendReliable, object customEventContent, byte channelId, EventCaching cache, int[] targetActors, ReceiverGroup receivers, byte interestGroup)
-        {
-            return OpRaiseEvent(eventCode, sendReliable, customEventContent, channelId, cache, targetActors, receivers, interestGroup, false);
-        }
-
-        /// <summary>
-        /// Send an event with custom code/type and any content to the other players in the same room.
-        /// </summary>
-        /// <remarks>This override explicitly uses another parameter order to not mix it up with the implementation for Hashtable only.</remarks>
-        /// <param name="eventCode">Identifies this type of event (and the content). Your game's event codes can start with 0.</param>
-        /// <param name="sendReliable">If this event has to arrive reliably (potentially repeated if it's lost).</param>
-        /// <param name="customEventContent">Any serializable datatype (including Hashtable like the other OpRaiseEvent overloads).</param>
-        /// <param name="channelId">Command sequence in which this command belongs. Must be less than value of ChannelCount property. Default: 0.</param>
-        /// <param name="cache">Affects how the server will treat the event caching-wise. Can cache events for players joining later on or remove previously cached events. Default: DoNotCache.</param>
-        /// <param name="targetActors">List of ActorNumbers (in this room) to send the event to. Overrides caching. Default: null.</param>
-        /// <param name="receivers">Defines a target-player group. Default: Others.</param>
-        /// <param name="interestGroup">Defines to which interest group the event is sent. Players can subscribe or unsibscribe to groups. Group 0 is always sent to all. Default: 0.</param>
-        /// <param name="forwardToWebhook">Tells the server to send this event to the "WebHook" configured for your Application in the Dashboard. Should only be used in Turnbased games.</param>
-        /// <returns>If operation could be enqueued for sending. Sent when calling: Service or SendOutgoingCommands.</returns>
-        [Obsolete("Use overload with RaiseEventOptions to reduce parameter- and overload-clutter.")]
-        public virtual bool OpRaiseEvent(byte eventCode, bool sendReliable, object customEventContent, byte channelId, EventCaching cache, int[] targetActors, ReceiverGroup receivers, byte interestGroup, bool forwardToWebhook)
-        {
-            Dictionary<byte, object> opParameters = new Dictionary<byte, object>();
-            opParameters[(byte)ParameterCode.Code] = (byte)eventCode;
-
-            if (customEventContent != null)
-            {
-                opParameters[(byte)ParameterCode.Data] = customEventContent;
-            }
-            if (cache != EventCaching.DoNotCache)
-            {
-                opParameters[(byte)ParameterCode.Cache] = (byte)cache;
-            }
-            if (receivers != ReceiverGroup.Others)
-            {
-                opParameters[(byte)ParameterCode.ReceiverGroup] = (byte)receivers;
-            }
-            if (interestGroup != 0)
-            {
-                opParameters[(byte)ParameterCode.Group] = (byte)interestGroup;
-            }
-            if (targetActors != null)
-            {
-                opParameters[(byte)ParameterCode.ActorList] = targetActors;
-            }
-            if (forwardToWebhook)
-            {
-                opParameters[(byte) ParameterCode.EventForward] = true; //TURNBASED
-            }
-
-            return this.OpCustom((byte)OperationCode.RaiseEvent, opParameters, sendReliable, channelId, false);
-        }
-
-        /// <summary>
-        /// Send your custom data as event to an "interest group" in the current Room.
-        /// </summary>
-        /// <remarks>
-        /// No matter if reliable or not, when an event is sent to a interest Group, some users won't get this data.
-        /// Clients can control the groups they are interested in by using OpChangeGroups.
-        /// </remarks>
-        /// <param name="eventCode">Identifies this type of event (and the content). Your game's event codes can start with 0.</param>
-        /// <param name="interestGroup">The ID of the interest group this event goes to (exclusively).</param>
-        /// <param name="customEventContent">Custom data you want to send along (use null, if none).</param>
-        /// <param name="sendReliable">If this event has to arrive reliably (potentially repeated if it's lost).</param>
-        /// <returns>If operation could be enqueued for sending</returns>
-        [Obsolete("Use overload with RaiseEventOptions to reduce parameter- and overload-clutter.")]
-        public virtual bool OpRaiseEvent(byte eventCode, byte interestGroup, Hashtable customEventContent, bool sendReliable)
-        {
-            return this.OpRaiseEvent(eventCode, sendReliable, customEventContent, 0, EventCaching.DoNotCache, null, ReceiverGroup.Others, 0, false);
-        }
-
-        /// <summary>
-        /// Used in a room to raise (send) an event to the other players.
-        /// Multiple overloads expose different parameters to this frequently used operation.
-        /// This is an async request will trigger a OnOperationResponse() call only in error-cases,
-        /// because it's called many times per second and can hardly fail.
-        /// </summary>
-        /// <param name="eventCode">Code for this "type" of event (assign a code, "meaning" and content at will, starting at code 1).</param>
-        /// <param name="evData">Data to send. Hashtable that contains key-values of Photon serializable datatypes.</param>
-        /// <param name="sendReliable">Use false if the event is replaced by a newer rapidly. Reliable events add overhead and add lag when repeated.</param>
-        /// <param name="channelId">The "channel" to which this event should belong. Per channel, the sequence is kept in order.</param>
-        /// <returns>If the operation could be sent (has to be connected).</returns>
-        [Obsolete("Use overload with RaiseEventOptions to reduce parameter- and overload-clutter.")]
-        public virtual bool OpRaiseEvent(byte eventCode, Hashtable evData, bool sendReliable, byte channelId)
-        {
-            return this.OpRaiseEvent(eventCode, sendReliable, evData, channelId, EventCaching.DoNotCache, null, ReceiverGroup.Others, 0, false);
-        }
-
-        /// <summary>
-        /// Used in a room to raise (send) an event to the other players.
-        /// Multiple overloads expose different parameters to this frequently used operation.
-        /// </summary>
-        /// <param name="eventCode">Code for this "type" of event (use a code per "meaning" or content).</param>
-        /// <param name="evData">Data to send. Hashtable that contains key-values of Photon serializable datatypes.</param>
-        /// <param name="sendReliable">Use false if the event is replaced by a newer rapidly. Reliable events add overhead and add lag when repeated.</param>
-        /// <param name="channelId">The "channel" to which this event should belong. Per channel, the sequence is kept in order.</param>
-        /// <param name="targetActors">Defines the target players who should receive the event (use only for small target groups).</param>
-        /// <returns>If the operation could be sent (has to be connected).</returns>
-        [Obsolete("Use overload with RaiseEventOptions to reduce parameter- and overload-clutter.")]
-        public virtual bool OpRaiseEvent(byte eventCode, Hashtable evData, bool sendReliable, byte channelId, int[] targetActors)
-        {
-            return this.OpRaiseEvent(eventCode, sendReliable, evData, channelId, EventCaching.DoNotCache, targetActors, ReceiverGroup.Others, 0, false);
-        }
-
-        /// <summary>
-        /// Used in a room to raise (send) an event to the other players.
-        /// Multiple overloads expose different parameters to this frequently used operation.
-        /// </summary>
-        /// <param name="eventCode">Code for this "type" of event (use a code per "meaning" or content).</param>
-        /// <param name="evData">Data to send. Hashtable that contains key-values of Photon serializable datatypes.</param>
-        /// <param name="sendReliable">Use false if the event is replaced by a newer rapidly. Reliable events add overhead and add lag when repeated.</param>
-        /// <param name="channelId">The "channel" to which this event should belong. Per channel, the sequence is kept in order.</param>
-        /// <param name="targetActors">Defines the target players who should receive the event (use only for small target groups).</param>
-        /// <param name="cache">Use EventCaching options to store this event for players who join.</param>
-        /// <returns>If the operation could be sent (has to be connected).</returns>
-        [Obsolete("Use overload with RaiseEventOptions to reduce parameter- and overload-clutter.")]
-        public virtual bool OpRaiseEvent(byte eventCode, Hashtable evData, bool sendReliable, byte channelId, int[] targetActors, EventCaching cache)
-        {
-            return this.OpRaiseEvent(eventCode, sendReliable, evData, channelId, cache, targetActors, ReceiverGroup.Others, 0, false);
-        }
-
-        /// <summary>
-        /// Used in a room to raise (send) an event to the other players.
-        /// Multiple overloads expose different parameters to this frequently used operation.
-        /// </summary>
-        /// <param name="eventCode">Code for this "type" of event (use a code per "meaning" or content).</param>
-        /// <param name="evData">Data to send. Hashtable that contains key-values of Photon serializable datatypes.</param>
-        /// <param name="sendReliable">Use false if the event is replaced by a newer rapidly. Reliable events add overhead and add lag when repeated.</param>
-        /// <param name="channelId">The "channel" to which this event should belong. Per channel, the sequence is kept in order.</param>
-        /// <param name="cache">Use EventCaching options to store this event for players who join.</param>
-        /// <param name="receivers">ReceiverGroup defines to which group of players the event is passed on.</param>
-        /// <returns>If the operation could be sent (has to be connected).</returns>
-        [Obsolete("Use overload with RaiseEventOptions to reduce parameter- and overload-clutter.")]
-        public virtual bool OpRaiseEvent(byte eventCode, Hashtable evData, bool sendReliable, byte channelId, EventCaching cache, ReceiverGroup receivers)
-        {
-            return this.OpRaiseEvent(eventCode, sendReliable, evData, channelId, cache, null, receivers, 0, false);
-        }
 
         /// <summary>
         /// Send an event with custom code/type and any content to the other players in the same room.
@@ -773,14 +716,69 @@ namespace ExitGames.Client.Photon.LoadBalancing
                 {
                     opParameters[(byte) ParameterCode.ActorList] = raiseEventOptions.TargetActors;
                 }
-                if (raiseEventOptions.ForwardToWebhook)
+                if (raiseEventOptions.Flags.HttpForward)
                 {
-                    opParameters[(byte) ParameterCode.EventForward] = true; //TURNBASED
+                    opParameters[(byte) ParameterCode.EventForward] = raiseEventOptions.Flags.WebhookFlags; //TURNBASED
                 }
             }
 
-            return this.OpCustom((byte) OperationCode.RaiseEvent, opParameters, sendReliable, raiseEventOptions.SequenceChannel, sendReliable);
+            return this.OpCustom((byte) OperationCode.RaiseEvent, opParameters, sendReliable, raiseEventOptions.SequenceChannel, false);
         }
+
+
+        /// <summary>
+        /// Internally used operation to set some "per server" settings. This is for the Master Server.
+        /// </summary>
+        /// <param name="receiveLobbyStats">Set to true, to get Lobby Statistics (lists of existing lobbies).</param>
+        /// <returns>False if the operation could not be sent.</returns>
+        public virtual bool OpSettings(bool receiveLobbyStats)
+        {
+            if (this.DebugOut >= DebugLevel.ALL)
+            {
+                this.Listener.DebugReturn(DebugLevel.ALL, "OpSettings()");
+            }
+
+            // re-used private variable to avoid many new Dictionary() calls (garbage collection)
+            opParameters.Clear();
+
+            // implementation for Master Server:
+            if (receiveLobbyStats)
+            {
+                opParameters[(byte)0] = receiveLobbyStats;
+            }
+
+            if (this.opParameters.Count == 0)
+            {
+                // no need to send op in case we set the default values
+                return true;
+            }
+            return this.OpCustom((byte)OperationCode.ServerSettings, opParameters, true);
+        }
+    }
+
+
+
+
+    public class OpJoinRandomRoomParams
+    {
+        public Hashtable ExpectedCustomRoomProperties;
+        public byte ExpectedMaxPlayers;
+        public MatchmakingMode MatchingType;
+        public TypedLobby TypedLobby;
+        public string SqlLobbyFilter;
+        public string[] ExpectedUsers;
+    }
+
+    public class EnterRoomParams
+    {
+        public string RoomName;
+        public RoomOptions RoomOptions;
+        public TypedLobby Lobby;
+        public Hashtable PlayerProperties;
+        public bool OnGameServer = true; // defaults to true! better send more parameter than too few (GS needs all)
+        public bool CreateIfNotExists;
+        public bool RejoinOnly;
+        public string[] ExpectedUsers;
     }
 
 
@@ -867,7 +865,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
         /// <remarks>
         /// Some subscription plans for the Photon Cloud are region-bound. Servers of other regions can't be used then.
         /// Check your master server address and compare it with your Photon Cloud Dashboard's info.
-        /// https://cloud.photonengine.com/dashboard
+        /// https://www.photonengine.com/dashboard
         ///
         /// OpAuthorize is part of connection workflow but only on the Photon Cloud, this error can happen.
         /// Self-hosted Photon servers with a CCU limited license won't let a client connect at all.
@@ -883,7 +881,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
         public const int AuthenticationTicketExpired = 0x7FF1;
 
         /// <summary>
-        /// (32752) A server-side plugin failed to execute and reported an error. Check the OperationResponse.DebugMessage.
+        /// (32752) A server-side plugin (or webhook) failed to execute and reported an error. Check the OperationResponse.DebugMessage.
         /// </summary>
         public const int PluginReportedError = 0x7FFF - 15;
 
@@ -928,15 +926,19 @@ namespace ExitGames.Client.Photon.LoadBalancing
         public const int ExternalHttpCallFailed = 32744; // 0x7FFF - 23,
 
         /// <summary>
-        /// (32742) Server will react with this error if exception happenes during matchmaking with slot reservation.
+        /// (32742) Server error during matchmaking with slot reservation. E.g. the reserved slots can not exceed MaxPlayers.
         /// </summary>
         public const int SlotError = 32742; // 0x7FFF - 25,
 
+        /// <summary>
+        /// (32741) Server will react with this error if invalid encryption parameters provided by token
+        /// </summary>
+        public const int InvalidEncryptionParameters = 32741; // 0x7FFF - 24,
     }
 
 
     /// <summary>
-    /// These (byte) values define "well known" properties for an Actor / Player.
+    /// Class for constants. These (byte) values define "well known" properties for an Actor / Player.
     /// </summary>
     /// <remarks>
     /// "Custom properties" have to use a string-type as key. They can be assigned at will.
@@ -994,7 +996,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
 
 
     /// <summary>
-    /// These values are for events defined by Photon Loadbalancing.
+    /// Class for constants. These values are for events defined by Photon Loadbalancing.
     /// </summary>
     /// <remarks>They start at 255 and go DOWN. Your own in-game events can start at 0.</remarks>
     public class EventCode
@@ -1038,11 +1040,14 @@ namespace ExitGames.Client.Photon.LoadBalancing
         /// Obsolete. Replaced by Leave. public const byte Disconnect = LiteEventCode.Disconnect;
 
         /// <summary>(251) Sent by Photon Cloud when a plugin-call or webhook-call failed. Usually, the execution on the server continues, despite the issue. Contains: ParameterCode.Info.</summary>
-        /// <seealso cref="https://doc.photonengine.com/en/realtime/current/reference/webhooks"/>
+        /// <seealso cref="https://doc.photonengine.com/en/realtime/current/reference/webhooks#options"/>
         public const byte ErrorInfo = 251;
 
         /// <summary>(250) Sent by Photon whent he event cache slice was changed. Done by OpRaiseEvent.</summary>
         public const byte CacheSliceChanged = 250;
+
+        /// <summary>(223) Sent by Photon to update a token before it times out.</summary>
+        public const byte AuthEvent = 223;
     }
 
 
@@ -1067,7 +1072,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
         [Obsolete("Use: IsInactive")]
         public const byte IsComingBack = (byte)233;
 
-        /// <summary>(233) Used to define if a user is inactive (and might come back) or not. In rooms with PlayerTTL, becoming inactive is the default case.</summary>
+        /// <summary>(233) Used in EvLeave to describe if a user is inactive (and might come back) or not. In rooms with PlayerTTL, becoming inactive is the default case.</summary>
         public const byte IsInactive = (byte)233;
 
         /// <summary>(232) Used when creating rooms to define if any userid can join the room only once.</summary>
@@ -1127,7 +1132,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
         /// <summary>(250) Code for broadcast parameter of OpSetProperties method.</summary>
         public const byte Broadcast = (byte)250;
 
-        /// <summary>(252) Code for list of players in a room. Currently not used.</summary>
+        /// <summary>(252) Code for list of players in a room.</summary>
         public const byte ActorList = (byte)252;
 
         /// <summary>(254) Code of the Actor of an operation. Used for property get and set.</summary>
@@ -1199,6 +1204,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
         public const byte ClientAuthenticationData = 214;
 
         /// <summary>(203) Code for MasterClientId, which is synced by server. When sent as op-parameter this is code 203.</summary>
+        /// <remarks>Tightly related to GamePropertyKey.MasterClientId.</remarks>
         public const byte MasterClientId = (byte)203;
 
         /// <summary>(1) Used in Op FindFriends request. Value must be string[] of friends to look up.</summary>
@@ -1237,12 +1243,12 @@ namespace ExitGames.Client.Photon.LoadBalancing
         /// <summary>(205) Used to define a "slice" for cached events. Slices can easily be removed from cache. Type: int.</summary>
         public const byte CacheSliceIndex = 205;
 
-        /// <summary>
-        /// Informs the server of the expected plugin setup.
+        /// <summary>(204) Informs the server of the expected plugin setup.</summary>
+        /// <remarks>
         /// The operation will fail in case of a plugin mismatch returning error code PluginMismatch 32751(0x7FFF - 16).
         /// Setting string[]{} means the client expects no plugin to be setup.
         /// Note: for backwards compatibility null omits any check.
-        /// </summary>
+        /// </remarks>
         public const byte Plugins = 204;
 
         /// <summary>(202) Used by the server in Operation Responses, when it sends the nickname of the client (the user's nickname).</summary>
@@ -1253,11 +1259,23 @@ namespace ExitGames.Client.Photon.LoadBalancing
 
         /// <summary>(200) Informs user about version of plugin load to game</summary>
         public const byte PluginVersion = 200;
+
+        /// <summary>(195) Protocol which will be used by client to connect master/game servers. Used for nameserver.</summary>
+        public const byte ExpectedProtocol = 195;
+
+        /// <summary>(194) Set of custom parameters which are sent in auth request.</summary>
+        public const byte CustomInitData = 194;
+
+        /// <summary>(193) How are we going to encrypt data.</summary>
+        public const byte EncryptionMode = 193;
+
+        /// <summary>(192) Parameter of Authentication, which contains encryption keys (depends on AuthMode and EncryptionMode).</summary>
+        public const byte EncryptionData = 192;
     }
 
 
     /// <summary>
-    /// Codes for parameters and events used in PhotonLoadbalancingAPI
+    /// Class for constants. Contains operation codes.
     /// </summary>
     public class OperationCode
     {
@@ -1266,6 +1284,9 @@ namespace ExitGames.Client.Photon.LoadBalancing
 
         /// <summary>(255) Code for OpJoin, to get into a room.</summary>
         public const byte Join = 255;
+
+        /// <summary>(231) Authenticates this peer and connects to a virtual application</summary>
+        public const byte AuthenticateOnce = 231;
 
         /// <summary>(230) Authenticates this peer and connects to a virtual application</summary>
         public const byte Authenticate = 230;
@@ -1313,6 +1334,9 @@ namespace ExitGames.Client.Photon.LoadBalancing
 
         /// <summary>(219) WebRpc Operation.</summary>
         public const byte WebRpc = 219;
+
+        /// <summary>(218) Operation to set some server settings. Used with different parameters on various servers.</summary>
+        public const byte ServerSettings = 218;
     }
 
     /// <summary>Defines possible values for OpJoinRoom and OpJoinOrCreate. It tells the server if the room can be only be joined normally, created implicitly or found on a web-service for Turnbased games.</summary>
@@ -1437,6 +1461,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
 
 
     /// <summary>Wraps up common room properties needed when you create rooms. Read the individual entries for more details.</summary>
+    /// <remarks>This directly maps to the fields in the Room class.</remarks>
     public class RoomOptions
     {
         /// <summary>Defines if this room is listed in the lobby. If not, it also is not joined randomly.</summary>
@@ -1517,13 +1542,17 @@ namespace ExitGames.Client.Photon.LoadBalancing
         /// Using this makes the client unaware of the other players in a room.
         /// That can save some traffic if you have some server logic that updates players
         /// but it can also limit the client's usability.
-        /// PUN will break, if you use this.
         /// </remarks>
         public bool SuppressRoomEvents { get; set; }
 
         /// <summary>
         /// Defines if the UserIds of players get "published" in the room. Useful for FindFriends, if players want to play another game together.
         /// </summary>
+        /// <remarks>
+        /// When you set this to true, Photon will publish the UserIds of the players in that room.
+        /// In that case, you can use PhotonPlayer.userId, to access any player's userID.
+        /// This is useful for FindFriends and to set "expected users" to reserve slots in a room (see PhotonNetwork.JoinRoom e.g.).
+        /// </remarks>
         public bool PublishUserId { get; set; }
     }
 
@@ -1552,8 +1581,9 @@ namespace ExitGames.Client.Photon.LoadBalancing
         /// <summary>Events are ordered per "channel". If you have events that are independent of others, they can go into another sequence or channel.</summary>
         public byte SequenceChannel;
 
-        /// <summary>Events can be forwarded to Webhooks, which can evaluate and use the events to follow the game's state.</summary>
-        public bool ForwardToWebhook;
+        /// <summary> Optional flags to be used in Photon client SDKs with Op RaiseEvent and Op SetProperties.
+        /// Introduced mainly for webhooks 1.2 to control behavior of forwarded HTTP requests.</summary>
+        public WebFlags Flags = WebFlags.Default;
 
         ///// <summary>Used along with CachingOption SliceSetIndex, SlicePurgeIndex or SlicePurgeUpToIndex if you want to set or purge a specific cache-slice.</summary>
         //public int CacheSliceIndex;
@@ -1619,6 +1649,13 @@ namespace ExitGames.Client.Photon.LoadBalancing
         }
     }
 
+
+    /// <summary>
+    /// Options for authentication modes. From "classic" auth on each server to AuthOnce (on NameServer).
+    /// </summary>
+    public enum AuthModeOption { Auth, AuthOnce, AuthOnceWss }
+
+
     /// <summary>
     /// Options for optional "Custom Authentication" services used with Photon. Used by OpAuthenticate after connecting to Photon.
     /// </summary>
@@ -1632,6 +1669,15 @@ namespace ExitGames.Client.Photon.LoadBalancing
 
         /// <summary>Authenticates users by their Facebook Account. Set auth values accordingly!</summary>
         Facebook = 2,
+
+        /// <summary>Authenticates users by their Oculus Account and token.</summary>
+        Oculus = 3,
+
+        /// <summary>Authenticates users by their PSN Account and token.</summary>
+        PlayStation = 4,
+
+        /// <summary>Authenticates users by their Xbox Account and XSTS token.</summary>
+        Xbox = 5,
 
         /// <summary>Disables custom authentification. Same as not providing any AuthenticationValues for connect (more precisely for: OpAuthenticate).</summary>
         None = byte.MaxValue

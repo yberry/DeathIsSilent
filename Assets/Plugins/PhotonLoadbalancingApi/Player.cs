@@ -10,6 +10,10 @@
 // <author>developer@photonengine.com</author>
 // ----------------------------------------------------------------------------
 
+#if UNITY_4_7 || UNITY_5 || UNITY_5_0 || UNITY_5_1 || UNITY_6_0
+#define UNITY
+#endif
+
 namespace ExitGames.Client.Photon.LoadBalancing
 {
     using System;
@@ -17,9 +21,11 @@ namespace ExitGames.Client.Photon.LoadBalancing
     using System.Collections.Generic;
     using ExitGames.Client.Photon;
 
-#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7 || UNITY_5 || UNITY_5_0 || UNITY_5_1 || UNITY_6
+    #if UNITY || NETFX_CORE
     using Hashtable = ExitGames.Client.Photon.Hashtable;
-#endif
+    using SupportClass = ExitGames.Client.Photon.SupportClass;
+    #endif
+
 
     /// <summary>
     /// Summarizes a "player" within a room, identified (in that room) by ID (or "actorID").
@@ -29,11 +35,6 @@ namespace ExitGames.Client.Photon.LoadBalancing
     /// </remarks>
     public class Player
     {
-        /// <summary>
-        /// A reference to the LoadbalancingClient which is currently keeping the connection and state.
-        /// </summary>
-        protected internal LoadBalancingClient LoadBalancingClient { get; set; }
-
         /// <summary>
         /// Used internally to identify the masterclient of a room.
         /// </summary>
@@ -79,19 +80,13 @@ namespace ExitGames.Client.Photon.LoadBalancing
                 this.nickName = value;
 
                 // update a room, if we changed our nickName (locally, while being in a room)
-                if (this.IsLocal && this.LoadBalancingClient != null && this.LoadBalancingClient.State == ClientState.Joined)
+                if (this.IsLocal && this.RoomReference != null && this.RoomReference.IsLocalClientInside)
                 {
                     this.SetPlayerNameProperty();
                 }
             }
         }
 
-        [Obsolete("Use NickName")]
-        public string Name
-        {
-            get { return NickName; }
-            set { NickName = value; }
-        }
 
         /// <summary>
         /// The player with the lowest actorID is the master and could be used for special tasks.
@@ -109,6 +104,9 @@ namespace ExitGames.Client.Photon.LoadBalancing
                 return this.ID == this.RoomReference.MasterClientId;
             }
         }
+
+        /// <summary>In turnbased games, other players might be inactive in a room. True when another player is not in the current room.</summary>
+        public bool IsInactive { get; set; }
 
         /// <summary>Read-only cache for custom properties of player. Set via Player.SetCustomProperties.</summary>
         /// <remarks>
@@ -134,10 +132,12 @@ namespace ExitGames.Client.Photon.LoadBalancing
 		/// <summary>Custom object associated with this Player. Not synchronized!</summary>
 		public object Tag;
 
-        /// <summary>In turnbased games, other players might be inactive in a room. True when another player is not in the current room.</summary>
-        public bool IsInactive { get; set; }    //TURNBASED
 
-
+        /// <summary>
+        /// Get a Player by ActorNumber (Player.ID).
+        /// </summary>
+        /// <param name="id">ActorNumber of the a player in this room.</param>
+        /// <returns>Player or null.</returns>
         public Player Get(int id)
         {
             if (this.RoomReference == null)
@@ -148,11 +148,17 @@ namespace ExitGames.Client.Photon.LoadBalancing
             return this.RoomReference.GetPlayer(id);
         }
 
+        /// <summary>Gets this Player's next Player, as sorted by ActorNumber (Player.ID). Wraps around.</summary>
+        /// <returns>Player or null.</returns>
         public Player GetNext()
         {
             return GetNextFor(this.ID);
         }
 
+        /// <summary>Gets a Player's next Player, as sorted by ActorNumber (Player.ID). Wraps around.</summary>
+        /// <remarks>Useful when you pass something to the next player. For example: passing the turn to the next player.</remarks>
+        /// <param name="currentPlayer">The Player for which the next is being needed.</param>
+        /// <returns>Player or null.</returns>
         public Player GetNextFor(Player currentPlayer)
         {
             if (currentPlayer == null)
@@ -162,6 +168,10 @@ namespace ExitGames.Client.Photon.LoadBalancing
             return GetNextFor(currentPlayer.ID);
         }
 
+        /// <summary>Gets a Player's next Player, as sorted by ActorNumber (Player.ID). Wraps around.</summary>
+        /// <remarks>Useful when you pass something to the next player. For example: passing the turn to the next player.</remarks>
+        /// <param name="currentPlayerId">The ActorNumber (Player.ID) for which the next is being needed.</param>
+        /// <returns>Player or null.</returns>
         public Player GetNextFor(int currentPlayerId)
         {
             if (this.RoomReference == null || this.RoomReference.Players == null || this.RoomReference.Players.Count < 2)
@@ -343,8 +353,8 @@ namespace ExitGames.Client.Photon.LoadBalancing
         /// </remarks>
         /// <param name="propertiesToSet">Hashtable of Custom Properties that changes.</param>
         /// <param name="expectedProperties">Provide some keys/values to use as condition for setting the new values. Client must be in room.</param>
-        /// <param name="webForward">If true, this SetCustomProperties operation gets forwarded to your WebHooks. Client must be in room.</param>
-        public void SetCustomProperties(Hashtable propertiesToSet, Hashtable expectedProperties = null, bool webForward = false)
+        /// <param name="webFlags">Defines if this SetCustomProperties-operation gets forwarded to your WebHooks. Client must be in room.</param>
+        public void SetCustomProperties(Hashtable propertiesToSet, Hashtable expectedProperties = null, WebFlags webFlags = null)
         {
             Hashtable customProps = propertiesToSet.StripToStringKeys() as Hashtable;
 
@@ -358,7 +368,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
             // send (sync) these new values if in room
             if (this.RoomReference != null && this.RoomReference.IsLocalClientInside)
             {
-                this.LoadBalancingClient.loadBalancingPeer.OpSetPropertiesOfActor(this.actorID, customProps, expectedProperties, webForward);
+                this.RoomReference.LoadBalancingClient.loadBalancingPeer.OpSetPropertiesOfActor(this.actorID, customProps, expectedProperties, webFlags);
             }
         }
 
@@ -366,9 +376,12 @@ namespace ExitGames.Client.Photon.LoadBalancing
         /// <summary>Uses OpSetPropertiesOfActor to sync this player's NickName (server is being updated with this.NickName).</summary>
         private void SetPlayerNameProperty()
         {
-            Hashtable properties = new Hashtable();
-            properties[ActorProperties.PlayerName] = this.nickName;
-            this.LoadBalancingClient.OpSetPropertiesOfActor(this.ID, properties);
+            if (this.RoomReference != null && this.RoomReference.IsLocalClientInside)
+            {
+                Hashtable properties = new Hashtable();
+                properties[ActorProperties.PlayerName] = this.nickName;
+                this.RoomReference.LoadBalancingClient.loadBalancingPeer.OpSetPropertiesOfActor(this.ID, properties);
+            }
         }
     }
 }

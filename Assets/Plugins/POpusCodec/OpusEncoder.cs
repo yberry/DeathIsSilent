@@ -17,7 +17,7 @@ namespace POpusCodec
         private int _frameSizePerChannel = 960;
         private SamplingRate _inputSamplingRate = SamplingRate.Sampling48000;
         private Channels _inputChannels = Channels.Stereo;
-
+        
         public SamplingRate InputSamplingRate
         {
             get
@@ -35,7 +35,8 @@ namespace POpusCodec
         }
 
 
-        private byte[] writePacket = new byte[RecommendedMaxPacketSize];
+        private readonly byte[] writePacket = new byte[RecommendedMaxPacketSize];
+        private static readonly ArraySegment<byte> EmptyBuffer = new ArraySegment<byte>(new byte[] { });
 
         public string Version
         {
@@ -236,32 +237,24 @@ namespace POpusCodec
             Bitrate = bitrate;
         }
 
-        public byte[] Encode(short[] pcmSamples) //pcmSamples: length is frame_size*channels*sizeof(short) 
+        public ArraySegment<byte> Encode(float[] pcmSamples)
         {
             int size = Wrapper.opus_encode(_handle, pcmSamples, _frameSizePerChannel, writePacket);
 
             if (size <= 1) //DTX. Negative already handled at this point
-                return new byte[] { };
-
-            byte[] encodedData = new byte[size];
-
-            Buffer.BlockCopy(writePacket, 0, encodedData, 0, encodedData.Length);
-
-            return encodedData;
+                return EmptyBuffer;
+            else
+                return new ArraySegment<byte>(writePacket, 0, size);
         }
 
-        public byte[] Encode(float[] pcmSamples)
+        public ArraySegment<byte> Encode(short[] pcmSamples)
         {
             int size = Wrapper.opus_encode(_handle, pcmSamples, _frameSizePerChannel, writePacket);
 
             if (size <= 1) //DTX. Negative already handled at this point
-                return new byte[] { };
-
-            byte[] encodedData = new byte[size];
-
-            Buffer.BlockCopy(writePacket, 0, encodedData, 0, encodedData.Length);
-
-            return encodedData;
+                return EmptyBuffer;
+            else
+                return new ArraySegment<byte>(writePacket, 0, size);
         }
 
         public void Dispose()

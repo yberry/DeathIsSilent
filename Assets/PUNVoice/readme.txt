@@ -1,6 +1,6 @@
 
 This is the readme for the Photon Unity Network Voice Package.
-(C) Exit Games GmbH 2015
+(C) Exit Games GmbH 2016
 
 
 Overview
@@ -8,6 +8,14 @@ Overview
 The package provides scripts for integration Photon Unity Networking with Photon Voice API
 
 Documentation is available online at this link: http://doc.photonengine.com/en/voice/current/getting-started/voice-for-pun
+
+
+### Supported platforms
+
+- Standalone: Windows, Mac, Linux
+- Windows Store Universal 10
+- iOS       (not simulator)
+- Android
 
 
 ### Getting started 

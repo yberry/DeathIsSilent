@@ -8,7 +8,7 @@
  * ----------------------------------------------------------------------------- */
 
 
-public enum ErrorCode {
+public enum ErrorCodes {
   ErrorCode_NoError = 0,
   ErrorCode_FileNotFound,
   ErrorCode_CannotOpenFile,

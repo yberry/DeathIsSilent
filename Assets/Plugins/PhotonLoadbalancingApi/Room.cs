@@ -9,6 +9,10 @@
 // <author>developer@photonengine.com</author>
 // ----------------------------------------------------------------------------
 
+#if UNITY_4_7 || UNITY_5 || UNITY_5_0 || UNITY_5_1 || UNITY_6_0
+#define UNITY
+#endif
+
 namespace ExitGames.Client.Photon.LoadBalancing
 {
     using System;
@@ -16,9 +20,11 @@ namespace ExitGames.Client.Photon.LoadBalancing
     using System.Collections.Generic;
     using ExitGames.Client.Photon;
 
-#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7 || UNITY_5 || UNITY_5_0 || UNITY_5_1 || UNITY_6
+    #if UNITY || NETFX_CORE
     using Hashtable = ExitGames.Client.Photon.Hashtable;
-#endif
+    using SupportClass = ExitGames.Client.Photon.SupportClass;
+    #endif
+
 
     /// <summary>
     /// This class represents a room a client joins/joined.
@@ -200,7 +206,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
         /// The ID (actorID, actorNumber) of the player who's the master of this Room.
         /// Note: This changes when the current master leaves the room.
         /// </summary>
-        public int MasterClientId { get; private set; }
+        public int MasterClientId { get { return this.masterClientIdField; } }
 
         /// <summary>
         /// Gets a list of custom properties that are in the RoomInfo of the Lobby.
@@ -230,24 +236,6 @@ namespace ExitGames.Client.Photon.LoadBalancing
         protected internal Room(string roomName) : base(roomName, null)
         {
             // base sets name and (custom)properties. here we set "well known" properties
-        }
-
-        /// <summary>Creates a Room (representation) with given name and properties and the "listing options" as provided by parameters.</summary>
-        /// <param name="roomName">Name of the room (can be null until it's actually created on server).</param>
-        /// <param name="roomProperties">Custom room propertes (Hashtable with string-typed keys) of this room.</param>
-        /// <param name="isVisible">Visible rooms show up in the lobby and can be joined randomly (a well-known room-property).</param>
-        /// <param name="isOpen">Closed rooms can't be joined (a well-known room-property).</param>
-        /// <param name="maxPlayers">The count of players that might join this room (a well-known room-property).</param>
-        /// <param name="propsListedInLobby">List of custom properties that are used in the lobby (less is better).</param>
-        [Obsolete]
-        protected internal Room(string roomName, Hashtable roomProperties, bool isVisible, bool isOpen, byte maxPlayers, string[] propsListedInLobby)
-            : base(roomName, roomProperties)
-        {
-            // base sets name and (custom)properties. here we set "well known" properties
-            this.isVisible = isVisible;
-            this.isOpen = isOpen;
-            this.maxPlayers = maxPlayers;
-            this.PropsListedInLobby = propsListedInLobby;
         }
 
         /// <summary>Creates a Room (representation) with given name and properties and the "listing options" as provided by parameters.</summary>
@@ -304,8 +292,8 @@ namespace ExitGames.Client.Photon.LoadBalancing
         /// </remarks>
         /// <param name="propertiesToSet">Hashtable of Custom Properties that changes.</param>
         /// <param name="expectedProperties">Provide some keys/values to use as condition for setting the new values. Client must be in room.</param>
-        /// <param name="webForward">If true, this SetCustomProperties operation gets forwarded to your WebHooks. Client must be in room.</param>
-        public virtual void SetCustomProperties(Hashtable propertiesToSet, Hashtable expectedProperties = null, bool webForward = false)
+        /// <param name="webFlags">Defines if this SetCustomProperties-operation gets forwarded to your WebHooks. Client must be in room.</param>
+        public virtual void SetCustomProperties(Hashtable propertiesToSet, Hashtable expectedProperties = null, WebFlags webFlags = null)
         {
             Hashtable customProps = propertiesToSet.StripToStringKeys() as Hashtable;
 
@@ -319,7 +307,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
             // send (sync) these new values if in room
             if (this.IsLocalClientInside)
             {
-                this.LoadBalancingClient.loadBalancingPeer.OpSetPropertiesOfRoom(customProps, expectedProperties, webForward);
+                this.LoadBalancingClient.loadBalancingPeer.OpSetPropertiesOfRoom(customProps, expectedProperties, webFlags);
             }
         }
 
@@ -382,8 +370,17 @@ namespace ExitGames.Client.Photon.LoadBalancing
         /// <summary>
         /// Picks a new master client and sets property MasterClientId accordingly.
         /// </summary>
+        /// <remarks>
+        /// The Photon server can select the Master Client and inform clients about that.
+        /// In this case, serverSideMasterClient is true and the clients get updates of this from the server.
+        /// </remarks>
         private void UpdateMasterClientId()
         {
+            if (this.serverSideMasterClient)
+            {
+                return;
+            }
+
             int lowestId = int.MaxValue;
             foreach (int id in this.Players.Keys)
             {
@@ -399,7 +396,44 @@ namespace ExitGames.Client.Photon.LoadBalancing
                 lowestId = 0;
             }
 
-            this.MasterClientId = lowestId;
+            this.masterClientIdField = lowestId;
+        }
+
+
+        /// <summary>
+        /// Asks the server to assign another player as Master Client of your current room.
+        /// </summary>
+        /// <remarks>
+        /// RaiseEvent has the option to send messages only to the Master Client of a room.
+        /// SetMasterClient affects which client gets those messages.
+        ///
+        /// This method calls an operation on the server to set a new Master Client, which takes a roundtrip.
+        /// In case of success, this client and the others get the new Master Client from the server.
+        ///
+        /// SetMasterClient tells the server which current Master Client should be replaced with the new one.
+        /// It will fail, if anything switches the Master Client moments earlier. There is no callback for this
+        /// error. All clients should get the new Master Client assigned by the server anyways.
+        ///
+        /// See also: MasterClientId
+        /// </remarks>
+        /// <param name="masterClientPlayer">The player to become the next Master Client.</param>
+        /// <returns>False when this operation couldn't be done currently. Requires a v4 Photon Server.</returns>
+        public bool SetMasterClient(Player masterClientPlayer)
+        {
+            if (!this.serverSideMasterClient)
+            {
+                this.LoadBalancingClient.DebugReturn(DebugLevel.WARNING, "SetMasterClient can only be called if the server supports a 'Server Side Master Client'.");
+                return false;
+            }
+            if (!this.IsLocalClientInside)
+            {
+                this.LoadBalancingClient.DebugReturn(DebugLevel.WARNING, "SetMasterClient can only be called for the current room (being in one).");
+                return false;
+            }
+
+            Hashtable newProps = new Hashtable() { { GamePropertyKey.MasterClientId, masterClientPlayer.ID } };
+            Hashtable prevProps = new Hashtable() { { GamePropertyKey.MasterClientId, this.MasterClientId} };
+            return this.LoadBalancingClient.OpSetPropertiesOfRoom(newProps, prevProps);
         }
 
         /// <summary>
@@ -464,8 +498,10 @@ namespace ExitGames.Client.Photon.LoadBalancing
         public void ClearExpectedUsers()
         {
             Hashtable props = new Hashtable();
-            props[GamePropertyKey.ExpectedUsers] = null;
-            this.LoadBalancingClient.OpSetPropertiesOfRoom(props, expectedProperties: null, webForward: false);
+            props[GamePropertyKey.ExpectedUsers] = new string[0];
+            Hashtable expected = new Hashtable();
+            expected[GamePropertyKey.ExpectedUsers] = this.ExpectedUsers;
+            this.LoadBalancingClient.OpSetPropertiesOfRoom(props, expected);
         }
 
 

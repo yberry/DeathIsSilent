@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using POpusCodec.Enums;
 using ExitGames.Client.Photon.Voice;
 using System;
 
@@ -21,13 +20,13 @@ public class PhotonVoiceSettings : MonoBehaviour
     public bool AutoTransmit = true;            // set in inspector
 
     /// Outgoing audio stream sampling rate (applied per every recoder instance).
-    public SamplingRate SamplingRate = (SamplingRate)Default.SamplingRate;     // set in inspector
+    public POpusCodec.Enums.SamplingRate SamplingRate = POpusCodec.Enums.SamplingRate.Sampling24000;     // set in inspector
 
     /// Outgoing audio stream encoder delay (buffer size in terms of time; applied per every recoder instance).
-    public Delay Delay = (Delay)Default.EncoderDelay;   // set in inspector
+    public FrameDuration FrameDuration = FrameDuration.Frame20ms;   // set in inspector
 
     /// Outgoing audio stream bitrate (applied per every recoder instance).
-    public int Bitrate = Default.Bitrate;               // set in inspector
+    public int Bitrate = 30000;               // set in inspector
 
     /// Enable voice detection (applied per every recoder instance).
     public bool VoiceDetection = false;                 // set in inspector

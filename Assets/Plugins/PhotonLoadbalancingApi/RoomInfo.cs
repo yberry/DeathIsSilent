@@ -9,13 +9,19 @@
 // <author>developer@photonengine.com</author>
 // ----------------------------------------------------------------------------
 
+#if UNITY_4_7 || UNITY_5 || UNITY_5_0 || UNITY_5_1 || UNITY_6_0
+#define UNITY
+#endif
+
 namespace ExitGames.Client.Photon.LoadBalancing
 {
     using System.Collections;
 
-#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7 || UNITY_5 || UNITY_5_0 || UNITY_5_1 || UNITY_6
+    #if UNITY || NETFX_CORE
     using Hashtable = ExitGames.Client.Photon.Hashtable;
-#endif
+    using SupportClass = ExitGames.Client.Photon.SupportClass;
+    #endif
+
 
     /// <summary>
     /// Used for Room listings of the lobby (not yet joining). Offers the basic info about a
@@ -230,14 +236,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
             if (propertiesToCache.ContainsKey(GamePropertyKey.MasterClientId))
             {
                 this.serverSideMasterClient = true;
-                bool isUpdate = this.masterClientIdField != 0;
                 this.masterClientIdField = (int)propertiesToCache[GamePropertyKey.MasterClientId];
-                
-                // UpdateMasterClient() is a CALLBACK in PUN, nothing more. commented out
-                //if (isUpdate)
-                //{
-                //    PhotonNetwork.networkingPeer.UpdateMasterClient();    
-                //}
             }
 
             if (propertiesToCache.ContainsKey(GamePropertyKey.PropsListedInLobby))
